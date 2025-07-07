@@ -17,8 +17,7 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 |------|---------|-------------------|
 | **Analyze** | Code analysis + scriptable analysis | `--security` `--performance` `--architecture` `--code-quality` |
 | **Build** | Feature development | `--feature` `--prototype` `--tdd` `--plan` |
-| **Design** | System & interface design | `--ui` `--architecture` `--datamodel` |
-| **Plan** | Strategic planning | `--refactor` `--feature` `--prd` |
+| **Plan** | Strategic planning | `--refactor` `--feature` `--prd` `--architecture` `--datamodel` |
 | **Fix** | Problem resolution | `--bug` `--performance` `--test` `--verbose` |
 
 **Universal Tools:** `--git-commit` `--c7` `--seq` `--think` `--ultrathink`
@@ -153,39 +152,39 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 ```bash
 # Quick UI demonstration
 "Create admin panel prototype for user management --prototype"
-# Files: copilot-instructions.md + build.chatmode.md + feature.md
-# Tokens: 2,825 | Rapid development using existing libraries, mock data
+# Files: copilot-instructions.md + build.chatmode.md + prototype.md
+# Tokens: ~1,000 | Rapid development using existing libraries, mock data
 
 # API prototype development
 "Mock payment integration flow for testing --prototype"
 # Files: Same as above
-# Tokens: 2,825 | Quick implementation, external service mocking
+# Tokens: ~1,000 | Quick implementation, external service mocking
 
 # Data visualization demo
 "Build interactive sales chart component --prototype"
 # Files: Same as above
-# Tokens: 2,825 | Chart library integration, sample data, basic interactions
+# Tokens: ~1,000 | Chart library integration, sample data, basic interactions
 ```
 
 ### Test-Driven Development
 ```bash
 # TDD feature implementation
 "Implement shopping cart functionality using TDD --tdd"
-# Files: copilot-instructions.md + build.chatmode.md + feature.md + tdd.md
-# Tokens: 3,100 | Test-first development, comprehensive coverage, refactoring
+# Files: copilot-instructions.md + build.chatmode.md + tdd.md
+# Tokens: ~1,200 | Test-first development, comprehensive coverage, refactoring
 
 # Legacy code refactoring with tests
 "Refactor payment processing with full test coverage --tdd"
 # Files: Same as above
-# Tokens: 3,100 | Legacy code modernization, test harness creation
+# Tokens: ~1,200 | Legacy code modernization, test harness creation
 ```
 
 ### Multi-Task Coordination
 ```bash
 # Complex feature coordination
 "Implement notification system with multiple components --plan"
-# Files: copilot-instructions.md + build.chatmode.md + feature.md + plan.md
-# Tokens: 2,625 | Task breakdown, dependency management, milestone planning
+# Files: copilot-instructions.md + build.chatmode.md + plan.md
+# Tokens: ~1,100 | Task breakdown, dependency management, milestone planning
 ```
 
 ## 📋 Plan Mode Examples
@@ -195,12 +194,12 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # System architecture design
 "Plan microservices architecture for e-commerce platform --architecture"
 # Files: copilot-instructions.md + plan.chatmode.md + architecture.md
-# Tokens: 3,450 | Service design, API contracts, data flow, deployment strategy
+# Tokens: ~1,200 | Service design, API contracts, data flow, deployment strategy
 
 # Infrastructure planning
 "Design cloud infrastructure for high-traffic application --architecture"
 # Files: Same as above
-# Tokens: 3,450 | Scalability design, cost optimization, reliability planning
+# Tokens: ~1,200 | Scalability design, cost optimization, reliability planning
 ```
 
 ### Data Model Planning
@@ -208,12 +207,12 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Database schema design
 "Plan user permissions and roles data model --datamodel"
 # Files: copilot-instructions.md + plan.chatmode.md + datamodel.md
-# Tokens: 2,675 | Entity relationships, normalization, performance considerations
+# Tokens: ~1,000 | Entity relationships, normalization, performance considerations
 
 # Analytics data architecture
 "Design time-series metrics storage strategy --datamodel"
 # Files: Same as above
-# Tokens: 2,675 | Time-series design, aggregation strategies, query optimization
+# Tokens: ~1,000 | Time-series design, aggregation strategies, query optimization
 ```
 
 ### Refactoring Plans
@@ -221,12 +220,12 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Legacy modernization planning
 "Plan migration from jQuery to React framework --refactor"
 # Files: copilot-instructions.md + plan.chatmode.md + refactor.md
-# Tokens: 3,075 | Migration strategy, risk assessment, rollback planning
+# Tokens: ~1,100 | Migration strategy, risk assessment, rollback planning
 
 # Performance optimization roadmap
 "Plan database query optimization project --refactor"
 # Files: Same as above
-# Tokens: 3,075 | Performance bottleneck analysis, optimization priorities
+# Tokens: ~1,100 | Performance bottleneck analysis, optimization priorities
 ```
 
 ### Product Requirements
@@ -234,12 +233,12 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Complete product specification
 "Write PRD for recommendation engine feature --prd"
 # Files: copilot-instructions.md + plan.chatmode.md + prd.md
-# Tokens: 3,600 | Requirements, acceptance criteria, success metrics, timeline
+# Tokens: ~1,500 | Requirements, acceptance criteria, success metrics, timeline
 
 # Feature specification document
 "Create detailed spec for real-time chat system --prd"
 # Files: Same as above
-# Tokens: 3,600 | Technical requirements, user stories, integration points
+# Tokens: ~1,500 | Technical requirements, user stories, integration points
 ```
 
 ## 🔧 Fix Mode Examples
@@ -249,17 +248,17 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Critical authentication bug
 "Authentication fails after password reset flow --bug"
 # Files: copilot-instructions.md + fix.chatmode.md + bug.md
-# Tokens: 3,325 | Systematic debugging, root cause analysis, validation testing
+# Tokens: ~1,800 | Systematic debugging, root cause analysis, validation testing
 
 # Data integrity issue
 "User data corruption in checkout process --bug"
 # Files: Same as above
-# Tokens: 3,325 | Data flow analysis, corruption point identification, data recovery
+# Tokens: ~1,800 | Data flow analysis, corruption point identification, data recovery
 
 # Concurrency issue resolution
 "Race condition in payment processing system --bug"
 # Files: Same as above
-# Tokens: 3,325 | Concurrency analysis, thread-safe implementation, stress testing
+# Tokens: ~1,800 | Concurrency analysis, thread-safe implementation, stress testing
 ```
 
 ### Performance Issues
@@ -267,17 +266,17 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Database performance optimization
 "Resolve query timeout on user dashboard --performance"
 # Files: copilot-instructions.md + fix.chatmode.md + performance.md
-# Tokens: 1,575 | Query optimization, index analysis, caching strategies
+# Tokens: ~500 | Query optimization, index analysis, caching strategies
 
 # Memory leak investigation
 "Fix memory leak in image processing service --performance"
 # Files: Same as above
-# Tokens: 1,575 | Memory profiling, leak detection, garbage collection optimization
+# Tokens: ~500 | Memory profiling, leak detection, garbage collection optimization
 
 # API response time improvement
 "Resolve API response time degradation --performance"
 # Files: Same as above
-# Tokens: 1,575 | Bottleneck identification, caching implementation, load optimization
+# Tokens: ~500 | Bottleneck identification, caching implementation, load optimization
 ```
 
 ### Test Failures
@@ -285,17 +284,17 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Integration test fixes
 "Fix integration tests failing after API changes --test"
 # Files: copilot-instructions.md + fix.chatmode.md + test.md
-# Tokens: 2,475 | Test isolation, mock updating, contract validation
+# Tokens: ~1,300 | Test isolation, mock updating, contract validation
 
 # Flaky test resolution
 "Resolve flaky unit tests in user authentication service --test"
 # Files: Same as above
-# Tokens: 2,475 | Race condition elimination, deterministic testing, test environment
+# Tokens: ~1,300 | Race condition elimination, deterministic testing, test environment
 
 # CI/CD pipeline test issues
 "Fix E2E tests timing out in CI pipeline --test"
 # Files: Same as above
-# Tokens: 2,475 | Environment configuration, timing optimization, retry strategies
+# Tokens: ~1,300 | Environment configuration, timing optimization, retry strategies
 ```
 
 ### Debugging Enhancement
@@ -303,12 +302,12 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Logging and monitoring improvements
 "Add comprehensive tracing to payment flow --verbose"
 # Files: copilot-instructions.md + fix.chatmode.md + verbose.md
-# Tokens: 2,075 | Structured logging, distributed tracing, error context
+# Tokens: ~1,000 | Structured logging, distributed tracing, error context
 
 # Intermittent issue debugging
 "Debug intermittent webhook delivery failures --verbose"
 # Files: Same as above
-# Tokens: 2,075 | Event logging, failure pattern analysis, retry mechanisms
+# Tokens: ~1,000 | Event logging, failure pattern analysis, retry mechanisms
 ```
 
 ## 🔧 Universal Tools Examples
@@ -390,7 +389,6 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 ### Choose the Right Mode
 - **Analyze** (~400 base): Understanding existing code, read-only assessment + scriptable analysis
 - **Build** (~350 base): Creating new functionality, code implementation  
-- **Design** (~450 base): System and interface design specifications
 - **Plan** (~500 base): Strategic planning, specifications, roadmaps
 - **Fix** (~400 base): Problem resolution, debugging, optimization
 
