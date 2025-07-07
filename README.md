@@ -4,13 +4,13 @@
 
 SuperCopilot v3.0 transforms GitHub Copilot into an intelligent development assistant using chat modes with specialized switches for just-in-time context loading.
 
-## 🎯 What's New in v3.0
+## 🎯 Core Features
 
 - **5 Specialized Chat Modes**: Purpose-built modes for different development activities
 - **Switch-Based Specialization**: Load only relevant rules with `--switch` syntax
-- **87% Context Reduction**: From 300+ lines to ~50 lines per operation
+- **Efficient Context Management**: Approximately 50 lines per operation
 - **Embedded Intelligence**: Persona mindsets integrated into workflow rules
-- **True Just-In-Time**: Load only what you need, when you need it
+- **Just-In-Time Loading**: Load only what you need, when you need it
 
 ## 🚀 Quick Start
 
@@ -142,10 +142,10 @@ Available in ALL modes with `--` syntax:
 
 ## 🎯 Key Benefits
 
-### Minimal Context Loading
-- **Before**: 300+ lines loaded for every operation
-- **After**: ~50 lines (30 base + 25 rules)
-- **Result**: Faster, more focused AI responses
+### Efficient Context Management
+- Approximately 50 lines per operation (30 base + 25 rules)
+- Faster, more focused AI responses
+- Reduced token usage and improved performance
 
 ### Intelligent Specialization
 - Mode provides general context
@@ -231,7 +231,7 @@ SuperCopilot lives in your repository for consistent team usage:
 
 # Commit for team
 git add .github/
-git commit -m "Add SuperCopilot v3.0 AI assistant"
+git commit -m "feat: add SuperCopilot v3.0 AI assistant"
 git push
 ```
 
@@ -244,7 +244,6 @@ Team benefits:
 ## 📚 Additional Resources
 
 - **Complete Guide**: See EXAMPLES.md for usage patterns and command reference
-- **Migration Guide**: See MIGRATION.md for upgrading from v2.0
 
 ## 🎯 Philosophy
 
