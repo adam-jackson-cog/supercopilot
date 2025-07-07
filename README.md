@@ -1,8 +1,8 @@
-# SuperCopilot v3.0 - Intelligent GitHub Copilot Enhancement
+# SuperCopilot v1.0 - Intelligent GitHub Copilot Enhancement
 
 > **Switch-based AI development with minimal context and maximum capability**
 
-SuperCopilot v3.0 transforms GitHub Copilot into an intelligent development assistant using chat modes with specialized switches for just-in-time context loading.
+SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assistant using chat modes with specialized switches for just-in-time context loading.
 
 ## 🎯 Core Features
 
@@ -163,6 +163,8 @@ Available in ALL modes with `--` syntax:
 ## 🔧 Installation Options
 
 ### Automated Installation
+
+**macOS/Linux:**
 ```bash
 # Install with prompt
 ./install.sh /path/to/project
@@ -172,6 +174,18 @@ Available in ALL modes with `--` syntax:
 
 # Update existing installation
 ./install.sh /path/to/project --update
+```
+
+**Windows:**
+```powershell
+# Install with prompt
+.\install.ps1 C:\path\to\project
+
+# Force install (no prompts)
+.\install.ps1 C:\path\to\project -Force
+
+# Update existing installation
+.\install.ps1 C:\path\to\project -Update
 ```
 
 ### Manual Installation
@@ -231,7 +245,7 @@ SuperCopilot lives in your repository for consistent team usage:
 
 # Commit for team
 git add .github/
-git commit -m "feat: add SuperCopilot v3.0 AI assistant"
+git commit -m "feat: add SuperCopilot v1.0 AI assistant"
 git push
 ```
 
@@ -247,7 +261,7 @@ Team benefits:
 
 ## 🎯 Philosophy
 
-SuperCopilot v3.0 follows the principle of **minimal context, maximum capability**:
+SuperCopilot v1.0 follows the principle of **minimal context, maximum capability**:
 
 1. **Load only what's needed** - No universal commands or personas
 2. **Embed intelligence** - Mindsets integrated into workflow rules
@@ -256,4 +270,4 @@ SuperCopilot v3.0 follows the principle of **minimal context, maximum capability
 
 ---
 
-**SuperCopilot v3.0** - Intelligent development assistance through efficient context management
+**SuperCopilot v1.0** - Intelligent development assistance through efficient context management

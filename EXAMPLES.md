@@ -1,10 +1,10 @@
-# SuperCopilot v3.0 Reference & Examples
+# SuperCopilot v1.0 Reference & Examples
 
 *Complete guide to SuperCopilot's switch-based system with practical examples and token counts*
 
 ## 🎯 Quick Reference
 
-SuperCopilot v3.0 uses **chat modes** with **switches** for specialized assistance with just-in-time loading.
+SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistance with just-in-time loading.
 
 **Usage Pattern:**
 1. **Select a chat mode** from GitHub Copilot dropdown
@@ -391,4 +391,4 @@ SuperCopilot v3.0 uses **chat modes** with **switches** for specialized assistan
 
 ---
 
-*SuperCopilot v3.0 - Maximum capability, minimum context*
+*SuperCopilot v1.0 - Maximum capability, minimum context*

@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Version
-VERSION="3.0.0"
+VERSION="1.0.0"
 
 # Default values
 INSTALL_DIR=""
@@ -278,7 +278,7 @@ else
     cp .github/chatmodes/*.md "$SUPERCOPILOT_DIR/chatmodes/"
 fi
 
-# Note: Personas removed in v3.0 - embedded in workflow rules
+# Note: Personas embedded in workflow rules
 
 # Copy workflows
 echo "Copying workflows..."
