@@ -14,7 +14,7 @@ When user includes switches, load the corresponding workflow files:
 - `--security` → Read `.github/workflows/analyze/security.md`
 - `--performance` → Read `.github/workflows/analyze/performance.md`
 - `--architecture` → Read `.github/workflows/analyze/architecture.md`
-- `--code-quality` → Read `.github/workflows/analyze/code-quality.md`
+- `--code-quality` → Read `.github/workflows/analyze/code_quality.md`
 - `--ux` → Read `.github/workflows/analyze/ux.md`
 
 ## Analysis Framework

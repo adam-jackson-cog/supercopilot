@@ -15,7 +15,7 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 
 | Mode | Purpose | Available Switches |
 |------|---------|-------------------|
-| **Analyze** | Code analysis + scriptable analysis | `--security` `--performance` `--architecture` `--code-quality` |
+| **Analyze** | Code analysis + scriptable analysis | `--security` `--performance` `--architecture` `--code-quality` `--ux` |
 | **Build** | Feature development | `--feature` `--prototype` `--tdd` `--plan` |
 | **Plan** | Strategic planning | `--refactor` `--feature` `--prd` `--architecture` `--datamodel` |
 | **Fix** | Problem resolution | `--bug` `--performance` `--test` `--verbose` |
