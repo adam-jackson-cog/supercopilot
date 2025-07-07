@@ -4,17 +4,17 @@
 
 ## Automated Performance Checks [Scripts]
 
-**Database Performance**: `profile_database.py`
+**Database Performance**: `.github/scripts/analyze/performance/profile_database.py`
 - Scans: N+1 queries, missing WHERE clauses, SELECT *, LIKE with wildcards
 - Output: Query performance issues with line numbers and context
 
-**Code Complexity**: `complexity_lizard.py` 
+**Code Complexity**: `.github/scripts/analyze/code_quality/complexity_lizard.py` 
 - Scans: Function length, cyclomatic complexity, deep nesting, code smells
 - Output: Complexity metrics and maintainability issues
 
 **Frontend Analysis** (Planned):
-- `analyze_frontend.py` - Bundle size, render performance, memory usage
-- `check_bottlenecks.py` - CPU/memory profiling patterns
+- `.github/scripts/analyze/performance/analyze_frontend.py` - Bundle size, render performance, memory usage
+- `.github/scripts/analyze/performance/check_bottlenecks.py` - CPU/memory profiling patterns
 
 ## Contextual Performance Assessment [LLM Analysis]
 

@@ -1,5 +1,5 @@
 # SuperCopilot Framework Installer Script for Windows
-# Installs SuperCopilot persona-driven development framework for GitHub Copilot
+# Installs SuperCopilot workflow-driven development framework for GitHub Copilot
 
 param(
     [Parameter(Mandatory=$true, Position=0)]
@@ -117,7 +117,6 @@ function Install-Dependencies {
             if ($DryRun) {
                 Write-ColorOutput "[DRY RUN] Would install:" -Color $Colors.Blue
                 Write-Output "  - lizard (code complexity analysis)"
-                Write-Output "  - Optional: radon, bandit, safety"
             } else {
                 Write-Output "Installing lizard for code complexity analysis..."
                 try {
@@ -127,30 +126,6 @@ function Install-Dependencies {
                     Write-ColorOutput "⚠ Failed to install lizard. Run manually: $pipCmd install lizard" -Color $Colors.Yellow
                 }
                 
-                # Optional tools - install if user wants them
-                if (-not $Force) {
-                    Write-Output ""
-                    Write-ColorOutput "Optional analysis tools available:" -Color $Colors.Yellow
-                    Write-Output "  - radon: Python complexity metrics"
-                    Write-Output "  - bandit: Python security analysis"
-                    Write-Output "  - safety: Python dependency vulnerability scanning"
-                    Write-Output ""
-                    $installOptional = Read-Host "Install optional tools? (y/n)"
-                    
-                    if ($installOptional -eq "y") {
-                        Write-Output "Installing optional tools..."
-                        
-                        $tools = @("radon", "bandit", "safety")
-                        foreach ($tool in $tools) {
-                            try {
-                                & $pipCmd install $tool *>$null
-                                Write-ColorOutput "✓ $tool installed" -Color $Colors.Green
-                            } catch {
-                                Write-ColorOutput "⚠ Failed to install $tool" -Color $Colors.Yellow
-                            }
-                        }
-                    }
-                }
             }
         } else {
             Write-ColorOutput "⚠ pip not found. Some scriptable workflows require Python packages." -Color $Colors.Yellow

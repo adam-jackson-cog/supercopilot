@@ -4,14 +4,14 @@
 
 ## Automated Security Checks [Scripts]
 
-**Secret Detection**: `detect_secrets.py`
+**Secret Detection**: `.github/scripts/analyze/security/detect_secrets.py`
 - Scans: Hardcoded passwords, API keys, database URLs, JWT secrets, AWS keys, private keys
 - Output: JSON report with file locations, line numbers, secret types
 
 **Vulnerability Scanning** (Planned):
-- `scan_vulnerabilities.py` - OWASP Top 10 pattern matching
-- `check_auth.py` - Authentication/session validation
-- `validate_inputs.py` - Injection vulnerability detection
+- `.github/scripts/analyze/security/scan_vulnerabilities.py` - OWASP Top 10 pattern matching
+- `.github/scripts/analyze/security/check_auth.py` - Authentication/session validation
+- `.github/scripts/analyze/security/validate_inputs.py` - Injection vulnerability detection
 
 ## Contextual Security Assessment [LLM Analysis]
 

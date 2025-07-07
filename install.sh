@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SuperCopilot Framework Installer Script
-# Installs SuperCopilot persona-driven development framework for GitHub Copilot
+# Installs SuperCopilot workflow-driven development framework for GitHub Copilot
 
 set -e  # Exit on error
 
@@ -334,7 +334,6 @@ install_dependencies() {
             if [[ "$DRY_RUN" = true ]]; then
                 echo -e "${BLUE}[DRY RUN] Would install:${NC}"
                 echo "  - lizard (code complexity analysis)"
-                echo "  - Optional: radon, bandit, safety"
             else
                 echo "Installing lizard for code complexity analysis..."
                 if $PIP_CMD install lizard >/dev/null 2>&1; then
@@ -343,29 +342,6 @@ install_dependencies() {
                     echo -e "${YELLOW}⚠ Failed to install lizard. Run manually: $PIP_CMD install lizard${NC}"
                 fi
                 
-                # Optional tools - install if user wants them
-                if [[ "$FORCE_INSTALL" != true ]]; then
-                    echo ""
-                    echo -e "${YELLOW}Optional analysis tools available:${NC}"
-                    echo "  - radon: Python complexity metrics"
-                    echo "  - bandit: Python security analysis"
-                    echo "  - safety: Python dependency vulnerability scanning"
-                    echo ""
-                    echo -n "Install optional tools? (y/n): "
-                    read -r install_optional
-                    
-                    if [ "$install_optional" = "y" ]; then
-                        echo "Installing optional tools..."
-                        
-                        for tool in radon bandit safety; do
-                            if $PIP_CMD install $tool >/dev/null 2>&1; then
-                                echo "✓ $tool installed"
-                            else
-                                echo -e "${YELLOW}⚠ Failed to install $tool${NC}"
-                            fi
-                        done
-                    fi
-                fi
             fi
         else
             echo -e "${YELLOW}⚠ pip not found. Some scriptable workflows require Python packages.${NC}"

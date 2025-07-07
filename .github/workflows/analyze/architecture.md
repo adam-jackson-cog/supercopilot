@@ -4,13 +4,17 @@
 
 ## Automated Architecture Checks [Scripts]
 
-**Coupling Analysis**: `coupling_analysis.py`
+**Coupling Analysis**: `.github/scripts/analyze/architecture/coupling_analysis.py`
 - Scans: Circular dependencies, high fan-in/fan-out, dependency chains
 - Output: Module coupling metrics and dependency graph issues
 
-**Pattern Evaluation** (Planned):
-- `pattern_evaluation.py` - Design pattern detection and appropriateness
-- `scalability_check.py` - Bottleneck identification in system design
+**Pattern Evaluation**: `.github/scripts/analyze/architecture/pattern_evaluation.py`
+- Scans: Design patterns, anti-patterns, architectural patterns, complexity issues
+- Output: Pattern usage analysis and code quality recommendations
+
+**Scalability Assessment**: `.github/scripts/analyze/architecture/scalability_check.py`
+- Scans: Performance bottlenecks, database issues, concurrency problems, architectural constraints
+- Output: Scalability score and prioritized improvement recommendations
 
 ## Contextual Architecture Assessment [LLM Analysis]
 
