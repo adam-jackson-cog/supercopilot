@@ -41,54 +41,6 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Token count: ~1,000 tokens
 ```
 
-## 🔬 Scriptable Analysis Examples
-
-SuperCopilot includes comprehensive Python analysis scripts for enterprise-grade code assessment:
-
-### Complete Security Analysis
-```bash
-# Run all security scripts
-python .github/scripts/run_all_analysis.py . --min-severity high
-# Output: Executive summary with 50+ vulnerability types across 12+ languages
-# Performance: ~0.5 seconds for complete analysis
-
-# Individual security analysis
-python .github/scripts/analyze/security/check_auth.py . --min-severity medium
-# Detects: Weak JWT secrets, missing CSRF, authorization bypasses
-# Output: JSON report with severity classification and recommendations
-```
-
-### Performance Bottleneck Detection
-```bash
-# Frontend performance analysis
-python .github/scripts/analyze/performance/analyze_frontend.py .
-# Analyzes: Bundle size, React patterns, CSS performance issues
-# Languages: JS, TS, CSS, HTML, React, Vue, Angular
-
-# CPU/Memory bottleneck detection
-python .github/scripts/analyze/performance/check_bottlenecks.py . --min-severity high
-# Detects: Blocking I/O, algorithm complexity, memory leaks, inefficient queries
-```
-
-### Architecture Pattern Analysis
-```bash
-# Design pattern evaluation
-python .github/scripts/analyze/architecture/pattern_evaluation.py .
-# Detects: Singleton, Factory, Observer, MVC patterns + anti-patterns
-# Analyzes: Code complexity, long methods, too many parameters
-
-# Scalability assessment
-python .github/scripts/analyze/architecture/scalability_check.py .
-# Identifies: Hardcoded configs, synchronous I/O, N+1 queries, bottlenecks
-```
-
-### Code Quality Assessment
-```bash
-# Lizard complexity analysis
-python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
-# Metrics: Cyclomatic complexity, function length, parameter count
-# Thresholds: Configurable high/medium/low severity levels
-```
 
 ## 📊 Analyze Mode Examples
 
@@ -97,17 +49,20 @@ python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
 # API security review (AI workflow)
 "Review our authentication endpoints --security"
 # Files: copilot-instructions.md + analyze.chatmode.md + security.md
+# Scripts: check_auth.py, scan_vulnerabilities.py, validate_inputs.py
 # Tokens: ~1,100 | OWASP checklist, vulnerability patterns, risk assessment
-# Alternative: Run scriptable analysis for comprehensive automated security scan
+# Scriptable: 50+ vulnerability types across 12+ languages, JSON reports
 
 # Payment security audit with research
 "Analyze payment processing security --security --c7"  
 # Files: Above + Context7 research lookup
+# Scripts: Same security analysis scripts available
 # Tokens: ~1,100 + research | Combines AI analysis with current best practices
 
 # Critical system security review with deep analysis
 "Security audit of admin panel --security --think"
 # Files: Above + structured thinking
+# Scripts: Complete security suite for automated validation
 # Tokens: ~1,100 + thinking | Attack vector analysis, business impact assessment
 ```
 
@@ -116,18 +71,21 @@ python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
 # Database performance review (AI workflow)
 "Analyze slow query performance in user service --performance"
 # Files: copilot-instructions.md + analyze.chatmode.md + performance.md
+# Scripts: check_bottlenecks.py, analyze_frontend.py
 # Tokens: ~900 | N+1 detection, index analysis, query execution plans
-# Alternative: Run scriptable analysis for automated bottleneck detection
+# Scriptable: CPU/memory analysis, algorithm complexity, inefficient queries
 
 # Frontend performance audit (AI workflow)
 "Review React component rendering performance --performance"
 # Files: Same as above
+# Scripts: analyze_frontend.py (bundle size, React patterns, CSS performance)
 # Tokens: ~900 | Bundle analysis, render optimization, memory leak detection
-# Alternative: Use frontend analysis script for comprehensive bundle analysis
+# Scriptable: JS/TS/CSS analysis across React, Vue, Angular
 
 # Full application performance review with deep analysis
 "Complete performance audit of checkout flow --performance --ultrathink"
 # Files: Above + deep analysis
+# Scripts: Complete performance suite (frontend + bottlenecks)
 # Tokens: ~900 + thinking | CPU/memory profiling, bottleneck identification
 ```
 
@@ -136,30 +94,22 @@ python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
 # Microservices evaluation
 "Assess our microservices communication patterns --architecture"
 # Files: copilot-instructions.md + analyze.chatmode.md + architecture.md
-# Tokens: 3,125 | Service boundaries, coupling analysis, data flow patterns
+# Scripts: pattern_evaluation.py, scalability_check.py
+# Tokens: ~950 | Service boundaries, coupling analysis, data flow patterns
+# Scriptable: Design patterns, anti-patterns, complexity analysis
 
 # System scalability review
 "Evaluate system design for scaling readiness --architecture"
 # Files: Same as above
-# Tokens: 3,125 | SOLID principles, design patterns, dependency analysis
+# Scripts: scalability_check.py (hardcoded configs, sync I/O, bottlenecks)
+# Tokens: ~950 | SOLID principles, design patterns, dependency analysis
+# Scriptable: Scalability bottleneck identification across multiple languages
 
 # Architecture improvement planning
 "Plan architecture improvements for notification system --architecture --c7"
 # Files: Above + research
-# Tokens: 3,125 + research | Research-backed recommendations, migration strategies
-```
-
-### UX Analysis
-```bash
-# User experience audit
-"Analyze user experience of onboarding flow --ux"
-# Files: copilot-instructions.md + analyze.chatmode.md + ux.md
-# Tokens: 2,450 | Usability evaluation, accessibility audit, user journey analysis
-
-# Mobile UX assessment
-"Review mobile app user experience --ux --think"
-# Files: Above + thinking
-# Tokens: 2,450 + thinking | Cross-platform analysis, touch interaction patterns
+# Scripts: Complete architecture analysis suite
+# Tokens: ~950 + research | Research-backed recommendations, migration strategies
 ```
 
 ### Code Quality
@@ -167,12 +117,16 @@ python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
 # Technical debt assessment
 "Evaluate technical debt in user management service --code-quality"
 # Files: copilot-instructions.md + analyze.chatmode.md + code-quality.md
-# Tokens: 2,750 | Quality metrics, bug patterns, SOLID principle analysis
+# Scripts: complexity_lizard.py (Lizard integration)
+# Tokens: ~800 | Quality metrics, bug patterns, SOLID principle analysis
+# Scriptable: Cyclomatic complexity, function length, parameter count analysis
 
 # Framework-specific quality review
 "Review React component quality standards --code-quality --c7"
 # Files: Above + research
-# Tokens: 2,750 + research | Framework best practices, pattern compliance
+# Scripts: complexity_lizard.py with configurable thresholds
+# Tokens: ~800 + research | Framework best practices, pattern compliance
+# Scriptable: Cross-language complexity analysis with severity classification
 ```
 
 ## 🛠️ Build Mode Examples
@@ -420,14 +374,15 @@ python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
 ### Hybrid Approach Options
 ```bash
 # AI workflow (minimal tokens)
-"Review authentication security --security" (~1,100 tokens)
+"Review authentication security --security" 
+# Files: copilot-instructions.md + analyze.chatmode.md + security.md
+# Scripts: check_auth.py, scan_vulnerabilities.py, validate_inputs.py available
+# Tokens: ~1,100 | AI insights + scriptable validation
 
-# Scriptable analysis (comprehensive automated analysis)
-python .github/scripts/analyze/security/check_auth.py . (0 AI tokens)
-
-# Combined approach
-"Review authentication security --security" + run scriptable analysis
-# Best of both: AI insights + comprehensive automated scanning
+# Scriptable-first approach (comprehensive automated analysis)
+# Use the scripts referenced in security.md for automated enterprise analysis
+# Files: Security workflow points to comprehensive script suite
+# Best of both: AI guidance + comprehensive automated scanning
 ```
 
 ## 📚 Best Practices for Token Efficiency
