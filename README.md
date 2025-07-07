@@ -8,6 +8,7 @@ SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assi
 
 - **5 Specialized Chat Modes**: Purpose-built modes for different development activities
 - **Switch-Based Specialization**: Load only relevant rules with `--switch` syntax
+- **Scriptable Analysis System**: 8 comprehensive Python analysis scripts with 50+ vulnerability types
 - **Efficient Context Management**: Approximately 50 lines per operation
 - **Embedded Intelligence**: Persona mindsets integrated into workflow rules
 - **Just-In-Time Loading**: Load only what you need, when you need it
@@ -53,14 +54,16 @@ cp -r /path/to/SuperCopilot/.github ./
 ## 📋 Chat Modes & Switches
 
 ### Analyze Mode
-**Purpose**: Code analysis, reviews, and assessments (read-only)
+**Purpose**: Code analysis, reviews, and assessments (read-only + scriptable analysis)
 
 | Switch | Purpose | Focus |
 |--------|---------|-------|
-| `--security` | Security vulnerability analysis | Threat modeling, OWASP checks |
-| `--performance` | Performance bottleneck analysis | Metrics, optimization opportunities |
-| `--architecture` | Architecture assessment | Scalability, maintainability |
-| `--code-quality` | Code quality evaluation | Technical debt, test coverage |
+| `--security` | Security vulnerability analysis | OWASP Top 10, auth/authz, input validation |
+| `--performance` | Performance bottleneck analysis | Frontend optimization, CPU/memory analysis |
+| `--architecture` | Architecture assessment | Design patterns, scalability bottlenecks |
+| `--code-quality` | Code quality evaluation | Complexity metrics via Lizard integration |
+
+Each mode includes **scriptable analysis** - comprehensive Python scripts that analyze 12+ programming languages for enterprise-grade code assessment.
 
 ### Build Mode
 **Purpose**: Feature development and implementation
@@ -99,6 +102,41 @@ cp -r /path/to/SuperCopilot/.github ./
 | `--performance` | Performance issue resolution | Profiling, optimization, measurement |
 | `--test` | Test failure resolution | Root cause analysis, no shortcuts |
 | `--verbose` | Enhanced logging for debugging | Structured logging, observability |
+
+## 🔬 Scriptable Analysis System
+
+SuperCopilot includes 8 comprehensive Python analysis scripts providing enterprise-grade code assessment:
+
+### Security Analysis (3 Scripts)
+- **Authentication & Authorization**: Detects weak passwords, missing CSRF, authorization bypasses
+- **Vulnerability Scanning**: OWASP Top 10 coverage including injection, XSS, XXE attacks  
+- **Input Validation**: SQL injection, command injection, path traversal detection
+
+### Performance Analysis (2 Scripts)
+- **Frontend Performance**: Bundle size optimization, React patterns, CSS performance
+- **Bottleneck Detection**: CPU/memory analysis, algorithm complexity, concurrency issues
+
+### Architecture Analysis (2 Scripts)
+- **Pattern Evaluation**: Design patterns, anti-patterns, complexity issues detection
+- **Scalability Assessment**: Bottleneck identification, hardcoded configs, synchronous I/O
+
+### Code Quality Analysis (1 Script)
+- **Complexity Metrics**: Lizard integration for cyclomatic complexity, function length, parameter count
+
+### Key Features
+- **50+ Vulnerability Types** across 12+ programming languages (Python, JS, TS, Java, C#, Go, Rust, PHP, Ruby, Swift, Kotlin, Scala)
+- **Standardized JSON Output** with severity levels (critical, high, medium, low)
+- **Executive Summary Reports** with actionable recommendations
+- **Configurable Severity Filtering** and cross-platform compatibility
+
+### Usage
+```bash
+# Run individual analysis
+python .github/scripts/analyze/security/check_auth.py . --min-severity high
+
+# Run complete analysis suite
+python .github/scripts/run_all_analysis.py . --min-severity medium
+```
 
 ## 🛠️ Universal Tools
 
@@ -209,7 +247,17 @@ ls -la /path/to/project/.github/workflows/
 │   ├── design.chatmode.md
 │   ├── plan.chatmode.md
 │   └── fix.chatmode.md
-└── workflows/                  # Concise rule files (~25 lines each)
+├── scripts/                   # Scriptable analysis system
+│   ├── run_all_analysis.py   # Complete analysis suite runner
+│   ├── utils/                # Cross-platform utilities
+│   │   ├── cross_platform.py
+│   │   └── output_formatter.py
+│   └── analyze/              # Analysis scripts by category
+│       ├── security/         # 3 security analysis scripts
+│       ├── performance/      # 2 performance analysis scripts
+│       ├── architecture/     # 2 architecture analysis scripts
+│       └── code_quality/     # 1 code quality script (Lizard)
+└── workflows/                 # Concise rule files (~25 lines each)
     ├── analyze/
     │   ├── security.md
     │   ├── performance.md
@@ -261,12 +309,13 @@ Team benefits:
 
 ## 🎯 Philosophy
 
-SuperCopilot v1.0 follows the principle of **minimal context, maximum capability**:
+SuperCopilot v1.0 follows the principle of **minimal context, maximum capability** with a hybrid approach:
 
-1. **Load only what's needed** - No universal commands or personas
-2. **Embed intelligence** - Mindsets integrated into workflow rules
-3. **Clear mode boundaries** - Each mode has a specific purpose
-4. **Evidence-based approach** - Quality standards built into every operation
+1. **Load only what's needed** - No universal commands or personas, just-in-time context loading
+2. **Hybrid AI + Scripting** - Intelligent workflows backed by comprehensive analysis scripts
+3. **Embed intelligence** - Mindsets integrated into workflow rules with executable validation
+4. **Clear mode boundaries** - Each mode has a specific purpose with optional scriptable enhancement
+5. **Evidence-based approach** - Quality standards built into every operation with measurable results
 
 ---
 

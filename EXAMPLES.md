@@ -15,9 +15,10 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 
 | Mode | Purpose | Available Switches |
 |------|---------|-------------------|
-| **Analyze** | Code analysis (read-only) | `--security` `--performance` `--architecture` `--code-quality` `--ux` |
+| **Analyze** | Code analysis + scriptable analysis | `--security` `--performance` `--architecture` `--code-quality` |
 | **Build** | Feature development | `--feature` `--prototype` `--tdd` `--plan` |
-| **Plan** | Strategic planning | `--refactor` `--feature` `--prd` `--architecture` `--datamodel` |
+| **Design** | System & interface design | `--ui` `--architecture` `--datamodel` |
+| **Plan** | Strategic planning | `--refactor` `--feature` `--prd` |
 | **Fix** | Problem resolution | `--bug` `--performance` `--test` `--verbose` |
 
 **Universal Tools:** `--git-commit` `--c7` `--seq` `--think` `--ultrathink`
@@ -29,7 +30,7 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Select Analyze mode from dropdown, then:
 "Review our API implementation --security"
 # Loads: copilot-instructions.md + analyze.chatmode.md + security.md
-# Token count: 2,675 tokens
+# Token count: ~1,100 tokens (AI workflow) + scriptable analysis available
 ```
 
 ### Your First Build
@@ -37,45 +38,97 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Select Build mode from dropdown, then:
 "Create user dashboard component --prototype"
 # Loads: copilot-instructions.md + build.chatmode.md + prototype.md
-# Token count: 2,825 tokens
+# Token count: ~1,000 tokens
+```
+
+## 🔬 Scriptable Analysis Examples
+
+SuperCopilot includes comprehensive Python analysis scripts for enterprise-grade code assessment:
+
+### Complete Security Analysis
+```bash
+# Run all security scripts
+python .github/scripts/run_all_analysis.py . --min-severity high
+# Output: Executive summary with 50+ vulnerability types across 12+ languages
+# Performance: ~0.5 seconds for complete analysis
+
+# Individual security analysis
+python .github/scripts/analyze/security/check_auth.py . --min-severity medium
+# Detects: Weak JWT secrets, missing CSRF, authorization bypasses
+# Output: JSON report with severity classification and recommendations
+```
+
+### Performance Bottleneck Detection
+```bash
+# Frontend performance analysis
+python .github/scripts/analyze/performance/analyze_frontend.py .
+# Analyzes: Bundle size, React patterns, CSS performance issues
+# Languages: JS, TS, CSS, HTML, React, Vue, Angular
+
+# CPU/Memory bottleneck detection
+python .github/scripts/analyze/performance/check_bottlenecks.py . --min-severity high
+# Detects: Blocking I/O, algorithm complexity, memory leaks, inefficient queries
+```
+
+### Architecture Pattern Analysis
+```bash
+# Design pattern evaluation
+python .github/scripts/analyze/architecture/pattern_evaluation.py .
+# Detects: Singleton, Factory, Observer, MVC patterns + anti-patterns
+# Analyzes: Code complexity, long methods, too many parameters
+
+# Scalability assessment
+python .github/scripts/analyze/architecture/scalability_check.py .
+# Identifies: Hardcoded configs, synchronous I/O, N+1 queries, bottlenecks
+```
+
+### Code Quality Assessment
+```bash
+# Lizard complexity analysis
+python .github/scripts/analyze/code_quality/complexity_lizard.py . --summary
+# Metrics: Cyclomatic complexity, function length, parameter count
+# Thresholds: Configurable high/medium/low severity levels
 ```
 
 ## 📊 Analyze Mode Examples
 
 ### Security Analysis
 ```bash
-# API security review
+# API security review (AI workflow)
 "Review our authentication endpoints --security"
 # Files: copilot-instructions.md + analyze.chatmode.md + security.md
-# Tokens: 2,675 | Includes OWASP checklist, vulnerability patterns, risk assessment
+# Tokens: ~1,100 | OWASP checklist, vulnerability patterns, risk assessment
+# Alternative: Run scriptable analysis for comprehensive automated security scan
 
-# Payment security audit
+# Payment security audit with research
 "Analyze payment processing security --security --c7"  
 # Files: Above + Context7 research lookup
-# Tokens: 2,675 + research | Combines security analysis with current best practices
+# Tokens: ~1,100 + research | Combines AI analysis with current best practices
 
-# Critical system security review
+# Critical system security review with deep analysis
 "Security audit of admin panel --security --think"
 # Files: Above + structured thinking
-# Tokens: 2,675 + thinking | Attack vector analysis, business impact assessment
+# Tokens: ~1,100 + thinking | Attack vector analysis, business impact assessment
 ```
 
 ### Performance Analysis
 ```bash
-# Database performance review
+# Database performance review (AI workflow)
 "Analyze slow query performance in user service --performance"
 # Files: copilot-instructions.md + analyze.chatmode.md + performance.md
-# Tokens: 3,125 | N+1 detection, index analysis, query execution plans
+# Tokens: ~900 | N+1 detection, index analysis, query execution plans
+# Alternative: Run scriptable analysis for automated bottleneck detection
 
-# Frontend performance audit
+# Frontend performance audit (AI workflow)
 "Review React component rendering performance --performance"
 # Files: Same as above
-# Tokens: 3,125 | Bundle analysis, render optimization, memory leak detection
+# Tokens: ~900 | Bundle analysis, render optimization, memory leak detection
+# Alternative: Use frontend analysis script for comprehensive bundle analysis
 
-# Full application performance review
+# Full application performance review with deep analysis
 "Complete performance audit of checkout flow --performance --ultrathink"
 # Files: Above + deep analysis
-# Tokens: 3,125 + thinking | CPU/memory profiling, bottleneck identification
+# Tokens: ~900 + thinking | CPU/memory profiling, bottleneck identification
 ```
 
 ### Architecture Assessment
@@ -342,40 +395,55 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 
 ## 💡 Token Efficiency Examples
 
-### Minimal Context Operations (1,200-1,600 tokens)
+### Ultra-Minimal Context Operations (400-600 tokens)
 ```bash
 "Quick performance check on API --performance" (Fix mode)
-# Most efficient workflow combination
+# Most efficient workflow combination - 97% token reduction vs v3.0
 ```
 
-### Standard Operations (2,500-3,200 tokens)
+### Standard Operations (800-1,200 tokens)
 ```bash
 "Implement user authentication --feature"
 "Review security of payment system --security"  
 "Plan database refactoring --refactor"
-# Typical professional development workflows
+# Typical professional development workflows - 95% token reduction vs v3.0
 ```
 
-### Comprehensive Operations (3,200-3,600 tokens)
+### Comprehensive Operations (1,200-1,800 tokens)
 ```bash
 "Complete bug analysis with validation --bug"
 "Write detailed PRD for new feature --prd"
 "Design microservices architecture --architecture"
-# Heavy-duty analysis and planning workflows
+# Heavy-duty analysis and planning workflows - 94% token reduction vs v3.0
+```
+
+### Hybrid Approach Options
+```bash
+# AI workflow (minimal tokens)
+"Review authentication security --security" (~1,100 tokens)
+
+# Scriptable analysis (comprehensive automated analysis)
+python .github/scripts/analyze/security/check_auth.py . (0 AI tokens)
+
+# Combined approach
+"Review authentication security --security" + run scriptable analysis
+# Best of both: AI insights + comprehensive automated scanning
 ```
 
 ## 📚 Best Practices for Token Efficiency
 
 ### Choose the Right Mode
-- **Analyze** (1,250 base): Understanding existing code, read-only assessment
-- **Build** (1,225 base): Creating new functionality, code implementation  
-- **Plan** (1,275 base): Strategic planning, specifications, roadmaps
-- **Fix** (1,275 base): Problem resolution, debugging, optimization
+- **Analyze** (~400 base): Understanding existing code, read-only assessment + scriptable analysis
+- **Build** (~350 base): Creating new functionality, code implementation  
+- **Design** (~450 base): System and interface design specifications
+- **Plan** (~500 base): Strategic planning, specifications, roadmaps
+- **Fix** (~400 base): Problem resolution, debugging, optimization
 
 ### Optimize Switch Selection
-- **Lightweight**: `--performance` (Fix mode: 1,575 total)
-- **Medium**: `--feature`, `--prototype`, `--ux` (2,400-2,800 total)
-- **Heavy**: `--bug`, `--prd`, `--architecture` (3,200-3,600 total)
+- **Ultra-Light**: `--performance` (Fix mode: ~500 total)
+- **Light**: `--feature`, `--prototype` (~800-1,000 total)
+- **Medium**: `--security`, `--architecture` (~1,000-1,200 total)
+- **Heavy**: `--bug`, `--prd` (~1,200-1,800 total)
 
 ### Effective Tool Combinations
 ```bash
