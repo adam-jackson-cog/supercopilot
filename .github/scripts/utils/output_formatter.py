@@ -98,16 +98,32 @@ class AnalysisResult:
             summary[finding.severity.value] += 1
         return summary
     
-    def to_dict(self, summary_mode: bool = False) -> Dict[str, Any]:
+    def to_dict(self, summary_mode: bool = False, min_severity: str = "low") -> Dict[str, Any]:
         """
         Convert result to dictionary.
         
         Args:
             summary_mode: If True, limit findings to top 10 critical/high severity
+            min_severity: Minimum severity level to include (critical|high|medium|low)
         """
-        findings_to_include = self.findings
+        # Filter by minimum severity
+        severity_order = {
+            "critical": 0,
+            "high": 1, 
+            "medium": 2,
+            "low": 3,
+            "info": 4
+        }
         
-        if summary_mode and len(self.findings) > 10:
+        min_severity_level = severity_order.get(min_severity, 3)
+        filtered_findings = [
+            f for f in self.findings 
+            if severity_order.get(f.severity.value, 4) <= min_severity_level
+        ]
+        
+        findings_to_include = filtered_findings
+        
+        if summary_mode and len(filtered_findings) > 10:
             # Sort by severity priority and take top 10
             severity_priority = {
                 Severity.CRITICAL: 0,
@@ -118,7 +134,7 @@ class AnalysisResult:
             }
             
             sorted_findings = sorted(
-                self.findings,
+                filtered_findings,
                 key=lambda f: severity_priority.get(f.severity, 5)
             )
             findings_to_include = sorted_findings[:10]
@@ -136,18 +152,22 @@ class AnalysisResult:
             "metadata": self.metadata
         }
         
-        # Add summary mode info if truncated
-        if summary_mode and len(self.findings) > 10:
+        # Add filtering/truncation info
+        if min_severity != "low":
+            result["min_severity_filter"] = min_severity
+            result["total_findings_before_filter"] = len(self.findings)
+            result["total_findings_after_filter"] = len(filtered_findings)
+        
+        if summary_mode and len(filtered_findings) > 10:
             result["summary_mode"] = True
-            result["total_findings"] = len(self.findings)
             result["showing_top"] = len(findings_to_include)
-            result["truncated_note"] = f"Showing top {len(findings_to_include)} critical/high severity findings out of {len(self.findings)} total"
+            result["truncated_note"] = f"Showing top {len(findings_to_include)} findings out of {len(filtered_findings)} filtered results"
         
         return result
     
-    def to_json(self, indent: int = 2, summary_mode: bool = False) -> str:
+    def to_json(self, indent: int = 2, summary_mode: bool = False, min_severity: str = "low") -> str:
         """Convert result to JSON string."""
-        return json.dumps(self.to_dict(summary_mode=summary_mode), indent=indent, ensure_ascii=False)
+        return json.dumps(self.to_dict(summary_mode=summary_mode, min_severity=min_severity), indent=indent, ensure_ascii=False)
 
 class ResultFormatter:
     """Utility class for formatting analysis results."""

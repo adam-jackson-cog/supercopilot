@@ -146,7 +146,7 @@ SuperCopilot v3.0 uses **chat modes** with **switches** for specialized assistan
 ```bash
 # Quick UI demonstration
 "Create admin panel prototype for user management --prototype"
-# Files: copilot-instructions.md + build.chatmode.md + prototype.md
+# Files: copilot-instructions.md + build.chatmode.md + feature.md
 # Tokens: 2,825 | Rapid development using existing libraries, mock data
 
 # API prototype development
@@ -164,7 +164,7 @@ SuperCopilot v3.0 uses **chat modes** with **switches** for specialized assistan
 ```bash
 # TDD feature implementation
 "Implement shopping cart functionality using TDD --tdd"
-# Files: copilot-instructions.md + build.chatmode.md + tdd.md
+# Files: copilot-instructions.md + build.chatmode.md + feature.md + tdd.md
 # Tokens: 3,100 | Test-first development, comprehensive coverage, refactoring
 
 # Legacy code refactoring with tests
@@ -177,7 +177,7 @@ SuperCopilot v3.0 uses **chat modes** with **switches** for specialized assistan
 ```bash
 # Complex feature coordination
 "Implement notification system with multiple components --plan"
-# Files: copilot-instructions.md + build.chatmode.md + plan.md
+# Files: copilot-instructions.md + build.chatmode.md + feature.md + plan.md
 # Tokens: 2,625 | Task breakdown, dependency management, milestone planning
 ```
 
@@ -323,7 +323,7 @@ SuperCopilot v3.0 uses **chat modes** with **switches** for specialized assistan
 
 # Framework-specific development
 "Implement Redux store for user management --feature --c7"
-# Files: build.chatmode.md + feature.md + Context7 research
+# Files: build.chatmode.md + prototype.md + Context7 research
 # Tokens: 2,825 + research | Authoritative documentation lookup
 ```
 

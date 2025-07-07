@@ -340,13 +340,26 @@ class CouplingAnalyzer:
 
 def main():
     """Main function for command-line usage."""
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Usage: python coupling_analysis.py <target_path> [--summary]")
+    if len(sys.argv) < 2:
+        print("Usage: python coupling_analysis.py <target_path> [options]")
+        print("Options:")
         print("  --summary: Limit output to top 10 critical/high findings for large codebases")
+        print("  --min-severity <level>: Minimum severity level (critical|high|medium|low) [default: low]")
         sys.exit(1)
     
     target_path = sys.argv[1]
-    summary_mode = len(sys.argv) == 3 and sys.argv[2] == "--summary"
+    summary_mode = False
+    min_severity = "low"
+    
+    # Parse arguments
+    for i, arg in enumerate(sys.argv[2:], 2):
+        if arg == "--summary":
+            summary_mode = True
+        elif arg == "--min-severity" and i + 1 < len(sys.argv):
+            min_severity = sys.argv[i + 1].lower()
+            if min_severity not in ["critical", "high", "medium", "low"]:
+                print("Error: min-severity level must be one of: critical, high, medium, low")
+                sys.exit(1)
     
     analyzer = CouplingAnalyzer()
     result = analyzer.analyze(target_path)
@@ -356,7 +369,7 @@ def main():
         print(f"⚠️ Large result set detected ({len(result.findings)} findings). Consider using --summary flag.", file=sys.stderr)
     
     # Output JSON result
-    print(result.to_json(summary_mode=summary_mode))
+    print(result.to_json(summary_mode=summary_mode, min_severity=min_severity))
     
     # Also print console summary to stderr for human readability
     print(ResultFormatter.format_console_output(result), file=sys.stderr)

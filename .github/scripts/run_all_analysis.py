@@ -26,11 +26,11 @@ class AnalysisRunner:
         self.scripts = {
             "security": "security/detect_secrets.py",
             "performance": "performance/profile_database.py", 
-            "code_quality": "code_quality/complexity_metrics.py",
+            "code_quality": "code_quality/complexity_lizard.py",
             "architecture": "architecture/coupling_analysis.py"
         }
     
-    def run_script(self, script_name: str, target_path: str, summary_mode: bool = True) -> Dict[str, Any]:
+    def run_script(self, script_name: str, target_path: str, summary_mode: bool = True, min_severity: str = "low") -> Dict[str, Any]:
         """Run a single analysis script."""
         script_path = Path(self.script_dir) / self.scripts[script_name]
         
@@ -39,6 +39,8 @@ class AnalysisRunner:
         args = [str(script_path), target_path]
         if summary_mode:
             args.append("--summary")
+        if min_severity != "low":
+            args.extend(["--min-severity", min_severity])
         
         start_time = time.time()
         returncode, stdout, stderr = CommandExecutor.run_python_script(str(script_path), args[1:])
@@ -57,7 +59,7 @@ class AnalysisRunner:
             print(f"❌ {script_name} failed: {stderr}", file=sys.stderr)
             return {"error": f"Script failed (code {returncode})", "stderr": stderr}
     
-    def run_all_analyses(self, target_path: str, summary_mode: bool = True) -> Dict[str, Any]:
+    def run_all_analyses(self, target_path: str, summary_mode: bool = True, min_severity: str = "low") -> Dict[str, Any]:
         """Run all analysis scripts and combine results."""
         print("🚀 SuperCopilot Hybrid Analysis - Running All Scripts", file=sys.stderr)
         print("=" * 60, file=sys.stderr)
@@ -66,7 +68,7 @@ class AnalysisRunner:
         results = {}
         
         for script_name in self.scripts.keys():
-            results[script_name] = self.run_script(script_name, target_path, summary_mode)
+            results[script_name] = self.run_script(script_name, target_path, summary_mode, min_severity)
         
         total_duration = time.time() - start_time
         
@@ -112,11 +114,14 @@ class AnalysisRunner:
             script_summary = result.get("summary", {})
             findings = result.get("findings", [])
             
-            # Add to totals
+            # Add to totals - use actual findings count, not summary (which may be truncated)
+            script_total = len(findings)
+            summary["total_findings"] += script_total
+            
+            # Add individual severity counts from summary
             for severity, count in script_summary.items():
                 if severity in summary["by_severity"]:
                     summary["by_severity"][severity] += count
-                    summary["total_findings"] += count
             
             # Track by category
             summary["by_category"][script_name] = {
@@ -178,19 +183,44 @@ class AnalysisRunner:
 
 def main():
     """Main function for command-line usage."""
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Usage: python run_all_analysis.py <target_path> [--verbose]")
+    if len(sys.argv) < 2:
+        print("Usage: python run_all_analysis.py <target_path> [options]")
+        print("Options:")
         print("  --verbose: Include detailed results (default is summary mode)")
+        print("  --min-severity <level>: Minimum severity level (critical|high|medium|low) [default: low]")
         sys.exit(1)
     
     target_path = sys.argv[1]
-    summary_mode = not (len(sys.argv) == 3 and sys.argv[2] == "--verbose")
+    summary_mode = True
+    min_severity = "low"
+    
+    # Parse arguments
+    for i, arg in enumerate(sys.argv[2:], 2):
+        if arg == "--verbose":
+            summary_mode = False
+        elif arg == "--min-severity" and i + 1 < len(sys.argv):
+            min_severity = sys.argv[i + 1].lower()
+            if min_severity not in ["critical", "high", "medium", "low"]:
+                print("Error: min-severity level must be one of: critical, high, medium, low")
+                sys.exit(1)
     
     runner = AnalysisRunner()
-    report = runner.run_all_analyses(target_path, summary_mode)
+    report = runner.run_all_analyses(target_path, summary_mode, min_severity)
     
-    # Output combined report
-    print(json.dumps(report, indent=2))
+    # Output combined report with proper error handling for broken pipe
+    try:
+        print(json.dumps(report, indent=2))
+        sys.stdout.flush()
+    except BrokenPipeError:
+        # Handle broken pipe gracefully (e.g., when output is piped to head)
+        try:
+            sys.stdout.close()
+        except:
+            pass
+        try:
+            sys.stderr.close()
+        except:
+            pass
 
 if __name__ == "__main__":
     main()

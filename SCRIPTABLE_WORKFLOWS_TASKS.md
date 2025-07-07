@@ -1,6 +1,6 @@
 # Scriptable Workflows Implementation Tasks
 
-**Project**: Transform analyze workflow prompts into hybrid documents combining LLM-guided analysis with executable scripts
+**Project**: Transform analyze workflow prompts into scriptable documents combining LLM-guided analysis with executable scripts
 
 **Goal**: Reduce token usage by ~70% while improving consistency and maintaining flexibility
 
@@ -45,7 +45,7 @@
 - [x] **Baseline token measurement** for current workflows
 - [x] **Projected token reduction** calculations
 - [x] **Identify scriptable vs contextual** tasks per workflow
-- [x] **Create hybrid workflow templates**
+- [x] **Create scriptable workflow templates**
 
 **Status**: ✅ Completed | **Assignee**: Claude | **Due**: Day 3
 
@@ -62,7 +62,7 @@
 **Status**: 🟡 In Progress | **Assignee**: Claude | **Due**: Day 6
 
 ### 2.2 Security Workflow Transformation
-- [x] **Transform security.md** to hybrid format
+- [x] **Transform security.md** to scriptable format
 - [x] **Integrate script references** with contextual prompts
 - [x] **Test token reduction** on security workflow
 - [x] **Validate analysis quality** vs original
@@ -109,7 +109,7 @@
 **Status**: 🟡 In Progress | **Assignee**: Claude | **Due**: Day 12
 
 ### 3.3 Code Quality Scripts
-- [x] **Create `complexity_metrics.py`** - Cyclomatic complexity
+- [x] **Create `complexity_lizard.py`** - Cyclomatic complexity (Lizard-based)
 - [ ] **Create `pattern_detection.py`** - Code smells, anti-patterns
 - [ ] **Create `naming_analysis.py`** - Convention compliance
 - [ ] **Create `duplication_finder.py`** - DRY violations
@@ -124,12 +124,12 @@
 - [x] **Create `coupling_analysis.py`** - Dependency graphs
 - [ ] **Create `pattern_evaluation.py`** - Design patterns
 - [ ] **Create `scalability_check.py`** - Bottleneck identification
-- [x] **Transform architecture.md** to hybrid format
+- [x] **Transform architecture.md** to scriptable format
 
 **Status**: 🟡 In Progress | **Assignee**: Claude | **Due**: Day 16
 
 ### 4.2 Performance Workflow
-- [x] **Transform performance.md** to hybrid format
+- [x] **Transform performance.md** to scriptable format
 - [x] **Integrate performance scripts** with contextual analysis
 - [x] **Test performance workflow** token reduction
 - [x] **Validate performance analysis** quality
@@ -137,7 +137,7 @@
 **Status**: ✅ Completed | **Assignee**: Claude | **Due**: Day 17
 
 ### 4.3 Code Quality Workflow
-- [x] **Transform code-quality.md** to hybrid format
+- [x] **Transform code-quality.md** to scriptable format
 - [x] **Integrate code quality scripts** with contextual analysis
 - [x] **Test code quality workflow** token reduction
 - [x] **Validate code quality analysis** effectiveness
@@ -154,7 +154,7 @@
 
 **Results**:
 - Total token reduction: 49.5% (2,495 → 1,260 words)
-- All 4 analyze workflows transformed to hybrid format
+- All 4 analyze workflows transformed to scriptable format
 - Scripts tested on real codebase (karakeep-app)
 
 ---
@@ -202,7 +202,7 @@
 ### 6.1 Documentation Updates
 - [ ] **Update EXAMPLES.md** with new token counts
 - [ ] **Create script usage guide** for developers
-- [ ] **Update README.md** with hybrid workflow info
+- [ ] **Update README.md** with scriptable workflow info
 - [ ] **Document installation process** for scripts
 
 **Status**: ⭕ Pending | **Assignee**: Claude | **Due**: Day 25

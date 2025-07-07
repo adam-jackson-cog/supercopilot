@@ -4,13 +4,27 @@
 
 ## Automated Quality Checks [Scripts]
 
-**Complexity Metrics**: `complexity_metrics.py`
-- Scans: Function length, cyclomatic complexity, deep nesting, parameter count
-- Output: Complexity scores and code smell detection with severity levels
+**Complexity Analysis**: `complexity_lizard.py`
+- Tool: Lizard - industry-standard multi-language complexity analyzer
+- Languages: Python, JS/TS, Java, C#, Go, Rust, PHP, Ruby, Swift, Kotlin, C/C++
+- Metrics: Cyclomatic complexity, function length, parameter count
+- Thresholds: High (20+ complexity, 100+ lines), Medium (10+ complexity, 50+ lines)
+- Output: JSON with actionable findings, zero false positives
 
-**Pattern Detection** (Planned):
-- `pattern_detection.py` - Anti-patterns, SOLID violations, design smells
-- `duplication_finder.py` - Code duplication and copy-paste detection
+**Security Scanning**: `detect_secrets.py`
+- Pattern-based secret detection with context awareness
+- Excludes test files and known safe configurations
+- Output: High-severity findings for immediate attention
+
+**Performance Profiling**: `profile_database.py`
+- Database query analysis and N+1 detection
+- File I/O pattern analysis
+- Output: Performance bottlenecks with optimization suggestions
+
+**Architecture Review**: `coupling_analysis.py`
+- Dependency analysis and circular dependency detection
+- Module coupling metrics (fan-in/fan-out)
+- Output: Structural improvements for maintainability
 
 ## Contextual Quality Assessment [LLM Analysis]
 

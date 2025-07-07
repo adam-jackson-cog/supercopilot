@@ -1,188 +1,63 @@
-# Performance Analysis Rules
+# Performance Analysis Rules (Hybrid)
 
-**Mindset**: "Where's the bottleneck?" - Measure first, optimize critical path, evidence-based improvements.
+**Mindset**: "Where's the bottleneck?" - Combine automated profiling with contextual performance assessment.
 
+## Automated Performance Checks [Scripts]
 
-## Systematic Performance Analysis
+**Database Performance**: `profile_database.py`
+- Scans: N+1 queries, missing WHERE clauses, SELECT *, LIKE with wildcards
+- Output: Query performance issues with line numbers and context
 
-### **Application Performance Profiling [Critical]**
+**Code Complexity**: `complexity_lizard.py` 
+- Scans: Function length, cyclomatic complexity, deep nesting, code smells
+- Output: Complexity metrics and maintainability issues
 
-**CPU Utilization Patterns**:
-- Hot path identification using profiling data
-- CPU-intensive operation detection
-- Algorithm complexity analysis (O(n), O(n²), etc.)
-- Thread/process utilization distribution
+**Frontend Analysis** (Planned):
+- `analyze_frontend.py` - Bundle size, render performance, memory usage
+- `check_bottlenecks.py` - CPU/memory profiling patterns
 
-**Memory Management Analysis**:
-- Memory allocation patterns & peak usage
-- Memory leak detection (growing heap, unreleased objects)
-- Garbage collection frequency & duration
-- Buffer/cache size optimization opportunities
+## Contextual Performance Assessment [LLM Analysis]
 
-**Execution Time Profiling**:
-- Function/method execution time distribution
-- Critical path latency analysis
-- Blocking operation identification
-- Asynchronous operation efficiency
+**System Performance Review**:
+- Evaluate performance requirements vs current implementation
+- Assess scalability patterns and bottleneck implications
+- Analyze resource utilization in business context
+- Prioritize optimizations by user impact and system criticality
 
-**Resource Contention**:
-- Lock contention patterns
-- Thread pool utilization
-- I/O wait time analysis
-- Deadlock risk assessment
+**Architecture Performance**:
+- Review system design for performance anti-patterns
+- Assess caching strategies and their effectiveness
+- Evaluate data flow and processing efficiency
+- Recommend architectural improvements for performance
 
-### **Database Performance [Critical]**
+**Load & Scaling Analysis**:
+- Assess current capacity vs expected growth
+- Evaluate auto-scaling and load balancing strategies
+- Review performance monitoring and alerting systems
+- Identify single points of failure affecting performance
 
-**Query Performance Analysis**:
-- Slow query identification (> 100ms threshold)
-- Query execution plan analysis
-- Index utilization assessment
-- Table scan vs index scan ratios
+## Analysis Process
+1. **Run profiling scripts** to identify measurable performance issues
+2. **Analyze metrics** in context of business requirements and SLAs
+3. **Evaluate system design** for scalability and performance patterns
+4. **Prioritize optimizations** by impact, effort, and business value
+5. **Generate roadmap** combining quick wins with strategic improvements
 
-**N+1 Query Detection**:
-- ORM-generated query patterns
-- Loop-based database access
-- Eager vs lazy loading strategies
-- Batch operation opportunities
-
-**Database Resource Utilization**:
-- Connection pool efficiency
-- Transaction duration analysis
-- Lock wait time assessment
-- Deadlock frequency monitoring
-
-**Schema & Indexing**:
-- Missing index identification
-- Index fragmentation analysis
-- Redundant index detection
-- Composite index optimization
-
-### **Network & I/O Performance [High]**
-
-**API Performance**:
-- Response time distribution
-- Payload size optimization
-- Compression utilization
-- Keep-alive connection usage
-
-**External Service Integration**:
-- Third-party API latency impact
-- Timeout configuration analysis
-- Circuit breaker implementation
-- Retry strategy efficiency
-
-**File I/O Operations**:
-- File access pattern analysis
-- Disk I/O throughput measurement
-- Sequential vs random access patterns
-- File caching opportunities
-
-**Network Latency**:
-- DNS lookup time analysis
-- TCP connection establishment time
-- SSL/TLS handshake duration
-- Geographic latency considerations
-
-### **Frontend Performance [Medium-High]**
-
-**Loading Performance**:
-- Bundle size analysis & optimization
-- Critical rendering path assessment
-- Resource loading waterfall analysis
-- Lazy loading implementation effectiveness
-
-**Runtime Performance**:
-- JavaScript execution time profiling
-- DOM manipulation efficiency
-- Event handler performance
-- Memory usage in browser
-
-**Rendering Performance**:
-- Layout/reflow frequency
-- Paint/composite operation cost
-- Animation frame rate consistency
-- Virtual DOM efficiency (React, Vue)
-
-**Caching Strategy**:
-- Browser cache utilization
-- Service worker effectiveness
-- CDN cache hit rates
-- Application cache strategies
-
-### **Scalability Analysis [High]**
-
-**Load Testing Results**:
-- Concurrent user capacity limits
-- Throughput degradation patterns
-- Error rate under load
-- Resource utilization scaling
-
-**Bottleneck Identification**:
-- Single points of failure
-- Resource saturation thresholds
-- Queue length monitoring
-- Auto-scaling trigger effectiveness
-
-**Capacity Planning**:
-- Growth projection analysis
-- Resource requirement forecasting
-- Cost vs performance trade-offs
-- Scaling strategy validation
-
-## Analysis Framework
-
-**Performance Metrics Dashboard**:
-- **Response Time**: P50, P95, P99 percentiles
-- **Throughput**: Requests/transactions per second
-- **Error Rate**: 4xx/5xx error percentage
-- **Resource Utilization**: CPU, memory, disk, network %
-
-**Bottleneck Classification**:
-- **CRITICAL**: > 10x slower than target, user experience severely impacted
-- **HIGH**: > 3x slower than target, noticeable performance degradation
-- **MEDIUM**: > 1.5x slower than target, minor user experience impact
-- **LOW**: Optimization opportunities, no immediate user impact
-
-**Performance Improvement ROI**:
-- User experience impact (bounce rate, conversion)
-- Infrastructure cost reduction potential
-- Development team velocity improvement
-- Maintenance complexity reduction
+## Performance Assessment
+- **CRITICAL**: System unusable, SLA violations, user churn risk
+- **HIGH**: Noticeable delays, scalability bottlenecks, resource waste
+- **MEDIUM**: Sub-optimal performance, maintenance overhead
+- **LOW**: Optimization opportunities, future scaling preparation
 
 ## Output Requirements
-
-**Performance Benchmark Report**:
-- Current vs target performance metrics
-- Historical trend analysis
-- Comparative analysis (competitors, industry standards)
-- Performance regression identification
-
-**Bottleneck Analysis**:
-- Top 5 performance constraints ranked by impact
-- Root cause analysis for each bottleneck
-- Evidence-based impact quantification
-- Dependency mapping (what affects what)
-
-**Optimization Roadmap**:
-- Quick wins (< 1 week, high impact)
-- Strategic improvements (1-4 weeks, medium-high impact)
-- Long-term optimizations (1-3 months, architectural changes)
-- Performance monitoring enhancements
-
-**Implementation Guide**:
-- Specific optimization techniques
-- Code examples for common patterns
-- Tool recommendations for monitoring
-- Success metrics & validation criteria
+- Performance metrics with script outputs and baseline comparisons
+- Bottleneck analysis with root cause identification
+- Optimization roadmap prioritized by ROI and implementation effort
+- Monitoring recommendations for ongoing performance tracking
 
 ## Symbol Legend
-- ⚡ Performance bottleneck identified
+- 🤖 Automated performance analysis
+- 🧠 LLM contextual assessment  
+- ⚡ Performance bottleneck requiring attention
 - 📊 Metrics/monitoring needed
-- 🎯 Optimization target
-- 🚀 Quick win opportunity
-- 🔧 Infrastructure optimization
-- 💾 Memory optimization needed
-- 🗄 Database optimization required
-- 🌐 Network optimization opportunity
-- → Leads to performance issue
-- ∴ Therefore impacts user experience
+- 🎯 Optimization target identified

@@ -47,18 +47,19 @@ class ComplexityAnalyzer:
         
         # Code smell patterns
         self.code_smell_patterns = {
-            "duplicate_code": {
-                "pattern": r'(.{30,})\n.*\1',  # Simplified duplicate detection
-                "severity": "medium",
-                "description": "Potential duplicate code block"
-            },
+            # Disabled - too many false positives
+            # "duplicate_code": {
+            #     "pattern": r'(.{30,})\n.*\1',  # Simplified duplicate detection
+            #     "severity": "medium",
+            #     "description": "Potential duplicate code block"
+            # },
             "magic_numbers": {
-                "pattern": r'(?<![.\w])\d{2,}(?![.\w])',
+                "pattern": r'(?<![.\w])\b(?!(?:0|1|10|100|1000|404|200|201|301|302|500|8080|3000|5000)\b)\d{3,}(?![.\w])',
                 "severity": "low",
                 "description": "Magic number - consider using named constant"
             },
             "long_variable": {
-                "pattern": r'\b\w{25,}\b',
+                "pattern": r'(?<![\'""])\b[a-zA-Z][a-zA-Z0-9_]{30,}\b(?![\'""])',
                 "severity": "low",
                 "description": "Very long variable/function name"
             },
@@ -73,26 +74,27 @@ class ComplexityAnalyzer:
                 "description": "Empty catch block - errors silently ignored"
             },
             "console_log": {
-                "pattern": r'console\.log\(|print\(|System\.out\.println|console\.debug',
-                "severity": "low",
+                "pattern": r'console\.(log|debug)\(',
+                "severity": "info",
                 "description": "Debug statement left in code"
             }
         }
         
-        # Naming convention patterns
+        # Naming convention patterns - Disabled for now as they generate too many false positives
         self.naming_patterns = {
-            "camelCase_violation": {
-                "pattern": r'\b[a-z]+[A-Z]\w*[_-]\w*\b',
-                "severity": "low",
-                "description": "Mixed naming conventions (camelCase with underscores/hyphens)"
-            },
-            "snake_case_violation": {
-                "pattern": r'\b[a-z]+_\w*[A-Z]\w*\b',
-                "severity": "low", 
-                "description": "Mixed naming conventions (snake_case with capitals)"
-            },
+            # Commenting out for now - these patterns catch too many legitimate cases
+            # "camelCase_violation": {
+            #     "pattern": r'(?<![\'""])\b[a-zA-Z][a-zA-Z0-9]*[A-Z][a-zA-Z0-9]*[_-][a-zA-Z0-9]*\b(?![\'""])',
+            #     "severity": "low",
+            #     "description": "Mixed naming conventions (camelCase with underscores/hyphens)"
+            # },
+            # "snake_case_violation": {
+            #     "pattern": r'(?<![\'""])\b[a-z]+_[a-zA-Z0-9]*[A-Z][a-zA-Z0-9]*\b(?![\'""])',
+            #     "severity": "low", 
+            #     "description": "Mixed naming conventions (snake_case with capitals)"
+            # },
             "single_letter": {
-                "pattern": r'\b[a-z]\s*=',
+                "pattern": r'^\s*(?:const|let|var)\s+[a-z]\s*=(?!\s*[\'\"\/])',
                 "severity": "low",
                 "description": "Single letter variable name (except i, j, k in loops)"
             }
@@ -110,7 +112,14 @@ class ComplexityAnalyzer:
             'node_modules', '.git', '__pycache__', '.pytest_cache',
             'venv', 'env', '.venv', 'dist', 'build', '.next',
             'coverage', '.nyc_output', 'target', 'vendor', 'test', 'tests',
-            'spec', '__tests__'
+            'spec', '__tests__', 'docs', 'documentation'
+        }
+        
+        # Config files that should have reduced scrutiny
+        self.config_files = {
+            'config.js', 'config.ts', '.config.js', '.config.ts',
+            'tailwind.config.ts', 'vite.config.ts', 'metro.config.js',
+            'docusaurus.config.ts', 'next.config.js', 'jest.config.js'
         }
     
     def should_scan_file(self, file_path: Path) -> bool:
@@ -120,36 +129,66 @@ class ComplexityAnalyzer:
             if part in self.skip_patterns:
                 return False
         
+        # Skip minified files
+        filename = file_path.name.lower()
+        if '.min.' in filename or filename.endswith('-min.js') or filename.endswith('-min.css'):
+            return False
+            
+        # Skip generated/compiled files
+        if any(pattern in filename for pattern in ['workbox-', 'sw.js', 'service-worker.js', '.chunk.', 'vendor.', 'bundle.']):
+            return False
+        
         # Check file extension
         suffix = file_path.suffix.lower()
         return suffix in self.code_extensions
+    
+    def is_config_file(self, file_path: Path) -> bool:
+        """Check if file is a configuration file that should have reduced scrutiny."""
+        filename = file_path.name.lower()
+        return any(pattern in filename for pattern in self.config_files)
     
     def analyze_function_length(self, content: str, file_path: Path) -> List[Dict[str, Any]]:
         """Analyze function/method length."""
         findings = []
         lines = content.split('\n')
         
-        # Find function/method definitions
-        function_patterns = [
-            r'^\s*(?:function\s+\w+|def\s+\w+|\w+\s*\([^)]*\)\s*{|class\s+\w+)',
-            r'^\s*(?:public|private|protected).*?(?:\w+\s*\([^)]*\))'
-        ]
+        # Only analyze certain file types with better patterns
+        suffix = file_path.suffix.lower()
+        
+        if suffix in ['.js', '.ts', '.jsx', '.tsx']:
+            # JavaScript/TypeScript function patterns
+            function_patterns = [
+                (r'^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(', 'function'),
+                (r'^\s*(?:export\s+)?(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s+)?\([^)]*\)\s*(?::|=>)', 'arrow'),
+                (r'^\s*(?:export\s+)?class\s+(\w+)', 'class')
+            ]
+        elif suffix == '.py':
+            # Python function patterns
+            function_patterns = [
+                (r'^\s*(?:async\s+)?def\s+(\w+)\s*\(', 'function'),
+                (r'^\s*class\s+(\w+)', 'class')
+            ]
+        else:
+            # Skip other file types for now
+            return findings
         
         for i, line in enumerate(lines):
-            for pattern in function_patterns:
-                if re.search(pattern, line, re.IGNORECASE):
+            for pattern, func_type in function_patterns:
+                match = re.search(pattern, line)
+                if match:
+                    func_name = match.group(1)
                     # Count lines until closing brace or next function
                     func_lines = self._count_function_lines(lines, i)
                     
-                    if func_lines > 50:  # Threshold for long functions
+                    if func_lines > 75:  # Increased threshold
                         findings.append({
                             "category": "Complexity",
                             "pattern_type": "long_function",
                             "file_path": str(file_path),
                             "line_number": i + 1,
                             "line_content": line.strip(),
-                            "severity": "high" if func_lines > 100 else "medium",
-                            "description": f"Function is {func_lines} lines long (recommended: <50)",
+                            "severity": "high" if func_lines > 150 else "medium",
+                            "description": f"Function is {func_lines} lines long (recommended: <75)",
                             "function_length": func_lines
                         })
         
@@ -194,14 +233,14 @@ class ComplexityAnalyzer:
         matches = re.findall(complexity_keywords, content, re.IGNORECASE)
         complexity_score = len(matches)
         
-        if complexity_score > 20:  # High complexity threshold
+        if complexity_score > 40:  # Increased threshold
             findings.append({
                 "category": "Complexity",
                 "pattern_type": "high_complexity",
                 "file_path": str(file_path),
                 "line_number": 1,
                 "line_content": f"File complexity score: {complexity_score}",
-                "severity": "high" if complexity_score > 50 else "medium",
+                "severity": "high" if complexity_score > 80 else "medium",
                 "description": f"File has high cyclomatic complexity ({complexity_score} indicators)",
                 "complexity_score": complexity_score
             })
@@ -240,11 +279,12 @@ class ComplexityAnalyzer:
                         content, lines, file_path, pattern_name, pattern_info, "Code Smell"
                     ))
                 
-                # Check naming patterns
-                for pattern_name, pattern_info in self.naming_patterns.items():
-                    findings.extend(self._find_pattern_matches(
-                        content, lines, file_path, pattern_name, pattern_info, "Naming"
-                    ))
+                # Check naming patterns (skip for config files)
+                if not self.is_config_file(file_path):
+                    for pattern_name, pattern_info in self.naming_patterns.items():
+                        findings.extend(self._find_pattern_matches(
+                            content, lines, file_path, pattern_name, pattern_info, "Naming"
+                        ))
         
         except Exception as e:
             # Log error but continue scanning
@@ -386,13 +426,26 @@ class ComplexityAnalyzer:
 
 def main():
     """Main function for command-line usage."""
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Usage: python complexity_metrics.py <target_path> [--summary]")
+    if len(sys.argv) < 2:
+        print("Usage: python complexity_metrics.py <target_path> [options]")
+        print("Options:")
         print("  --summary: Limit output to top 10 critical/high findings for large codebases")
+        print("  --min-severity <level>: Minimum severity level (critical|high|medium|low) [default: low]")
         sys.exit(1)
     
     target_path = sys.argv[1]
-    summary_mode = len(sys.argv) == 3 and sys.argv[2] == "--summary"
+    summary_mode = False
+    min_severity = "low"
+    
+    # Parse arguments
+    for i, arg in enumerate(sys.argv[2:], 2):
+        if arg == "--summary":
+            summary_mode = True
+        elif arg == "--min-severity" and i + 1 < len(sys.argv):
+            min_severity = sys.argv[i + 1].lower()
+            if min_severity not in ["critical", "high", "medium", "low"]:
+                print("Error: min-severity level must be one of: critical, high, medium, low")
+                sys.exit(1)
     
     analyzer = ComplexityAnalyzer()
     result = analyzer.analyze(target_path)
@@ -402,7 +455,7 @@ def main():
         print(f"⚠️ Large result set detected ({len(result.findings)} findings). Consider using --summary flag.", file=sys.stderr)
     
     # Output JSON result
-    print(result.to_json(summary_mode=summary_mode))
+    print(result.to_json(summary_mode=summary_mode, min_severity=min_severity))
     
     # Also print console summary to stderr for human readability
     print(ResultFormatter.format_console_output(result), file=sys.stderr)

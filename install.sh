@@ -302,6 +302,102 @@ else
     cp CHAT-MODES-MIGRATION-PLAN.md "$SUPERCOPILOT_DIR/" 2>/dev/null || true
 fi
 
+# Copy scriptable workflows (if available)
+if [ -d ".github/scripts" ]; then
+    echo "Copying scriptable workflows..."
+    if [[ "$DRY_RUN" = true ]]; then
+        echo -e "${BLUE}[DRY RUN] Would copy: .github/scripts directory${NC}"
+    else
+        cp -r .github/scripts "$SUPERCOPILOT_DIR/" 2>/dev/null || true
+    fi
+fi
+
+# Install dependencies for scriptable workflows
+install_dependencies() {
+    echo ""
+    echo "Installing scriptable workflow dependencies..."
+    
+    # Check if Python is available
+    if command -v python3 >/dev/null 2>&1; then
+        echo "✓ Python 3 found"
+        
+        # Check if pip is available
+        if command -v pip3 >/dev/null 2>&1 || command -v pip >/dev/null 2>&1; then
+            echo "✓ pip found"
+            
+            # Install required packages
+            echo "Installing analysis tools..."
+            
+            # Use pip3 if available, otherwise pip
+            PIP_CMD=$(command -v pip3 >/dev/null 2>&1 && echo "pip3" || echo "pip")
+            
+            if [[ "$DRY_RUN" = true ]]; then
+                echo -e "${BLUE}[DRY RUN] Would install:${NC}"
+                echo "  - lizard (code complexity analysis)"
+                echo "  - Optional: radon, bandit, safety"
+            else
+                echo "Installing lizard for code complexity analysis..."
+                if $PIP_CMD install lizard >/dev/null 2>&1; then
+                    echo "✓ lizard installed successfully"
+                else
+                    echo -e "${YELLOW}⚠ Failed to install lizard. Run manually: $PIP_CMD install lizard${NC}"
+                fi
+                
+                # Optional tools - install if user wants them
+                if [[ "$FORCE_INSTALL" != true ]]; then
+                    echo ""
+                    echo -e "${YELLOW}Optional analysis tools available:${NC}"
+                    echo "  - radon: Python complexity metrics"
+                    echo "  - bandit: Python security analysis"
+                    echo "  - safety: Python dependency vulnerability scanning"
+                    echo ""
+                    echo -n "Install optional tools? (y/n): "
+                    read -r install_optional
+                    
+                    if [ "$install_optional" = "y" ]; then
+                        echo "Installing optional tools..."
+                        
+                        for tool in radon bandit safety; do
+                            if $PIP_CMD install $tool >/dev/null 2>&1; then
+                                echo "✓ $tool installed"
+                            else
+                                echo -e "${YELLOW}⚠ Failed to install $tool${NC}"
+                            fi
+                        done
+                    fi
+                fi
+            fi
+        else
+            echo -e "${YELLOW}⚠ pip not found. Some scriptable workflows require Python packages.${NC}"
+            echo "  Install manually: pip install lizard"
+        fi
+    else
+        echo -e "${YELLOW}⚠ Python 3 not found. Some scriptable workflows require Python.${NC}"
+        echo "  Scriptable workflows will use fallback methods where possible."
+    fi
+    
+    # Check for Node.js tools (for JavaScript/TypeScript analysis)
+    if command -v npm >/dev/null 2>&1; then
+        echo "✓ npm found"
+        if [[ "$DRY_RUN" = true ]]; then
+            echo -e "${BLUE}[DRY RUN] Would check for ESLint in project${NC}"
+        else
+            # Note: We don't install ESLint globally as it should be project-specific
+            echo "  Note: ESLint should be configured per-project for JavaScript/TypeScript analysis"
+        fi
+    else
+        echo -e "${YELLOW}⚠ npm not found. JavaScript/TypeScript analysis will be limited.${NC}"
+    fi
+}
+
+# Only install dependencies if scripts directory exists
+if [ -d ".github/scripts" ] && [[ "$DRY_RUN" != true ]]; then
+    install_dependencies
+elif [ -d ".github/scripts" ] && [[ "$DRY_RUN" = true ]]; then
+    echo ""
+    echo -e "${BLUE}[DRY RUN] Would install scriptable workflow dependencies${NC}"
+fi
+
 # Verify installation
 if [[ "$DRY_RUN" != true ]]; then
     echo ""

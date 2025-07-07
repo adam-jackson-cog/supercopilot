@@ -1,10 +1,10 @@
-# Capability Gap Analysis: Original vs Hybrid Workflows
+# Capability Gap Analysis: Original vs Current Workflows
 
-**Objective**: Compare original workflows with hybrid versions to identify any capability gaps or missing functionality.
+**Objective**: Compare original workflows with current scriptable versions to identify any capability gaps or missing functionality.
 
 ## Executive Summary
 
-**✅ Overall Assessment**: The hybrid workflows maintain equivalent or superior capabilities while achieving 49.5% token reduction.
+**✅ Overall Assessment**: The scriptable workflows maintain equivalent or superior capabilities while achieving 49.5% token reduction.
 
 **🎯 Key Improvements**:
 - **Measurable Analysis**: Scripts provide objective, repeatable results
@@ -27,7 +27,7 @@
 - **Infrastructure Security**: Configuration, dependencies, secrets management
 - **Analysis Framework**: Risk assessment matrix, attack vector analysis, business impact
 
-#### Hybrid Capabilities (security_hybrid.md - 300 words + scripts)
+#### Current Capabilities (security.md - 300 words + scripts)
 ✅ **Automated Coverage**:
 - `detect_secrets.py`: Hardcoded passwords, API keys, database URLs, JWT secrets, AWS keys, private keys
 - **Planned scripts**: Vulnerability scanning, authentication validation, input validation
@@ -55,7 +55,7 @@
 - **Frontend Performance**: Loading, runtime, rendering, caching strategies
 - **Scalability Analysis**: Load testing, bottlenecks, capacity planning
 
-#### Hybrid Capabilities (performance_hybrid.md - 331 words + scripts)
+#### Current Capabilities (performance.md - 331 words + scripts)
 ✅ **Automated Coverage**:
 - `profile_database.py`: N+1 queries, slow queries, ORM patterns (206 findings found)
 - **Planned scripts**: Frontend analysis, bottleneck detection
@@ -82,9 +82,9 @@
 - **Performance Anti-Patterns**: Algorithmic inefficiency, database performance, frontend performance
 - **Architecture & Design**: SOLID principles, design patterns, layer coupling, maintainability
 
-#### Hybrid Capabilities (code_quality_hybrid.md - 315 words + scripts)
+#### Current Capabilities (code_quality.md - 315 words + scripts)
 ✅ **Automated Coverage**:
-- `complexity_metrics.py`: Function length, cyclomatic complexity, code smells, naming conventions (25,778 findings found)
+- `complexity_lizard.py`: Function length, cyclomatic complexity, code smells, naming conventions (393 findings found with Lizard)
 - **Planned scripts**: Pattern detection, duplication analysis
 
 ✅ **LLM Analysis Coverage**:
@@ -110,7 +110,7 @@
 - **Maintainability Assessment**: Code organization, configuration management, testing architecture, documentation
 - **Technology Choices**: Framework appropriateness, dependency analysis, technology stack coherence
 
-#### Hybrid Capabilities (architecture_hybrid.md - 314 words + scripts)
+#### Current Capabilities (architecture.md - 314 words + scripts)
 ✅ **Automated Coverage**:
 - `coupling_analysis.py`: Circular dependencies, fan-in/fan-out analysis, dependency mapping (1 finding found)
 - **Planned scripts**: Pattern evaluation, scalability checks
@@ -155,14 +155,14 @@
 #### Recommended Solutions
 1. **Enhanced EXAMPLES.md**: Add script-specific usage examples with real-world scenarios
 2. **Training Materials**: Create workflow guides for different team roles (developers, architects, security)
-3. **Integration Playbooks**: Document best practices for hybrid analysis workflows
+3. **Integration Playbooks**: Document best practices for scriptable analysis workflows
 4. **Customization Templates**: Provide patterns for extending scripts with organization rules
 
 ## Implementation Completeness
 
 ### Current Status (90% Complete)
 - ✅ **4/4 Core Scripts**: Security, Performance, Code Quality, Architecture base implementations
-- ✅ **4/4 Hybrid Workflows**: All analyze workflows converted with maintained capabilities
+- ✅ **4/4 Scriptable Workflows**: All analyze workflows converted with maintained capabilities
 - ✅ **Cross-Platform Infrastructure**: Utilities, output formatting, dependency management
 - ✅ **Real-World Testing**: Validated on production codebase (karakeep-app)
 
@@ -175,7 +175,7 @@
 
 **✅ No Critical Capability Gaps Identified**
 
-The hybrid approach successfully maintains all essential analysis capabilities while providing significant improvements in:
+The scriptable approach successfully maintains all essential analysis capabilities while providing significant improvements in:
 - **Efficiency**: 49.5% token reduction with faster analysis
 - **Scalability**: Handles large codebases effectively
 - **Objectivity**: Provides measurable, repeatable results
