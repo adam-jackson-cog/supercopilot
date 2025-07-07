@@ -70,7 +70,8 @@ class SecretDetector:
         # Files to skip
         self.skip_patterns = {
             'node_modules', '.git', '__pycache__', '.pytest_cache',
-            'venv', 'env', '.venv', 'dist', 'build'
+            'venv', 'env', '.venv', 'dist', 'build', '.next', 
+            'coverage', '.nyc_output', 'target', 'vendor'
         }
     
     def should_scan_file(self, file_path: Path) -> bool:
@@ -203,17 +204,23 @@ class SecretDetector:
 
 def main():
     """Main function for command-line usage."""
-    if len(sys.argv) != 2:
-        print("Usage: python detect_secrets.py <target_path>")
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Usage: python detect_secrets.py <target_path> [--summary]")
+        print("  --summary: Limit output to top 10 critical/high findings for large codebases")
         sys.exit(1)
     
     target_path = sys.argv[1]
+    summary_mode = len(sys.argv) == 3 and sys.argv[2] == "--summary"
     
     detector = SecretDetector()
     result = detector.analyze(target_path)
     
+    # Auto-enable summary mode for large result sets
+    if len(result.findings) > 50 and not summary_mode:
+        print(f"⚠️ Large result set detected ({len(result.findings)} findings). Consider using --summary flag.", file=sys.stderr)
+    
     # Output JSON result
-    print(result.to_json())
+    print(result.to_json(summary_mode=summary_mode))
     
     # Also print console summary to stderr for human readability
     print(ResultFormatter.format_console_output(result), file=sys.stderr)

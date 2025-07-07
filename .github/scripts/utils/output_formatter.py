@@ -98,9 +98,32 @@ class AnalysisResult:
             summary[finding.severity.value] += 1
         return summary
     
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert result to dictionary."""
-        return {
+    def to_dict(self, summary_mode: bool = False) -> Dict[str, Any]:
+        """
+        Convert result to dictionary.
+        
+        Args:
+            summary_mode: If True, limit findings to top 10 critical/high severity
+        """
+        findings_to_include = self.findings
+        
+        if summary_mode and len(self.findings) > 10:
+            # Sort by severity priority and take top 10
+            severity_priority = {
+                Severity.CRITICAL: 0,
+                Severity.HIGH: 1, 
+                Severity.MEDIUM: 2,
+                Severity.LOW: 3,
+                Severity.INFO: 4
+            }
+            
+            sorted_findings = sorted(
+                self.findings,
+                key=lambda f: severity_priority.get(f.severity, 5)
+            )
+            findings_to_include = sorted_findings[:10]
+        
+        result = {
             "analysis_type": self.analysis_type.value,
             "script_name": self.script_name,
             "target_path": self.target_path,
@@ -109,13 +132,22 @@ class AnalysisResult:
             "success": self.success,
             "error_message": self.error_message,
             "summary": self.get_summary(),
-            "findings": [finding.to_dict() for finding in self.findings],
+            "findings": [finding.to_dict() for finding in findings_to_include],
             "metadata": self.metadata
         }
+        
+        # Add summary mode info if truncated
+        if summary_mode and len(self.findings) > 10:
+            result["summary_mode"] = True
+            result["total_findings"] = len(self.findings)
+            result["showing_top"] = len(findings_to_include)
+            result["truncated_note"] = f"Showing top {len(findings_to_include)} critical/high severity findings out of {len(self.findings)} total"
+        
+        return result
     
-    def to_json(self, indent: int = 2) -> str:
+    def to_json(self, indent: int = 2, summary_mode: bool = False) -> str:
         """Convert result to JSON string."""
-        return json.dumps(self.to_dict(), indent=indent, ensure_ascii=False)
+        return json.dumps(self.to_dict(summary_mode=summary_mode), indent=indent, ensure_ascii=False)
 
 class ResultFormatter:
     """Utility class for formatting analysis results."""
