@@ -24,10 +24,14 @@ class AnalysisRunner:
     def __init__(self):
         self.script_dir = PathUtils.get_analyze_script_dir()
         self.scripts = {
-            "security": "security/detect_secrets.py",
-            "performance": "performance/profile_database.py", 
+            "security_auth": "security/check_auth.py",
+            "security_vulnerabilities": "security/scan_vulnerabilities.py", 
+            "security_input_validation": "security/validate_inputs.py",
+            "performance_frontend": "performance/analyze_frontend.py",
+            "performance_bottlenecks": "performance/check_bottlenecks.py",
             "code_quality": "code_quality/complexity_lizard.py",
-            "architecture": "architecture/coupling_analysis.py"
+            "architecture_patterns": "architecture/pattern_evaluation.py",
+            "architecture_scalability": "architecture/scalability_check.py"
         }
     
     def run_script(self, script_name: str, target_path: str, summary_mode: bool = True, min_severity: str = "low") -> Dict[str, Any]:
@@ -37,7 +41,8 @@ class AnalysisRunner:
         print(f"🔄 Running {script_name} analysis...", file=sys.stderr)
         
         args = [str(script_path), target_path]
-        if summary_mode:
+        # Only lizard script supports --summary flag
+        if summary_mode and script_name == "code_quality":
             args.append("--summary")
         if min_severity != "low":
             args.extend(["--min-severity", min_severity])
@@ -111,22 +116,24 @@ class AnalysisRunner:
             if result.get("error"):
                 continue
                 
-            script_summary = result.get("summary", {})
             findings = result.get("findings", [])
             
-            # Add to totals - use actual findings count, not summary (which may be truncated)
+            # Add to totals - use actual findings count
             script_total = len(findings)
             summary["total_findings"] += script_total
             
-            # Add individual severity counts from summary
-            for severity, count in script_summary.items():
-                if severity in summary["by_severity"]:
-                    summary["by_severity"][severity] += count
+            # Count severities from actual findings
+            script_severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0, "info": 0}
+            for finding in findings:
+                severity = finding.get("severity", "info")
+                if severity in script_severity_counts:
+                    script_severity_counts[severity] += 1
+                    summary["by_severity"][severity] += 1
             
             # Track by category
             summary["by_category"][script_name] = {
-                "total": len(findings),
-                "summary": script_summary
+                "total": script_total,
+                "summary": script_severity_counts
             }
             
             # Collect critical/high issues for top issues
@@ -157,24 +164,48 @@ class AnalysisRunner:
         recommendations = []
         
         # Security recommendations
-        security_critical = summary["by_category"].get("security", {}).get("summary", {}).get("critical", 0)
+        security_critical = 0
+        security_high = 0
+        for category in ["security_auth", "security_vulnerabilities", "security_input_validation"]:
+            if category in summary["by_category"]:
+                security_critical += summary["by_category"][category].get("summary", {}).get("critical", 0)
+                security_high += summary["by_category"][category].get("summary", {}).get("high", 0)
+        
         if security_critical > 0:
-            recommendations.append(f"🚨 URGENT: Address {security_critical} critical security issues immediately")
+            recommendations.append(f"🚨 URGENT: Address {security_critical} critical security vulnerabilities immediately")
+        elif security_high > 3:
+            recommendations.append(f"🔒 HIGH: Fix {security_high} high-severity security issues")
         
         # Performance recommendations  
-        perf_high = summary["by_category"].get("performance", {}).get("summary", {}).get("high", 0)
-        if perf_high > 5:
+        perf_critical = 0
+        perf_high = 0
+        for category in ["performance_frontend", "performance_bottlenecks"]:
+            if category in summary["by_category"]:
+                perf_critical += summary["by_category"][category].get("summary", {}).get("critical", 0)
+                perf_high += summary["by_category"][category].get("summary", {}).get("high", 0)
+        
+        if perf_critical > 0:
+            recommendations.append(f"🚨 CRITICAL: Fix {perf_critical} critical performance issues")
+        elif perf_high > 3:
             recommendations.append(f"⚡ HIGH: Optimize {perf_high} performance bottlenecks affecting user experience")
         
         # Code quality recommendations
         quality_total = summary["by_category"].get("code_quality", {}).get("total", 0)
-        if quality_total > 1000:
-            recommendations.append(f"🏗 MEDIUM: Address code quality issues to improve maintainability ({quality_total} findings)")
+        if quality_total > 50:
+            recommendations.append(f"🏗 MEDIUM: Address code complexity issues to improve maintainability ({quality_total} findings)")
         
         # Architecture recommendations
-        arch_high = summary["by_category"].get("architecture", {}).get("summary", {}).get("high", 0)
-        if arch_high > 0:
-            recommendations.append(f"🔗 MEDIUM: Resolve {arch_high} high-coupling architectural issues")
+        arch_critical = 0
+        arch_high = 0
+        for category in ["architecture_patterns", "architecture_scalability"]:
+            if category in summary["by_category"]:
+                arch_critical += summary["by_category"][category].get("summary", {}).get("critical", 0)
+                arch_high += summary["by_category"][category].get("summary", {}).get("high", 0)
+        
+        if arch_critical > 0:
+            recommendations.append(f"🚨 CRITICAL: Fix {arch_critical} critical architectural issues")
+        elif arch_high > 2:
+            recommendations.append(f"🔗 HIGH: Resolve {arch_high} architectural design issues")
         
         if not recommendations:
             recommendations.append("✅ Overall code health appears good - continue with regular monitoring")
