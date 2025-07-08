@@ -19,6 +19,7 @@ Thumbs.db
 supercopilot.code-workspace
 .claude/
 claude.md
+CLAUDE.md
 
 # Development workflows not ready for production
 .github/workflows/analyze/test_coverage.md
