@@ -59,11 +59,11 @@ function Show-Usage {
     Write-Output "  .\install.ps1 .\test-project -DryRun                   # Preview installation"
     Write-Output ""
     Write-Output "Features:"
-    Write-Output "  • 5 Specialized Chat Modes (Build, Fix, Analyze, Design, Plan)"
-    Write-Output "  • Switch-based specialization (--security, --feature, --ui, etc.)"
+    Write-Output "  • 5 Specialized Chat Modes for VS Code with GitHub Copilot"
+    Write-Output "  • Switch-based specialization (--security, --feature, --architecture, etc.)"
     Write-Output "  • 87% context reduction through just-in-time loading"
     Write-Output "  • Universal tools (--git-commit, --c7, --seq, --think, --ultrathink)"
-    Write-Output "  • Native GitHub Copilot integration"
+    Write-Output "  • Prerequisites validation (Python, Node.js, Lizard, MCP servers)"
 }
 
 function Test-Prerequisites {
@@ -88,11 +88,13 @@ function Test-Prerequisites {
     }
 }
 
-function Install-Dependencies {
+function Test-Prerequisites {
     Write-Output ""
-    Write-Output "Installing scriptable workflow dependencies..."
+    Write-Output "Checking prerequisites for SuperCopilot framework..."
     
-    # Check if Python is available
+    $errors = 0
+    
+    # Check Python 3.8+
     $pythonCmd = $null
     if (Get-Command python -ErrorAction SilentlyContinue) {
         $pythonCmd = "python"
@@ -101,81 +103,117 @@ function Install-Dependencies {
     }
     
     if ($pythonCmd) {
-        Write-ColorOutput "✓ Python found" -Color $Colors.Green
-        
-        # Check if pip is available
-        $pipCmd = $null
-        if (Get-Command pip -ErrorAction SilentlyContinue) {
-            $pipCmd = "pip"
-        } elseif (Get-Command pip3 -ErrorAction SilentlyContinue) {
-            $pipCmd = "pip3"
-        }
-        
-        # Check for modern package managers first, then fallback to pip
-        $uvCmd = $null
-        if (Get-Command uv -ErrorAction SilentlyContinue) {
-            $uvCmd = "uv"
-        }
-        
-        if ($uvCmd) {
-            Write-ColorOutput "✓ uv found (modern Python package manager)" -Color $Colors.Green
-            
-            if ($DryRun) {
-                Write-ColorOutput "[DRY RUN] Would install:" -Color $Colors.Blue
-                Write-Output "  - lizard (code complexity analysis) via uv"
+        try {
+            $pythonVersion = & $pythonCmd -c "import sys; print('.'.join(map(str, sys.version_info[:2])))" 2>$null
+            $versionCheck = & $pythonCmd -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                Write-ColorOutput "✓ Python $pythonVersion found" -Color $Colors.Green
             } else {
-                Write-Output "Installing lizard for code complexity analysis via uv..."
-                try {
-                    & $uvCmd add lizard *>$null
-                    Write-ColorOutput "✓ lizard installed successfully via uv" -Color $Colors.Green
-                } catch {
-                    try {
-                        & $uvCmd pip install lizard *>$null
-                        Write-ColorOutput "✓ lizard installed successfully via uv" -Color $Colors.Green
-                    } catch {
-                        Write-ColorOutput "⚠ Failed to install lizard via uv. Trying pip..." -Color $Colors.Yellow
-                    }
-                }
+                Write-ColorOutput "✗ Python $pythonVersion found, but 3.8+ required" -Color $Colors.Red
+                Write-Output "  Install: https://python.org"
+                $errors++
             }
-        } elseif ($pipCmd) {
-            Write-ColorOutput "✓ pip found" -Color $Colors.Green
-            
-            if ($DryRun) {
-                Write-ColorOutput "[DRY RUN] Would install:" -Color $Colors.Blue
-                Write-Output "  - lizard (code complexity analysis)"
-            } else {
-                Write-Output "Installing lizard for code complexity analysis..."
-                try {
-                    & $pipCmd install lizard *>$null
-                    Write-ColorOutput "✓ lizard installed successfully" -Color $Colors.Green
-                } catch {
-                    Write-ColorOutput "⚠ Failed to install lizard. Run manually: $pipCmd install lizard" -Color $Colors.Yellow
-                }
-                
-            }
-        } else {
-            Write-ColorOutput "⚠ No Python package manager found (pip/uv). Some scriptable workflows require Python packages." -Color $Colors.Yellow
-            Write-Output "  Install options:"
-            Write-Output "    - Modern: powershell -c ""irm https://astral.sh/uv/install.ps1 | iex"" && uv pip install lizard"
-            Write-Output "    - Traditional: pip install lizard"
+        } catch {
+            Write-ColorOutput "✗ Python version check failed" -Color $Colors.Red
+            Write-Output "  Install: https://python.org"
+            $errors++
         }
     } else {
-        Write-ColorOutput "⚠ Python not found. Some scriptable workflows require Python." -Color $Colors.Yellow
-        Write-Output "  Scriptable workflows will use fallback methods where possible."
+        Write-ColorOutput "✗ Python not found" -Color $Colors.Red
+        Write-Output "  Install: https://python.org"
+        $errors++
     }
     
-    # Check for Node.js tools (for JavaScript/TypeScript analysis)
-    if (Get-Command npm -ErrorAction SilentlyContinue) {
-        Write-ColorOutput "✓ npm found" -Color $Colors.Green
-        if ($DryRun) {
-            Write-ColorOutput "[DRY RUN] Would check for ESLint in project" -Color $Colors.Blue
-        } else {
-            # Note: We don't install ESLint globally as it should be project-specific
-            Write-Output "  Note: ESLint should be configured per-project for JavaScript/TypeScript analysis"
+    # Check Node.js 18+
+    if (Get-Command node -ErrorAction SilentlyContinue) {
+        try {
+            $nodeVersion = (& node --version).TrimStart('v')
+            $nodeMajor = [int]($nodeVersion.Split('.')[0])
+            if ($nodeMajor -ge 18) {
+                Write-ColorOutput "✓ Node.js $nodeVersion found" -Color $Colors.Green
+            } else {
+                Write-ColorOutput "✗ Node.js $nodeVersion found, but 18+ required" -Color $Colors.Red
+                Write-Output "  Install: https://nodejs.org"
+                $errors++
+            }
+        } catch {
+            Write-ColorOutput "✗ Node.js version check failed" -Color $Colors.Red
+            Write-Output "  Install: https://nodejs.org"
+            $errors++
         }
     } else {
-        Write-ColorOutput "⚠ npm not found. JavaScript/TypeScript analysis will be limited." -Color $Colors.Yellow
+        Write-ColorOutput "✗ Node.js not found" -Color $Colors.Red
+        Write-Output "  Install: https://nodejs.org"
+        $errors++
     }
+    
+    # Check Lizard
+    if (Get-Command lizard -ErrorAction SilentlyContinue) {
+        try {
+            $lizardVersion = & lizard --version 2>$null | Select-Object -First 1
+            if (-not $lizardVersion) { $lizardVersion = "unknown" }
+            Write-ColorOutput "✓ Lizard found ($lizardVersion)" -Color $Colors.Green
+        } catch {
+            Write-ColorOutput "✓ Lizard found" -Color $Colors.Green
+        }
+    } else {
+        Write-ColorOutput "✗ Lizard not found" -Color $Colors.Red
+        Write-Output "  Install: pip install lizard"
+        $errors++
+    }
+    
+    # Check Context7 MCP Server
+    if (Get-Command npx -ErrorAction SilentlyContinue) {
+        try {
+            & npx @context7/mcp-server --version *>$null
+            if ($LASTEXITCODE -eq 0) {
+                Write-ColorOutput "✓ Context7 MCP Server found" -Color $Colors.Green
+            } else {
+                Write-ColorOutput "✗ Context7 MCP Server not found" -Color $Colors.Red
+                Write-Output "  Install: npx @context7/mcp-server"
+                $errors++
+            }
+        } catch {
+            Write-ColorOutput "✗ Context7 MCP Server not found" -Color $Colors.Red
+            Write-Output "  Install: npx @context7/mcp-server"
+            $errors++
+        }
+    } else {
+        Write-ColorOutput "✗ npx not found (required for MCP servers)" -Color $Colors.Red
+        Write-Output "  Install Node.js: https://nodejs.org"
+        $errors++
+    }
+    
+    # Check Sequential Thinking MCP Server
+    if (Get-Command npx -ErrorAction SilentlyContinue) {
+        try {
+            & npx @anthropic-ai/mcp-server-sequential-thinking --version *>$null
+            if ($LASTEXITCODE -eq 0) {
+                Write-ColorOutput "✓ Sequential Thinking MCP Server found" -Color $Colors.Green
+            } else {
+                Write-ColorOutput "✗ Sequential Thinking MCP Server not found" -Color $Colors.Red
+                Write-Output "  Install: npx @anthropic-ai/mcp-server-sequential-thinking"
+                $errors++
+            }
+        } catch {
+            Write-ColorOutput "✗ Sequential Thinking MCP Server not found" -Color $Colors.Red
+            Write-Output "  Install: npx @anthropic-ai/mcp-server-sequential-thinking"
+            $errors++
+        }
+    }
+    
+    # Block installation if prerequisites missing
+    if ($errors -gt 0) {
+        Write-Output ""
+        Write-ColorOutput "✗ Installation blocked: $errors prerequisite(s) missing" -Color $Colors.Red
+        Write-Output ""
+        Write-Output "Please install missing prerequisites and run again."
+        Write-Output "See README.md Prerequisites section for details."
+        exit 1
+    }
+    
+    Write-Output ""
+    Write-ColorOutput "✓ All prerequisites satisfied" -Color $Colors.Green
 }
 
 # Show help if requested
@@ -399,12 +437,12 @@ if (Test-Path ".github\scripts") {
     }
 }
 
-# Install dependencies for scriptable workflows
-if ((Test-Path ".github\scripts") -and -not $DryRun) {
-    Install-Dependencies
-} elseif ((Test-Path ".github\scripts") -and $DryRun) {
+# Check prerequisites before proceeding
+if (-not $DryRun) {
+    Test-Prerequisites
+} elseif ($DryRun) {
     Write-Output ""
-    Write-ColorOutput "[DRY RUN] Would install scriptable workflow dependencies" -Color $Colors.Blue
+    Write-ColorOutput "[DRY RUN] Would check prerequisites (Python 3.8+, Node.js 18+, Lizard, MCP servers)" -Color $Colors.Blue
 }
 
 # Verify installation

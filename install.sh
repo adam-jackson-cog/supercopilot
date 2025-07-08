@@ -47,11 +47,11 @@ show_usage() {
     echo "  $0 ./test-project --dry-run               # Preview installation"
     echo ""
     echo "Features:"
-    echo "  • 5 Specialized Chat Modes (Build, Fix, Analyze, Design, Plan)"
-    echo "  • Switch-based specialization (--security, --feature, --ui, etc.)"
+    echo "  • 5 Specialized Chat Modes for VS Code with GitHub Copilot"
+    echo "  • Switch-based specialization (--security, --feature, --architecture, etc.)"
     echo "  • 87% context reduction through just-in-time loading"
     echo "  • Universal tools (--git-commit, --c7, --seq, --think, --ultrathink)"
-    echo "  • Native GitHub Copilot integration"
+    echo "  • Prerequisites validation (Python, Node.js, Lizard, MCP servers)"
 }
 
 # Parse command line arguments
@@ -317,82 +317,102 @@ if [ -d ".github/scripts" ]; then
     fi
 fi
 
-# Install dependencies for scriptable workflows
-install_dependencies() {
+# Check prerequisites for SuperCopilot framework
+check_prerequisites() {
     echo ""
-    echo "Installing scriptable workflow dependencies..."
+    echo "Checking prerequisites for SuperCopilot framework..."
     
-    # Check if Python is available
+    local errors=0
+    
+    # Check Python 3.8+
     if command -v python3 >/dev/null 2>&1; then
-        echo "✓ Python 3 found"
-        
-        # Check for modern package managers first, then fallback to pip
-        if command -v uv >/dev/null 2>&1; then
-            echo "✓ uv found (modern Python package manager)"
-            
-            if [[ "$DRY_RUN" = true ]]; then
-                echo -e "${BLUE}[DRY RUN] Would install:${NC}"
-                echo "  - lizard (code complexity analysis) via uv"
-            else
-                echo "Installing lizard for code complexity analysis via uv..."
-                if uv add lizard >/dev/null 2>&1 || uv pip install lizard >/dev/null 2>&1; then
-                    echo "✓ lizard installed successfully via uv"
-                else
-                    echo -e "${YELLOW}⚠ Failed to install lizard via uv. Trying pip...${NC}"
-                fi
-            fi
-        elif command -v pip3 >/dev/null 2>&1 || command -v pip >/dev/null 2>&1; then
-            echo "✓ pip found"
-            
-            # Install required packages
-            echo "Installing analysis tools..."
-            
-            # Use pip3 if available, otherwise pip
-            PIP_CMD=$(command -v pip3 >/dev/null 2>&1 && echo "pip3" || echo "pip")
-            
-            if [[ "$DRY_RUN" = true ]]; then
-                echo -e "${BLUE}[DRY RUN] Would install:${NC}"
-                echo "  - lizard (code complexity analysis)"
-            else
-                echo "Installing lizard for code complexity analysis..."
-                if $PIP_CMD install lizard >/dev/null 2>&1; then
-                    echo "✓ lizard installed successfully"
-                else
-                    echo -e "${YELLOW}⚠ Failed to install lizard. Run manually: $PIP_CMD install lizard${NC}"
-                fi
-                
-            fi
+        python_version=$(python3 -c "import sys; print('.'.join(map(str, sys.version_info[:2])))")
+        if python3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" 2>/dev/null; then
+            echo -e "${GREEN}✓ Python $python_version found${NC}"
         else
-            echo -e "${YELLOW}⚠ No Python package manager found (pip/uv). Some scriptable workflows require Python packages.${NC}"
-            echo "  Install options:"
-            echo "    - Modern: curl -LsSf https://astral.sh/uv/install.sh | sh && uv pip install lizard"
-            echo "    - Traditional: pip install lizard"
+            echo -e "${RED}✗ Python $python_version found, but 3.8+ required${NC}"
+            echo "  Install: https://python.org"
+            errors=$((errors + 1))
         fi
     else
-        echo -e "${YELLOW}⚠ Python 3 not found. Some scriptable workflows require Python.${NC}"
-        echo "  Scriptable workflows will use fallback methods where possible."
+        echo -e "${RED}✗ Python 3 not found${NC}"
+        echo "  Install: https://python.org"
+        errors=$((errors + 1))
     fi
     
-    # Check for Node.js tools (for JavaScript/TypeScript analysis)
-    if command -v npm >/dev/null 2>&1; then
-        echo "✓ npm found"
-        if [[ "$DRY_RUN" = true ]]; then
-            echo -e "${BLUE}[DRY RUN] Would check for ESLint in project${NC}"
+    # Check Node.js 18+
+    if command -v node >/dev/null 2>&1; then
+        node_version=$(node --version | sed 's/v//')
+        node_major=$(echo $node_version | cut -d. -f1)
+        if [ "$node_major" -ge 18 ]; then
+            echo -e "${GREEN}✓ Node.js $node_version found${NC}"
         else
-            # Note: We don't install ESLint globally as it should be project-specific
-            echo "  Note: ESLint should be configured per-project for JavaScript/TypeScript analysis"
+            echo -e "${RED}✗ Node.js $node_version found, but 18+ required${NC}"
+            echo "  Install: https://nodejs.org"
+            errors=$((errors + 1))
         fi
     else
-        echo -e "${YELLOW}⚠ npm not found. JavaScript/TypeScript analysis will be limited.${NC}"
+        echo -e "${RED}✗ Node.js not found${NC}"
+        echo "  Install: https://nodejs.org"
+        errors=$((errors + 1))
     fi
+    
+    # Check Lizard
+    if command -v lizard >/dev/null 2>&1; then
+        lizard_version=$(lizard --version 2>/dev/null | head -1 || echo "unknown")
+        echo -e "${GREEN}✓ Lizard found ($lizard_version)${NC}"
+    else
+        echo -e "${RED}✗ Lizard not found${NC}"
+        echo "  Install: pip install lizard"
+        errors=$((errors + 1))
+    fi
+    
+    # Check Context7 MCP Server
+    if command -v npx >/dev/null 2>&1; then
+        if npx @context7/mcp-server --version >/dev/null 2>&1; then
+            echo -e "${GREEN}✓ Context7 MCP Server found${NC}"
+        else
+            echo -e "${RED}✗ Context7 MCP Server not found${NC}"
+            echo "  Install: npx @context7/mcp-server"
+            errors=$((errors + 1))
+        fi
+    else
+        echo -e "${RED}✗ npx not found (required for MCP servers)${NC}"
+        echo "  Install Node.js: https://nodejs.org"
+        errors=$((errors + 1))
+    fi
+    
+    # Check Sequential Thinking MCP Server
+    if command -v npx >/dev/null 2>&1; then
+        if npx @anthropic-ai/mcp-server-sequential-thinking --version >/dev/null 2>&1; then
+            echo -e "${GREEN}✓ Sequential Thinking MCP Server found${NC}"
+        else
+            echo -e "${RED}✗ Sequential Thinking MCP Server not found${NC}"
+            echo "  Install: npx @anthropic-ai/mcp-server-sequential-thinking"
+            errors=$((errors + 1))
+        fi
+    fi
+    
+    # Block installation if prerequisites missing
+    if [ $errors -gt 0 ]; then
+        echo ""
+        echo -e "${RED}✗ Installation blocked: $errors prerequisite(s) missing${NC}"
+        echo ""
+        echo "Please install missing prerequisites and run again."
+        echo "See README.md Prerequisites section for details."
+        exit 1
+    fi
+    
+    echo ""
+    echo -e "${GREEN}✓ All prerequisites satisfied${NC}"
 }
 
-# Only install dependencies if scripts directory exists
-if [ -d ".github/scripts" ] && [[ "$DRY_RUN" != true ]]; then
-    install_dependencies
-elif [ -d ".github/scripts" ] && [[ "$DRY_RUN" = true ]]; then
+# Check prerequisites before proceeding
+if [[ "$DRY_RUN" != true ]]; then
+    check_prerequisites
+elif [[ "$DRY_RUN" = true ]]; then
     echo ""
-    echo -e "${BLUE}[DRY RUN] Would install scriptable workflow dependencies${NC}"
+    echo -e "${BLUE}[DRY RUN] Would check prerequisites (Python 3.8+, Node.js 18+, Lizard, MCP servers)${NC}"
 fi
 
 # Verify installation
