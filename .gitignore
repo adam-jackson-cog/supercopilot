@@ -53,6 +53,7 @@ node_modules/
 # Build outputs
 dist/
 build/
+!.github/workflows/build/
 
 # Python
 __pycache__/
