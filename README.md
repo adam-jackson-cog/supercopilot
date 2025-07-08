@@ -22,14 +22,30 @@ SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assi
 - **Windows**: Download from [python.org](https://python.org) or Microsoft Store
 - **Alternative**: Install [uv](https://docs.astral.sh/uv/) - modern Python package manager that can install Python automatically
 
+### TL;DR Quick Start
+
+**macOS/Linux**: `./install.sh /path/to/project`  
+**Windows**: `.\install.ps1 C:\path\to\project`
+
+*Automatically installs Python dependencies (uv preferred, pip fallback)*
+
 ### Installation
+
+**Automated (Recommended)**:
 ```bash
-# Install to your project
+# macOS/Linux
 ./install.sh /path/to/your/project
 
-# Or copy manually
+# Windows PowerShell
+.\install.ps1 C:\path\to\project
+```
+
+**Manual**:
+```bash
 cp -r /path/to/SuperCopilot/.github ./
 ```
+
+*Installers automatically handle Python 3.8+ requirements and set up scriptable analysis*
 
 ### Using Chat Modes
 
@@ -80,6 +96,7 @@ Each mode includes **scriptable analysis** - comprehensive Python scripts that a
 
 | Switch | Purpose | Focus |
 |--------|---------|-------|
+| `--init` | Project initialization | Workspace setup, prevents agent loops |
 | `--feature` | Production feature development | Architecture, testing, documentation |
 | `--plan` | Multi-task coordination | Task breakdown, dependencies |
 | `--prototype` | Rapid prototyping | Speed, existing libraries, mocking |
@@ -94,6 +111,8 @@ Each mode includes **scriptable analysis** - comprehensive Python scripts that a
 | `--refactor` | Refactoring strategy | Technical debt, incremental approach |
 | `--feature` | Feature planning | Requirements, timeline, resources |
 | `--prd` | Product requirements | User stories, success metrics |
+| `--architecture` | System architecture design | Patterns, scalability, technology |
+| `--datamodel` | Database design | Schema, performance, integrity |
 
 ### Fix Mode
 **Purpose**: Systematic problem resolution and remediation
@@ -215,40 +234,32 @@ Available in ALL modes with `--` syntax:
 
 ## 🔧 Installation Options
 
-### Automated Installation
+### Automated Installation (Recommended)
+
+Installers automatically handle:
+- ✅ Python 3.8+ requirement validation
+- ✅ Package manager detection (uv → pip fallback)
+- ✅ Dependency installation (lizard for code analysis)
+- ✅ Cross-platform script permissions
 
 **macOS/Linux:**
 ```bash
-# Install with prompt
-./install.sh /path/to/project
-
-# Force install (no prompts)
-./install.sh /path/to/project --force
-
-# Update existing installation
-./install.sh /path/to/project --update
+./install.sh /path/to/project           # Interactive
+./install.sh /path/to/project --force   # Silent
+./install.sh /path/to/project --update  # Update existing
 ```
 
-**Windows:**
+**Windows PowerShell:**
 ```powershell
-# Install with prompt
-.\install.ps1 C:\path\to\project
-
-# Force install (no prompts)
-.\install.ps1 C:\path\to\project -Force
-
-# Update existing installation
-.\install.ps1 C:\path\to\project -Update
+.\install.ps1 C:\path\to\project        # Interactive  
+.\install.ps1 C:\path\to\project -Force # Silent
+.\install.ps1 C:\path\to\project -Update # Update existing
 ```
 
 ### Manual Installation
 ```bash
-# Copy the .github directory
 cp -r SuperCopilot/.github /path/to/project/
-
-# Verify installation
-ls -la /path/to/project/.github/chatmodes/
-ls -la /path/to/project/.github/workflows/
+# Note: Manual setup requires separate Python dependency installation
 ```
 
 ## 📁 Project Structure
