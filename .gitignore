@@ -14,6 +14,15 @@ Thumbs.db
 *.swo
 *~
 
+# SuperCopilot specific
+.codeplans/
+supercopilot.code-workspace
+.claude/
+claude.md
+
+# Development workflows not ready for production
+.github/workflows/analyze/test_coverage.md
+
 # Logs
 *.log
 npm-debug.log*
@@ -43,3 +52,10 @@ node_modules/
 # Build outputs
 dist/
 build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python

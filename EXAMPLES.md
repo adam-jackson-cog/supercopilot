@@ -16,7 +16,7 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 | Mode | Purpose | Available Switches |
 |------|---------|-------------------|
 | **Analyze** | Code analysis + scriptable analysis | `--security` `--performance` `--architecture` `--code-quality` `--ux` |
-| **Build** | Feature development | `--feature` `--prototype` `--tdd` `--plan` |
+| **Build** | Feature development | `--init` `--feature` `--prototype` `--tdd` `--plan` |
 | **Plan** | Strategic planning | `--refactor` `--feature` `--prd` `--architecture` `--datamodel` |
 | **Fix** | Problem resolution | `--bug` `--performance` `--test` `--verbose` |
 
@@ -40,6 +40,15 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 # Token count: ~1,000 tokens
 ```
 
+### Initialize New Project
+```bash
+# Select Build mode from dropdown, then:
+"Initialize a new project workspace --init"
+# Loads: copilot-instructions.md + build.chatmode.md + init.md
+# Token count: ~1,200 tokens
+# Solves: GitHub Copilot Agent infinite loop bug in empty workspaces
+# Creates: README.md, package.json, .gitignore, directory structure
+```
 
 ## 📊 Analyze Mode Examples
 
@@ -129,6 +138,25 @@ SuperCopilot v1.0 uses **chat modes** with **switches** for specialized assistan
 ```
 
 ## 🛠️ Build Mode Examples
+
+### Project Initialization
+```bash
+# New project workspace setup (prevents GitHub Copilot Agent infinite loops)
+"Initialize a new project workspace --init"
+# Files: copilot-instructions.md + build.chatmode.md + init.md
+# Tokens: ~1,200 | Creates foundation files, directory structure, prevents agent loops
+# Creates: README.md, package.json, .gitignore, git repo, VS Code config
+
+# Empty workspace initialization for React project
+"Set up empty workspace for React development --init"
+# Files: Same as above
+# Tokens: ~1,200 | Universal foundation that works with any framework choice
+
+# Enterprise project initialization
+"Initialize enterprise workspace with full configuration --init"
+# Files: Same as above
+# Tokens: ~1,200 | Complete workspace setup for team collaboration
+```
 
 ### Feature Development
 ```bash

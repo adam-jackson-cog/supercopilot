@@ -11,6 +11,7 @@ You are in **BUILD mode** focused on creating and implementing features, compone
 
 When user includes switches, load the corresponding workflow files:
 
+- `--init` → Read `.github/workflows/build/init.md`
 - `--feature` → Read `.github/workflows/build/feature.md`
 - `--plan` → Read `.github/workflows/build/plan.md`
 - `--prototype` → Read `.github/workflows/build/prototype.md`
@@ -18,10 +19,15 @@ When user includes switches, load the corresponding workflow files:
 
 ## Build Framework
 
-1. **Understand requirements** from user request and switch
-2. **Research patterns** using available tools
-3. **Implement solution** per loaded workflow rules
-4. **Test implementation** according to workflow standards
+1. **Check for --init flag** - If `--init` appears anywhere in user request, execute initialization workflow FIRST
+2. **Understand requirements** from user request and switch
+3. **Research patterns** using available tools
+4. **Implement solution** per loaded workflow rules
+5. **Test implementation** according to workflow standards
+
+## Initialization Priority Rule
+
+**CRITICAL**: If user request contains `--init` flag anywhere in the message, ALWAYS execute the initialization workflow before any other build tasks. This prevents GitHub Copilot Agent infinite loops in empty workspaces.
 
 ## Build-Specific Quality Gates
 

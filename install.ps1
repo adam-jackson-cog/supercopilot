@@ -111,7 +111,33 @@ function Install-Dependencies {
             $pipCmd = "pip3"
         }
         
-        if ($pipCmd) {
+        # Check for modern package managers first, then fallback to pip
+        $uvCmd = $null
+        if (Get-Command uv -ErrorAction SilentlyContinue) {
+            $uvCmd = "uv"
+        }
+        
+        if ($uvCmd) {
+            Write-ColorOutput "✓ uv found (modern Python package manager)" -Color $Colors.Green
+            
+            if ($DryRun) {
+                Write-ColorOutput "[DRY RUN] Would install:" -Color $Colors.Blue
+                Write-Output "  - lizard (code complexity analysis) via uv"
+            } else {
+                Write-Output "Installing lizard for code complexity analysis via uv..."
+                try {
+                    & $uvCmd add lizard *>$null
+                    Write-ColorOutput "✓ lizard installed successfully via uv" -Color $Colors.Green
+                } catch {
+                    try {
+                        & $uvCmd pip install lizard *>$null
+                        Write-ColorOutput "✓ lizard installed successfully via uv" -Color $Colors.Green
+                    } catch {
+                        Write-ColorOutput "⚠ Failed to install lizard via uv. Trying pip..." -Color $Colors.Yellow
+                    }
+                }
+            }
+        } elseif ($pipCmd) {
             Write-ColorOutput "✓ pip found" -Color $Colors.Green
             
             if ($DryRun) {
@@ -128,8 +154,10 @@ function Install-Dependencies {
                 
             }
         } else {
-            Write-ColorOutput "⚠ pip not found. Some scriptable workflows require Python packages." -Color $Colors.Yellow
-            Write-Output "  Install manually: pip install lizard"
+            Write-ColorOutput "⚠ No Python package manager found (pip/uv). Some scriptable workflows require Python packages." -Color $Colors.Yellow
+            Write-Output "  Install options:"
+            Write-Output "    - Modern: powershell -c ""irm https://astral.sh/uv/install.ps1 | iex"" && uv pip install lizard"
+            Write-Output "    - Traditional: pip install lizard"
         }
     } else {
         Write-ColorOutput "⚠ Python not found. Some scriptable workflows require Python." -Color $Colors.Yellow
@@ -362,8 +390,12 @@ if (Test-Path ".github\scripts") {
     Write-Output "Copying scriptable workflows..."
     if ($DryRun) {
         Write-ColorOutput "[DRY RUN] Would copy: .github\scripts directory" -Color $Colors.Blue
+        Write-ColorOutput "[DRY RUN] Note: Windows uses file associations for Python scripts" -Color $Colors.Blue
     } else {
         Copy-Item -Path ".github\scripts" -Destination $SuperCopilotDir -Recurse -Force -ErrorAction SilentlyContinue
+        
+        # Windows note: No execute permissions needed, uses file association
+        Write-Output "Python scripts ready (Windows uses file associations for execution)"
     }
 }
 

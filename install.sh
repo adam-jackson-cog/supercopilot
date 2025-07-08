@@ -307,8 +307,13 @@ if [ -d ".github/scripts" ]; then
     echo "Copying scriptable workflows..."
     if [[ "$DRY_RUN" = true ]]; then
         echo -e "${BLUE}[DRY RUN] Would copy: .github/scripts directory${NC}"
+        echo -e "${BLUE}[DRY RUN] Would make Python scripts executable${NC}"
     else
         cp -r .github/scripts "$SUPERCOPILOT_DIR/" 2>/dev/null || true
+        
+        # Ensure Python scripts are executable on Unix/macOS
+        echo "Setting execute permissions on Python scripts..."
+        find "$SUPERCOPILOT_DIR/scripts" -name "*.py" -type f -exec chmod +x {} \; 2>/dev/null || true
     fi
 fi
 
@@ -321,8 +326,22 @@ install_dependencies() {
     if command -v python3 >/dev/null 2>&1; then
         echo "✓ Python 3 found"
         
-        # Check if pip is available
-        if command -v pip3 >/dev/null 2>&1 || command -v pip >/dev/null 2>&1; then
+        # Check for modern package managers first, then fallback to pip
+        if command -v uv >/dev/null 2>&1; then
+            echo "✓ uv found (modern Python package manager)"
+            
+            if [[ "$DRY_RUN" = true ]]; then
+                echo -e "${BLUE}[DRY RUN] Would install:${NC}"
+                echo "  - lizard (code complexity analysis) via uv"
+            else
+                echo "Installing lizard for code complexity analysis via uv..."
+                if uv add lizard >/dev/null 2>&1 || uv pip install lizard >/dev/null 2>&1; then
+                    echo "✓ lizard installed successfully via uv"
+                else
+                    echo -e "${YELLOW}⚠ Failed to install lizard via uv. Trying pip...${NC}"
+                fi
+            fi
+        elif command -v pip3 >/dev/null 2>&1 || command -v pip >/dev/null 2>&1; then
             echo "✓ pip found"
             
             # Install required packages
@@ -344,8 +363,10 @@ install_dependencies() {
                 
             fi
         else
-            echo -e "${YELLOW}⚠ pip not found. Some scriptable workflows require Python packages.${NC}"
-            echo "  Install manually: pip install lizard"
+            echo -e "${YELLOW}⚠ No Python package manager found (pip/uv). Some scriptable workflows require Python packages.${NC}"
+            echo "  Install options:"
+            echo "    - Modern: curl -LsSf https://astral.sh/uv/install.sh | sh && uv pip install lizard"
+            echo "    - Traditional: pip install lizard"
         fi
     else
         echo -e "${YELLOW}⚠ Python 3 not found. Some scriptable workflows require Python.${NC}"

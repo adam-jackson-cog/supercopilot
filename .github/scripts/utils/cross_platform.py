@@ -152,8 +152,8 @@ class DependencyChecker:
     
     @staticmethod
     def check_python_version() -> bool:
-        """Check if Python version is 3.7 or higher."""
-        return sys.version_info >= (3, 7)
+        """Check if Python version is 3.8 or higher."""
+        return sys.version_info >= (3, 8)
     
     @staticmethod
     def check_package_installed(package_name: str) -> bool:

@@ -6,7 +6,7 @@ SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assi
 
 ## 🎯 Core Features
 
-- **5 Specialized Chat Modes**: Purpose-built modes for different development activities
+- **4 Specialized Chat Modes**: Purpose-built modes for different development activities
 - **Switch-Based Specialization**: Load only relevant rules with `--switch` syntax
 - **Scriptable Analysis System**: 8 comprehensive Python analysis scripts with 50+ vulnerability types
 - **Efficient Context Management**: Approximately 50 lines per operation
@@ -14,6 +14,13 @@ SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assi
 - **Just-In-Time Loading**: Load only what you need, when you need it
 
 ## 🚀 Quick Start
+
+### Prerequisites
+
+**Python 3.8+** is required for scriptable analysis features:
+- **macOS/Linux**: Usually pre-installed, verify with `python3 --version`
+- **Windows**: Download from [python.org](https://python.org) or Microsoft Store
+- **Alternative**: Install [uv](https://docs.astral.sh/uv/) - modern Python package manager that can install Python automatically
 
 ### Installation
 ```bash
@@ -36,19 +43,20 @@ cp -r /path/to/SuperCopilot/.github ./
 # In Analyze mode
 "Review authentication system --security"
 "Check API performance bottlenecks --performance"
+"Analyze recent changes for issues --root-cause"
 
 # In Build mode  
 "Create user registration feature --feature"
 "Build quick demo UI --prototype"
 "Implement login with tests --tdd"
 
-# In Design mode
-"Design dashboard interface --ui"
-"Plan microservices architecture --architecture"
-
 # In Plan mode
 "Plan technical debt reduction --refactor"
 "Create feature roadmap --feature"
+
+# In Fix mode
+"Debug intermittent errors --verbose"
+"Fix failing tests --test"
 ```
 
 ## 📋 Chat Modes & Switches
@@ -62,6 +70,8 @@ cp -r /path/to/SuperCopilot/.github ./
 | `--performance` | Performance bottleneck analysis | Frontend optimization, CPU/memory analysis |
 | `--architecture` | Architecture assessment | Design patterns, scalability bottlenecks |
 | `--code-quality` | Code quality evaluation | Complexity metrics via Lizard integration |
+| `--root-cause` | Root cause analysis | Five-whys methodology, recent changes correlation |
+| `--test-coverage` | Test coverage analysis | Coverage gaps, business logic priority |
 
 Each mode includes **scriptable analysis** - comprehensive Python scripts that analyze 12+ programming languages for enterprise-grade code assessment.
 
@@ -75,14 +85,6 @@ Each mode includes **scriptable analysis** - comprehensive Python scripts that a
 | `--prototype` | Rapid prototyping | Speed, existing libraries, mocking |
 | `--tdd` | Test-driven development | Red-green-refactor, coverage |
 
-### Design Mode
-**Purpose**: System and interface design (specifications only)
-
-| Switch | Purpose | Focus |
-|--------|---------|-------|
-| `--ui` | User interface design | UX patterns, accessibility, responsive |
-| `--architecture` | System architecture design | Patterns, scalability, technology |
-| `--datamodel` | Database design | Schema, performance, integrity |
 
 ### Plan Mode
 **Purpose**: Strategic planning and roadmaps
@@ -129,14 +131,34 @@ SuperCopilot includes 8 comprehensive Python analysis scripts providing enterpri
 - **Executive Summary Reports** with actionable recommendations
 - **Configurable Severity Filtering** and cross-platform compatibility
 
-### Usage
+### Cross-Platform Script Execution
+
+**macOS/Linux:**
 ```bash
-# Run individual analysis
+# Method 1: Direct execution (after installation)
+./.github/scripts/analyze/security/check_auth.py .
+
+# Method 2: Explicit python command
+python3 .github/scripts/analyze/security/check_auth.py . --min-severity high
+
+# Run complete analysis suite
+python3 .github/scripts/run_all_analysis.py . --min-severity medium
+```
+
+**Windows:**
+```cmd
+# Windows uses file associations - both work
 python .github/scripts/analyze/security/check_auth.py . --min-severity high
+.github\scripts\analyze\security\check_auth.py . --min-severity high
 
 # Run complete analysis suite
 python .github/scripts/run_all_analysis.py . --min-severity medium
 ```
+
+**Notes:**
+- Installation script automatically sets execute permissions on Unix/macOS
+- Windows uses Python file associations (no execute permissions needed)
+- All scripts validate Python version (3.8+) and provide installation guidance
 
 ## 🛠️ Universal Tools
 
@@ -164,12 +186,6 @@ Available in ALL modes with `--` syntax:
 "Create quick admin dashboard --prototype"
 ```
 
-### System Design
-```bash
-# Select Design mode, then:
-"Design scalable notification system --architecture"
-"Plan user data model --datamodel"
-```
 
 ### Strategic Planning
 ```bash
@@ -194,7 +210,6 @@ Available in ALL modes with `--` syntax:
 ### Clear Separation of Concerns
 - **Analyze**: Assessment only (no code changes)
 - **Build**: Implementation with tests
-- **Design**: Specifications and plans
 - **Plan**: Strategic roadmaps
 - **Fix**: Problem resolution and remediation
 
@@ -241,10 +256,9 @@ ls -la /path/to/project/.github/workflows/
 ```
 .github/
 ├── copilot-instructions.md    # Universal tools only
-├── chatmodes/                 # 5 chat mode definitions
+├── chatmodes/                 # 4 chat mode definitions
 │   ├── analyze.chatmode.md
 │   ├── build.chatmode.md
-│   ├── design.chatmode.md
 │   ├── plan.chatmode.md
 │   └── fix.chatmode.md
 ├── scripts/                   # Scriptable analysis system
@@ -268,10 +282,6 @@ ls -la /path/to/project/.github/workflows/
     │   ├── plan.md
     │   ├── prototype.md
     │   └── tdd.md
-    ├── design/
-    │   ├── ui.md
-    │   ├── architecture.md
-    │   └── datamodel.md
     ├── plan/
     │   ├── refactor.md
     │   ├── feature.md
