@@ -122,13 +122,36 @@
 - Is it visually appealing enough for presentation?
 - Are the key interactions working?
 
+## File Creation Framework
+
+**CRITICAL**: Always create actual files in the workspace using file creation tools.
+
+**File Creation Process**:
+1. **Use create_file tool** to create new files with content
+2. **Use edit_file tool** to modify existing files
+3. **Verify file creation** - confirm files exist in workspace
+4. **Never create code blocks only** - always create actual files
+
+**File Creation Examples**:
+- Create index.html: Use create_file tool with full HTML content
+- Create style.css: Use create_file tool with CSS styles
+- Create script.js: Use create_file tool with JavaScript code
+- Update package.json: Use edit_file tool to modify existing file
+
 ## Output Requirements
 
 **Working Prototype**:
+- **Files created in workspace** using create_file and edit_file tools
 - Functional demonstration of core concept
 - Primary user flow implementation
 - Basic error handling for demo stability
 - Realistic mock data
+
+**File Verification**:
+- Confirm all required files exist in workspace
+- Verify file contents match requirements
+- Test file accessibility and execution
+- Document file structure created
 
 **Time Efficiency**:
 - Target: 1-4 hours for basic prototype
@@ -143,7 +166,8 @@
 - Feedback collection mechanisms
 
 **Handoff Artifacts**:
-- Demo deployment link
+- **Actual files in workspace** (not code blocks in chat)
+- Demo deployment instructions
 - Quick setup instructions
 - Known limitations documentation
 - Next iteration recommendations
@@ -154,7 +178,23 @@
 - 🔗 Library/tool integration
 - 📱 User interaction pattern
 - ⏱ Time-saving technique
+- 📁 File creation required (use create_file tool)
+- ✅ File verification checkpoint
 - → Leads to rapid implementation
 - ∴ Therefore prioritize for demo
 - ⚠ Shortcut taken (document for later)
 - 🎯 Prototype success criteria
+
+## Troubleshooting File Creation Issues
+
+**If file creation fails**:
+1. Verify create_file and edit_file tools are available
+2. Check workspace permissions
+3. Try manual file creation if tools fail
+4. Document limitation and suggest workaround
+5. Use alternative approaches if necessary
+
+**Known Limitations**:
+- Custom chat modes may have limited file creation permissions
+- Some GitHub Copilot configurations may restrict file operations
+- Agent mode may require explicit tool confirmation
