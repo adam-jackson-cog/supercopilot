@@ -65,22 +65,6 @@ A structured approach for creating comprehensive Product Requirements Documents 
 - Planning feature implementations
 - Establishing design principles and guidelines
 
-## 🎯 How to Use Chatmodes
-
-### Method 1: Direct Invocation
-
-1. Open GitHub Copilot Chat in VS Code (⌃⌘I)
-2. Click "Attach Context" → "Prompt..."
-3. Select the desired chatmode file
-4. Enter your specific request
-
-### Method 2: Copy and Paste
-
-1. Open the chatmode file
-2. Copy the content
-3. Paste into a new chat conversation
-4. Add your specific requirements
-
 ## 💡 Example Usage Scenarios
 
 ### Prototype Chatmode Examples
