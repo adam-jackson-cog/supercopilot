@@ -66,9 +66,9 @@ function Show-Usage {
     Write-Output "  • Prerequisites validation (Python, Node.js, Lizard, MCP servers)"
 }
 
-function Test-Prerequisites {
+function Test-SuperCopilotDirectory {
     # Check if we're in the SuperCopilot directory
-    $requiredFiles = @("README.md", ".github\chatmodes", ".github\workflows")
+    $requiredFiles = @("README.md", "github\chatmodes", "github\copilot-instructions.md")
     $missingFiles = @()
     
     foreach ($file in $requiredFiles) {
@@ -94,45 +94,15 @@ function Test-Prerequisites {
     
     $errors = 0
     
-    # Check Python 3.8+
-    $pythonCmd = $null
-    if (Get-Command python -ErrorAction SilentlyContinue) {
-        $pythonCmd = "python"
-    } elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
-        $pythonCmd = "python3"
-    }
-    
-    if ($pythonCmd) {
-        try {
-            $pythonVersion = & $pythonCmd -c "import sys; print('.'.join(map(str, sys.version_info[:2])))" 2>$null
-            $versionCheck = & $pythonCmd -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" 2>$null
-            if ($LASTEXITCODE -eq 0) {
-                Write-ColorOutput "✓ Python $pythonVersion found" -Color $Colors.Green
-            } else {
-                Write-ColorOutput "✗ Python $pythonVersion found, but 3.8+ required" -Color $Colors.Red
-                Write-Output "  Install: https://python.org"
-                $errors++
-            }
-        } catch {
-            Write-ColorOutput "✗ Python version check failed" -Color $Colors.Red
-            Write-Output "  Install: https://python.org"
-            $errors++
-        }
-    } else {
-        Write-ColorOutput "✗ Python not found" -Color $Colors.Red
-        Write-Output "  Install: https://python.org"
-        $errors++
-    }
-    
-    # Check Node.js 18+
+    # Check Node.js (required for MCP servers)
     if (Get-Command node -ErrorAction SilentlyContinue) {
         try {
             $nodeVersion = (& node --version).TrimStart('v')
             $nodeMajor = [int]($nodeVersion.Split('.')[0])
-            if ($nodeMajor -ge 18) {
+            if ($nodeMajor -ge 14) {
                 Write-ColorOutput "✓ Node.js $nodeVersion found" -Color $Colors.Green
             } else {
-                Write-ColorOutput "✗ Node.js $nodeVersion found, but 18+ required" -Color $Colors.Red
+                Write-ColorOutput "✗ Node.js $nodeVersion found, but 14+ required" -Color $Colors.Red
                 Write-Output "  Install: https://nodejs.org"
                 $errors++
             }
@@ -144,21 +114,6 @@ function Test-Prerequisites {
     } else {
         Write-ColorOutput "✗ Node.js not found" -Color $Colors.Red
         Write-Output "  Install: https://nodejs.org"
-        $errors++
-    }
-    
-    # Check Lizard
-    if (Get-Command lizard -ErrorAction SilentlyContinue) {
-        try {
-            $lizardVersion = & lizard --version 2>$null | Select-Object -First 1
-            if (-not $lizardVersion) { $lizardVersion = "unknown" }
-            Write-ColorOutput "✓ Lizard found ($lizardVersion)" -Color $Colors.Green
-        } catch {
-            Write-ColorOutput "✓ Lizard found" -Color $Colors.Green
-        }
-    } else {
-        Write-ColorOutput "✗ Lizard not found" -Color $Colors.Red
-        Write-Output "  Install: pip install lizard"
         $errors++
     }
     
@@ -296,6 +251,7 @@ try {
 }
 
 # Check prerequisites
+Test-SuperCopilotDirectory
 Test-Prerequisites
 
 # Backup existing .github directory if it exists

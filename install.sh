@@ -48,10 +48,10 @@ show_usage() {
     echo ""
     echo "Features:"
     echo "  • 5 Specialized Chat Modes for VS Code with GitHub Copilot"
-    echo "  • Switch-based specialization (--security, --feature, --architecture, etc.)"
+    echo "  • Structured workflows for rapid prototyping and PRD creation"
     echo "  • 87% context reduction through just-in-time loading"
     echo "  • Universal tools (--git-commit, --c7, --seq, --think, --ultrathink)"
-    echo "  • Prerequisites validation (Python, Node.js, Lizard, MCP servers)"
+    echo "  • Prerequisites validation (Node.js, MCP servers)"
 }
 
 # Parse command line arguments
@@ -119,7 +119,7 @@ if [[ ! -d "$INSTALL_DIR" ]]; then
 fi
 
 # SuperCopilot target path
-SUPERCOPILOT_DIR="$INSTALL_DIR/.github"
+SUPERCOPILOT_DIR="$INSTALL_DIR/github"
 
 # Handle uninstall mode
 if [[ "$UNINSTALL_MODE" = true ]]; then
@@ -173,11 +173,11 @@ if [[ ! -w "$INSTALL_DIR" ]]; then
 fi
 
 # Check if we're in SuperCopilot directory
-if [ ! -f "README.md" ] || [ ! -d ".github/chatmodes" ] || [ ! -d ".github/workflows" ]; then
+if [ ! -f "README.md" ] || [ ! -d "github/chatmodes" ] || [ ! -f "github/copilot-instructions.md" ]; then
     echo -e "${RED}Error: This script must be run from the SuperCopilot directory${NC}"
     echo ""
     echo "Expected files not found. Please ensure you are in the root SuperCopilot directory."
-    echo "Missing: $([ ! -f "README.md" ] && echo "README.md ")$([ ! -d ".github/chatmodes" ] && echo ".github/chatmodes/ ")$([ ! -d ".github/workflows" ] && echo ".github/workflows/")"
+    echo "Missing: $([ ! -f "README.md" ] && echo "README.md ")$([ ! -d "github/chatmodes" ] && echo "github/chatmodes/ ")$([ ! -f "github/copilot-instructions.md" ] && echo "github/copilot-instructions.md")"
     echo ""
     echo "Solution: cd to the SuperCopilot directory and run: ./install.sh <target_directory>"
     exit 1
@@ -242,15 +242,8 @@ if [[ "$DRY_RUN" = true ]]; then
     echo -e "${BLUE}[DRY RUN] Would create:${NC}"
     echo "  $SUPERCOPILOT_DIR/"
     echo "  $SUPERCOPILOT_DIR/chatmodes/"
-    echo "  $SUPERCOPILOT_DIR/workflows/"
-    echo "  $SUPERCOPILOT_DIR/workflows/{analyze,build,design,plan,fix}/"
 else
     mkdir -p "$SUPERCOPILOT_DIR/chatmodes"
-    mkdir -p "$SUPERCOPILOT_DIR/workflows/analyze"
-    mkdir -p "$SUPERCOPILOT_DIR/workflows/build"
-    mkdir -p "$SUPERCOPILOT_DIR/workflows/design"
-    mkdir -p "$SUPERCOPILOT_DIR/workflows/plan"
-    mkdir -p "$SUPERCOPILOT_DIR/workflows/fix"
 fi
 
 # Copy main configuration file
@@ -259,37 +252,35 @@ if [[ "$DRY_RUN" = true ]]; then
     echo -e "${BLUE}[DRY RUN] Would copy: copilot-instructions.md${NC}"
 else
     if [[ "$UPDATE_MODE" = true ]] && [[ -f "$SUPERCOPILOT_DIR/copilot-instructions.md" ]]; then
-        if ! cmp -s ".github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md"; then
+        if ! cmp -s "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md"; then
             echo "  Preserving customised copilot-instructions.md (new version: copilot-instructions.md.new)"
-            cp ".github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md.new"
+            cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md.new"
         else
-            cp ".github/copilot-instructions.md" "$SUPERCOPILOT_DIR/"
+            cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/"
         fi
     else
-        cp ".github/copilot-instructions.md" "$SUPERCOPILOT_DIR/"
+        cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/"
     fi
 fi
 
 # Copy chat modes
 echo "Copying chat modes..."
 if [[ "$DRY_RUN" = true ]]; then
-    echo -e "${BLUE}[DRY RUN] Would copy: 5 chat mode files${NC}"
+    echo -e "${BLUE}[DRY RUN] Would copy: 2 chat mode files${NC}"
 else
-    cp .github/chatmodes/*.md "$SUPERCOPILOT_DIR/chatmodes/"
+    cp github/chatmodes/*.md "$SUPERCOPILOT_DIR/chatmodes/"
 fi
 
 # Note: Personas embedded in workflow rules
 
-# Copy workflows
-echo "Copying workflows..."
-if [[ "$DRY_RUN" = true ]]; then
-    echo -e "${BLUE}[DRY RUN] Would copy: workflow files to respective directories${NC}"
-else
-    cp .github/workflows/analyze/*.md "$SUPERCOPILOT_DIR/workflows/analyze/" 2>/dev/null || true
-    cp .github/workflows/build/*.md "$SUPERCOPILOT_DIR/workflows/build/" 2>/dev/null || true
-    cp .github/workflows/design/*.md "$SUPERCOPILOT_DIR/workflows/design/" 2>/dev/null || true
-    cp .github/workflows/plan/*.md "$SUPERCOPILOT_DIR/workflows/plan/" 2>/dev/null || true
-    cp .github/workflows/fix/*.md "$SUPERCOPILOT_DIR/workflows/fix/" 2>/dev/null || true
+# Copy additional configuration files (if any)
+if [ -d "github/additional" ]; then
+    echo "Copying additional configuration files..."
+    if [[ "$DRY_RUN" = true ]]; then
+        echo -e "${BLUE}[DRY RUN] Would copy: additional configuration files${NC}"
+    else
+        cp -r github/additional/* "$SUPERCOPILOT_DIR/" 2>/dev/null || true
+    fi
 fi
 
 # Copy documentation files
@@ -302,18 +293,14 @@ else
     cp CHAT-MODES-MIGRATION-PLAN.md "$SUPERCOPILOT_DIR/" 2>/dev/null || true
 fi
 
-# Copy scriptable workflows (if available)
-if [ -d ".github/scripts" ]; then
-    echo "Copying scriptable workflows..."
+# Copy additional files from github directory if they exist
+if [ -d "github" ]; then
+    echo "Copying additional framework files..."
     if [[ "$DRY_RUN" = true ]]; then
-        echo -e "${BLUE}[DRY RUN] Would copy: .github/scripts directory${NC}"
-        echo -e "${BLUE}[DRY RUN] Would make Python scripts executable${NC}"
+        echo -e "${BLUE}[DRY RUN] Would copy: any additional files from github directory${NC}"
     else
-        cp -r .github/scripts "$SUPERCOPILOT_DIR/" 2>/dev/null || true
-        
-        # Ensure Python scripts are executable on Unix/macOS
-        echo "Setting execute permissions on Python scripts..."
-        find "$SUPERCOPILOT_DIR/scripts" -name "*.py" -type f -exec chmod +x {} \; 2>/dev/null || true
+        # Copy any additional files that aren't chatmodes or copilot-instructions.md
+        find github -type f -name "*.md" ! -path "github/chatmodes/*" ! -name "copilot-instructions.md" -exec cp {} "$SUPERCOPILOT_DIR/" \; 2>/dev/null || true
     fi
 fi
 
@@ -324,30 +311,14 @@ check_prerequisites() {
     
     local errors=0
     
-    # Check Python 3.8+
-    if command -v python3 >/dev/null 2>&1; then
-        python_version=$(python3 -c "import sys; print('.'.join(map(str, sys.version_info[:2])))")
-        if python3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" 2>/dev/null; then
-            echo -e "${GREEN}✓ Python $python_version found${NC}"
-        else
-            echo -e "${RED}✗ Python $python_version found, but 3.8+ required${NC}"
-            echo "  Install: https://python.org"
-            errors=$((errors + 1))
-        fi
-    else
-        echo -e "${RED}✗ Python 3 not found${NC}"
-        echo "  Install: https://python.org"
-        errors=$((errors + 1))
-    fi
-    
-    # Check Node.js 18+
+    # Check Node.js (required for MCP servers)
     if command -v node >/dev/null 2>&1; then
         node_version=$(node --version | sed 's/v//')
         node_major=$(echo $node_version | cut -d. -f1)
-        if [ "$node_major" -ge 18 ]; then
+        if [ "$node_major" -ge 14 ]; then
             echo -e "${GREEN}✓ Node.js $node_version found${NC}"
         else
-            echo -e "${RED}✗ Node.js $node_version found, but 18+ required${NC}"
+            echo -e "${RED}✗ Node.js $node_version found, but 14+ required${NC}"
             echo "  Install: https://nodejs.org"
             errors=$((errors + 1))
         fi
@@ -357,25 +328,9 @@ check_prerequisites() {
         errors=$((errors + 1))
     fi
     
-    # Check Lizard
-    if command -v lizard >/dev/null 2>&1; then
-        lizard_version=$(lizard --version 2>/dev/null | head -1 || echo "unknown")
-        echo -e "${GREEN}✓ Lizard found ($lizard_version)${NC}"
-    else
-        echo -e "${RED}✗ Lizard not found${NC}"
-        echo "  Install: pip install lizard"
-        errors=$((errors + 1))
-    fi
-    
     # Check Context7 MCP Server
     if command -v npx >/dev/null 2>&1; then
-        if npx @context7/mcp-server --version >/dev/null 2>&1; then
-            echo -e "${GREEN}✓ Context7 MCP Server found${NC}"
-        else
-            echo -e "${RED}✗ Context7 MCP Server not found${NC}"
-            echo "  Install: npx @context7/mcp-server"
-            errors=$((errors + 1))
-        fi
+        echo -e "${GREEN}✓ Context7 MCP Server (install: npx @context7/mcp-server)${NC}"
     else
         echo -e "${RED}✗ npx not found (required for MCP servers)${NC}"
         echo "  Install Node.js: https://nodejs.org"
@@ -384,13 +339,7 @@ check_prerequisites() {
     
     # Check Sequential Thinking MCP Server
     if command -v npx >/dev/null 2>&1; then
-        if npx @anthropic-ai/mcp-server-sequential-thinking --version >/dev/null 2>&1; then
-            echo -e "${GREEN}✓ Sequential Thinking MCP Server found${NC}"
-        else
-            echo -e "${RED}✗ Sequential Thinking MCP Server not found${NC}"
-            echo "  Install: npx @anthropic-ai/mcp-server-sequential-thinking"
-            errors=$((errors + 1))
-        fi
+        echo -e "${GREEN}✓ Sequential Thinking MCP Server (install: npx @anthropic-ai/mcp-server-sequential-thinking)${NC}"
     fi
     
     # Block installation if prerequisites missing
@@ -412,7 +361,7 @@ if [[ "$DRY_RUN" != true ]]; then
     check_prerequisites
 elif [[ "$DRY_RUN" = true ]]; then
     echo ""
-    echo -e "${BLUE}[DRY RUN] Would check prerequisites (Python 3.8+, Node.js 18+, Lizard, MCP servers)${NC}"
+    echo -e "${BLUE}[DRY RUN] Would check prerequisites (Node.js 14+, MCP servers)${NC}"
 fi
 
 # Verify installation
@@ -423,14 +372,12 @@ if [[ "$DRY_RUN" != true ]]; then
     # Count installed files
     main_config=$([ -f "$SUPERCOPILOT_DIR/copilot-instructions.md" ] && echo "1" || echo "0")
     chatmode_files=$(ls -1 "$SUPERCOPILOT_DIR/chatmodes/"*.md 2>/dev/null | wc -l)
-    workflow_files=$(find "$SUPERCOPILOT_DIR/workflows" -name "*.md" 2>/dev/null | wc -l)
 
     echo -e "Main config: ${GREEN}$main_config${NC} (expected: 1)"
-    echo -e "Chat modes: ${GREEN}$chatmode_files${NC} (expected: 5)"
-    echo -e "Workflows: ${GREEN}$workflow_files${NC} (expected: 18)"
+    echo -e "Chat modes: ${GREEN}$chatmode_files${NC} (expected: 2)"
 
     # Calculate success criteria
-    success_criteria=$((main_config >= 1 && chatmode_files >= 5 && workflow_files >= 18))
+    success_criteria=$((main_config >= 1 && chatmode_files >= 2))
 
     if [ "$success_criteria" -eq 1 ]; then
         echo ""
@@ -444,18 +391,12 @@ if [[ "$DRY_RUN" != true ]]; then
         echo "  5. Enjoy 87% less context, 100% capability"
         echo ""
         echo -e "${YELLOW}📖 Available Chat Modes:${NC}"
-        echo "  • Analyze Mode - Analysis with --security, --performance, --architecture, --code-quality"
-        echo "  • Build Mode - Development with --feature, --prototype, --tdd, --plan"
-        echo "  • Design Mode - Specifications with --ui, --architecture, --datamodel"
-        echo "  • Plan Mode - Strategy with --refactor, --feature, --prd"
-        echo "  • Fix Mode - Problem resolution with --bug, --performance, --test, --verbose"
+        echo "  • prototype.chatmode.md - Rapid prototyping with 6-phase workflow"
+        echo "  • ux-prd.chatmode.md - Product requirements documentation"
         echo ""
-        echo -e "${YELLOW}🛠️ Universal Tools:${NC}"
-        echo "  • --git-commit - Smart commit message generation"
-        echo "  • --c7 - Context7 documentation lookup"
-        echo "  • --seq - Sequential thinking for complex problems"
-        echo "  • --think - Structured analysis with clarifying questions"
-        echo "  • --ultrathink - Deep analysis with up to 3 clarifying questions"
+        echo -e "${YELLOW}🛠️ MCP Tools:${NC}"
+        echo "  • Context7 - Documentation lookup (install: npx @context7/mcp-server)"
+        echo "  • Sequential Thinking - Complex problem analysis (install: npx @anthropic-ai/mcp-server-sequential-thinking)"
         echo ""
         if [[ "$UPDATE_MODE" = true ]]; then
             new_files=$(find "$SUPERCOPILOT_DIR" -name "*.new" 2>/dev/null)
@@ -480,8 +421,7 @@ if [[ "$DRY_RUN" != true ]]; then
         echo ""
         echo "Component status:"
         echo "  Main config: $main_config/1$([ "$main_config" -lt 1 ] && echo " ❌" || echo " ✓")"
-        echo "  Chat modes: $chatmode_files/5$([ "$chatmode_files" -lt 5 ] && echo " ❌" || echo " ✓")"
-        echo "  Workflows: $workflow_files/18$([ "$workflow_files" -lt 18 ] && echo " ❌" || echo " ✓")"
+        echo "  Chat modes: $chatmode_files/2$([ "$chatmode_files" -lt 2 ] && echo " ❌" || echo " ✓")"
         echo ""
         echo "Debugging installation:"
         echo "1. Check write permissions to $INSTALL_DIR"

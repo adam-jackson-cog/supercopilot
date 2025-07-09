@@ -1,17 +1,8 @@
-# SuperCopilot v1.0 - Intelligent GitHub Copilot Enhancement
+# SuperCopilot - GitHub Copilot Enhancement Framework
 
-> **Switch-based AI development with minimal context and maximum capability**
+> **Specialized chatmodes for streamlined development workflows**
 
-SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assistant using chat modes with specialized switches for just-in-time context loading.
-
-## 🎯 Core Features
-
-- **4 Specialized Chat Modes**: Purpose-built modes for different development activities
-- **Switch-Based Specialization**: Load only relevant rules with `--switch` syntax
-- **Scriptable Analysis System**: 8 comprehensive Python analysis scripts with 50+ vulnerability types
-- **Efficient Context Management**: Approximately 50 lines per operation
-- **Embedded Intelligence**: Persona mindsets integrated into workflow rules
-- **Just-In-Time Loading**: Load only what you need, when you need it
+SuperCopilot provides two specialized chatmodes that transform GitHub Copilot into a focused development assistant, along with global configurations to address common development issues.
 
 ## 🚀 Quick Start
 
@@ -19,15 +10,12 @@ SuperCopilot v1.0 transforms GitHub Copilot into an intelligent development assi
 
 **Required for VS Code with GitHub Copilot:**
 
-| Component | Minimum Version | Purpose | Installation |
-|-----------|----------------|---------|--------------|
-| **Python** | 3.8+ | Scriptable analysis scripts | [python.org](https://python.org) |
-| **Node.js** | 18+ | MCP server requirements | [nodejs.org](https://nodejs.org) |
-| **Lizard** | Latest | Code complexity analysis | `pip install lizard` ([PyPI](https://pypi.org/project/lizard/)) |
-| **Context7 MCP** | Latest | Documentation lookup (--c7) | `npx @context7/mcp-server` ([npm](https://www.npmjs.com/package/@context7/mcp-server)) |
-| **Sequential Thinking MCP** | Latest | Complex problem analysis (--seq) | `npx @anthropic-ai/mcp-server-sequential-thinking` ([npm](https://www.npmjs.com/package/@anthropic-ai/mcp-server-sequential-thinking)) |
+| Component                   | Purpose                  | Installation                                       |
+| --------------------------- | ------------------------ | -------------------------------------------------- |
+| **Context7 MCP**            | Documentation lookup     | `npx @context7/mcp-server`                         |
+| **Sequential Thinking MCP** | Complex problem analysis | `npx @anthropic-ai/mcp-server-sequential-thinking` |
 
-_Installation scripts check for these prerequisites and block execution if missing._
+_Installation scripts check for these prerequisites and guide setup if missing. You can find setup scripts for these in the local development setup repository_
 
 ### Installation
 
@@ -44,323 +32,188 @@ _Installation scripts check for these prerequisites and block execution if missi
 **Manual**:
 
 ```bash
-cp -r /path/to/SuperCopilot/.github ./
+cp -r /path/to/SuperCopilot/github ./
 ```
 
-_Manual installation requires separate prerequisite setup._
+### Using Chatmodes
 
-### Using Chat Modes
+1. **Open GitHub Copilot Chat** in VS Code (⌃⌘I)
+2. **Select a chatmode** from the dropdown or attach via "Attach Context" → "Prompt..."
+3. **Enter your specific request** following the structured approach
 
-1. **Select a mode** from GitHub Copilot chat dropdown
-2. **Type your request** with optional switches
-3. **Get specialized assistance** with minimal context
+## 📋 Available Chatmodes
 
-### Examples
+### prototype.chatmode.md
 
-```bash
-# In Analyze mode
-"Review authentication system --security"
-"Check API performance bottlenecks --performance"
-"Analyze recent changes for issues --root-cause"
+A 6-phase workflow for rapid prototype development focused on "speed over perfection" principles.
 
-# In Build mode
-"Create user registration feature --feature"
-"Build quick demo UI --prototype"
-"Implement login with tests --tdd"
+**Best for:**
 
-# In Plan mode
-"Plan technical debt reduction --refactor"
-"Create feature roadmap --feature"
+- Creating functional demos and proof-of-concepts
+- Building MVP features quickly
+- Validating ideas with minimal setup time
+- Demonstrating core functionality to stakeholders
 
-# In Fix mode
-"Debug intermittent errors --verbose"
-"Fix failing tests --test"
+### ux-prd.chatmode.md
+
+A structured approach for creating comprehensive Product Requirements Documents with emphasis on user experience design.
+
+**Best for:**
+
+- Documenting product requirements
+- Creating user-centered design specifications
+- Planning feature implementations
+- Establishing design principles and guidelines
+
+## 🎯 How to Use Chatmodes
+
+### Method 1: Direct Invocation
+
+1. Open GitHub Copilot Chat in VS Code (⌃⌘I)
+2. Click "Attach Context" → "Prompt..."
+3. Select the desired chatmode file
+4. Enter your specific request
+
+### Method 2: Copy and Paste
+
+1. Open the chatmode file
+2. Copy the content
+3. Paste into a new chat conversation
+4. Add your specific requirements
+
+## 💡 Example Usage Scenarios
+
+### Prototype Chatmode Examples
+
+#### Task Management App
+
+```
+Using the prototype chatmode:
+"Create a prototype for a task management app with drag-and-drop functionality, user authentication, and real-time updates. Target users are small teams who need to collaborate on project tasks."
 ```
 
-## 📋 Chat Modes & Switches
+#### E-commerce Product Listing
 
-### Analyze Mode
-
-**Purpose**: Code analysis, reviews, and assessments (read-only + scriptable analysis)
-
-| Switch            | Purpose                         | Focus                                             |
-| ----------------- | ------------------------------- | ------------------------------------------------- |
-| `--security`      | Security vulnerability analysis | OWASP Top 10, auth/authz, input validation        |
-| `--performance`   | Performance bottleneck analysis | Frontend optimization, CPU/memory analysis        |
-| `--architecture`  | Architecture assessment         | Design patterns, scalability bottlenecks          |
-| `--code-quality`  | Code quality evaluation         | Complexity metrics via Lizard integration         |
-| `--root-cause`    | Root cause analysis             | Five-whys methodology, recent changes correlation |
-| `--test-coverage` | Test coverage analysis          | Coverage gaps, business logic priority            |
-
-Each mode includes **scriptable analysis** - comprehensive Python scripts that analyze 12+ programming languages for enterprise-grade code assessment.
-
-### Build Mode
-
-**Purpose**: Feature development and implementation
-
-| Switch        | Purpose                        | Focus                                 |
-| ------------- | ------------------------------ | ------------------------------------- |
-| `--init`      | Project initialization         | Workspace setup, prevents agent loops |
-| `--feature`   | Production feature development | Architecture, testing, documentation  |
-| `--plan`      | Multi-task coordination        | Task breakdown, dependencies          |
-| `--prototype` | Rapid prototyping              | Speed, existing libraries, mocking    |
-| `--tdd`       | Test-driven development        | Red-green-refactor, coverage          |
-
-### Plan Mode
-
-**Purpose**: Strategic planning and roadmaps
-
-| Switch           | Purpose                    | Focus                                |
-| ---------------- | -------------------------- | ------------------------------------ |
-| `--refactor`     | Refactoring strategy       | Technical debt, incremental approach |
-| `--feature`      | Feature planning           | Requirements, timeline, resources    |
-| `--prd`          | Product requirements       | User stories, success metrics        |
-| `--architecture` | System architecture design | Patterns, scalability, technology    |
-| `--datamodel`    | Database design            | Schema, performance, integrity       |
-
-### Fix Mode
-
-**Purpose**: Systematic problem resolution and remediation
-
-| Switch          | Purpose                        | Focus                                           |
-| --------------- | ------------------------------ | ----------------------------------------------- |
-| `--bug`         | Bug diagnosis and fixing       | Preserve functionality, before/after validation |
-| `--performance` | Performance issue resolution   | Profiling, optimization, measurement            |
-| `--test`        | Test failure resolution        | Root cause analysis, no shortcuts               |
-| `--verbose`     | Enhanced logging for debugging | Structured logging, observability               |
-
-## 🔬 Scriptable Analysis System
-
-SuperCopilot includes 8 comprehensive Python analysis scripts providing enterprise-grade code assessment:
-
-### Security Analysis (3 Scripts)
-
-- **Authentication & Authorization**: Detects weak passwords, missing CSRF, authorization bypasses
-- **Vulnerability Scanning**: OWASP Top 10 coverage including injection, XSS, XXE attacks
-- **Input Validation**: SQL injection, command injection, path traversal detection
-
-### Performance Analysis (2 Scripts)
-
-- **Frontend Performance**: Bundle size optimization, React patterns, CSS performance
-- **Bottleneck Detection**: CPU/memory analysis, algorithm complexity, concurrency issues
-
-### Architecture Analysis (2 Scripts)
-
-- **Pattern Evaluation**: Design patterns, anti-patterns, complexity issues detection
-- **Scalability Assessment**: Bottleneck identification, hardcoded configs, synchronous I/O
-
-### Code Quality Analysis (1 Script)
-
-- **Complexity Metrics**: Lizard integration for cyclomatic complexity, function length, parameter count
-
-### Key Features
-
-- **50+ Vulnerability Types** across 12+ programming languages (Python, JS, TS, Java, C#, Go, Rust, PHP, Ruby, Swift, Kotlin, Scala)
-- **Standardized JSON Output** with severity levels (critical, high, medium, low)
-- **Executive Summary Reports** with actionable recommendations
-- **Configurable Severity Filtering** and cross-platform compatibility
-
-### Cross-Platform Script Execution
-
-**macOS/Linux:**
-
-```bash
-# Method 1: Direct execution (after installation)
-./.github/scripts/analyze/security/check_auth.py .
-
-# Method 2: Explicit python command
-python3 .github/scripts/analyze/security/check_auth.py . --min-severity high
-
-# Run complete analysis suite
-python3 .github/scripts/run_all_analysis.py . --min-severity medium
+```
+Using the prototype chatmode:
+"Build a quick demo of an e-commerce product listing with filters, search functionality, and shopping cart. Focus on mobile-first design with category filtering and price sorting."
 ```
 
-**Windows:**
+#### Analytics Dashboard
 
-```cmd
-# Windows uses file associations - both work
-python .github/scripts/analyze/security/check_auth.py . --min-severity high
-.github\scripts\analyze\security\check_auth.py . --min-severity high
-
-# Run complete analysis suite
-python .github/scripts/run_all_analysis.py . --min-severity medium
+```
+Using the prototype chatmode:
+"Prototype a dashboard showing real-time metrics for a SaaS application. Include user analytics, performance metrics, and revenue tracking with interactive charts."
 ```
 
-**Notes:**
+#### Mobile Expense Tracker
 
-- Installation script automatically sets execute permissions on Unix/macOS
-- Windows uses Python file associations (no execute permissions needed)
-- All scripts validate Python version (3.8+) and provide installation guidance
-
-## 🛠️ Universal Tools
-
-Available in ALL modes with `--` syntax:
-
-- `--git-commit` - Smart commit message generation
-- `--c7` - Context7 documentation lookup (requires MCP)
-- `--seq` - Sequential thinking for complex problems (requires MCP)
-- `--think` - Structured analysis with clarifying questions
-- `--ultrathink` - Deep analysis with up to 3 clarifying questions
-
-## 💡 Usage Patterns
-
-### Security Review
-
-```bash
-# Select Analyze mode, then:
-"Review user authentication for vulnerabilities --security"
-"Analyze payment processing security --security --c7"
+```
+Using the prototype chatmode:
+"Create a mobile app prototype for expense tracking with camera receipt capture, category management, and monthly reporting. Target users are individuals managing personal finances."
 ```
 
-### Feature Development
+#### Social Media Feed
 
-```bash
-# Select Build mode, then:
-"Implement user profile management --feature"
-"Create quick admin dashboard --prototype"
+```
+Using the prototype chatmode:
+"Build a social media feed prototype with infinite scroll, like/comment functionality, and user profiles. Focus on responsive design and smooth interactions."
 ```
 
-### Strategic Planning
+### UX-PRD Chatmode Examples
 
-```bash
-# Select Plan mode, then:
-"Plan authentication system refactor --refactor"
-"Create Q4 feature roadmap --feature"
+#### Feature Documentation
+
+```
+Using the ux-prd chatmode:
+"Create a comprehensive PRD for a video calling feature in a team collaboration app. Include screen flows, technical requirements, and accessibility considerations."
 ```
 
-## 🎯 Key Benefits
+#### Mobile App Planning
 
-### Efficient Context Management
-
-- Approximately 50 lines per operation (30 base + 25 rules)
-- Faster, more focused AI responses
-- Reduced token usage and improved performance
-
-### Intelligent Specialization
-
-- Mode provides general context
-- Switches load specific expertise
-- Rules embed persona mindsets
-- No redundant information
-
-### Clear Separation of Concerns
-
-- **Analyze**: Assessment only (no code changes)
-- **Build**: Implementation with tests
-- **Plan**: Strategic roadmaps
-- **Fix**: Problem resolution and remediation
-
-## 🔧 Installation Options
-
-### Automated Installation (Recommended)
-
-Installers automatically handle:
-
-- ✅ Prerequisite validation (Python 3.8+, Node.js 18+, Lizard, MCP servers)
-- ✅ Framework file deployment
-- ✅ Cross-platform script permissions
-- ❌ Blocks execution if prerequisites missing
-
-**macOS/Linux:**
-
-```bash
-./install.sh /path/to/project           # Interactive
-./install.sh /path/to/project --force   # Silent
-./install.sh /path/to/project --update  # Update existing
+```
+Using the ux-prd chatmode:
+"Document requirements for a fitness tracking mobile app with workout logging, progress tracking, and social features. Focus on user personas and journey mapping."
 ```
 
-**Windows PowerShell:**
+## 🛠️ Configuration Requirements
 
-```powershell
-.\install.ps1 C:\path\to\project        # Interactive
-.\install.ps1 C:\path\to\project -Force # Silent
-.\install.ps1 C:\path\to\project -Update # Update existing
-```
+### VS Code Settings
 
-### Manual Installation
+For optimal chatmode behavior, the installation includes:
 
-```bash
-cp -r SuperCopilot/.github /path/to/project/
-# Note: Manual setup requires all prerequisites installed separately
-```
+- File creation enforcement (prevents code blocks in chat)
+- Tool auto-approval for essential operations
+- Extended request limits for complex tasks
+- MCP and prompt file support
+
+### Required Extensions
+
+- GitHub Copilot
+- GitHub Copilot Chat
+- Any language-specific extensions for your target platform
+
+### MCP Tools
+
+Enhanced functionality through:
+
+- **Context7**: Up-to-date documentation access
+- **Sequential Thinking**: Complex problem analysis
+- **File System**: Guaranteed file creation
+
+## 🎯 Best Practices
+
+### Before Using Chatmodes
+
+1. **Prepare Context**: Gather relevant information about your project, target users, and constraints
+2. **Define Success Criteria**: Know what constitutes a successful outcome
+3. **Set Time Boundaries**: Allocate appropriate time for the chatmode workflow
+4. **Check Prerequisites**: Ensure required tools and settings are configured
+
+### During Chatmode Usage
+
+1. **Follow the Workflow**: Don't skip phases or steps in the structured process
+2. **Provide Complete Information**: Answer clarifying questions thoroughly
+3. **Review Phase Outputs**: Verify each phase completes successfully before proceeding
+4. **Document Decisions**: Keep track of choices made during the process
+
+### After Chatmode Completion
+
+1. **Test Thoroughly**: Verify all outputs work as expected
+2. **Document Limitations**: Note any known issues or shortcuts taken
+3. **Plan Next Steps**: Identify areas for improvement or extension
+4. **Share Learnings**: Update chatmode files based on experience
+
+## 🔧 Global Configuration
+
+The framework includes a global `copilot-instructions.md` file that addresses common development issues:
+
+- **Common Problem Resolution**: Guidance for frequent development challenges
+- **Tool Integration**: Instructions for MCP server usage
+- **Best Practices**: Development standards and conventions
+- **Quality Assurance**: Guidelines for code quality and testing
 
 ## 📁 Project Structure
 
 ```
-.github/
-├── copilot-instructions.md    # Universal tools only
-├── chatmodes/                 # 4 chat mode definitions
-│   ├── analyze.chatmode.md
-│   ├── build.chatmode.md
-│   ├── plan.chatmode.md
-│   └── fix.chatmode.md
-├── scripts/                   # Scriptable analysis system
-│   ├── run_all_analysis.py   # Complete analysis suite runner
-│   ├── utils/                # Cross-platform utilities
-│   │   ├── cross_platform.py
-│   │   └── output_formatter.py
-│   └── analyze/              # Analysis scripts by category
-│       ├── security/         # 3 security analysis scripts
-│       ├── performance/      # 2 performance analysis scripts
-│       ├── architecture/     # 2 architecture analysis scripts
-│       └── code_quality/     # 1 code quality script (Lizard)
-└── workflows/                 # Concise rule files (~25 lines each)
-    ├── analyze/
-    │   ├── security.md
-    │   ├── performance.md
-    │   ├── architecture.md
-    │   └── code-quality.md
-    ├── build/
-    │   ├── feature.md
-    │   ├── plan.md
-    │   ├── prototype.md
-    │   └── tdd.md
-    ├── plan/
-    │   ├── refactor.md
-    │   ├── feature.md
-    │   └── prd.md
-    └── fix/
-        ├── bug.md
-        ├── performance.md
-        ├── test.md
-        └── verbose.md
+github/
+├── copilot-instructions.md     # Global configuration and common issues
+├── chatmodes/                  # Specialized chatmode definitions
+│   ├── prototype.chatmode.md   # Rapid prototyping workflow
+│   └── ux-prd.chatmode.md      # Product requirements documentation
+└── [additional configuration files]
 ```
 
-## 🤝 Team Collaboration
+## 📚 Philosophy
 
-SuperCopilot lives in your repository for consistent team usage:
+SuperCopilot follows the principle of **focused specialization** through:
 
-```bash
-# Add to your project
-./install.sh .
-
-# Commit for team
-git add .github/
-git commit -m "feat: add SuperCopilot v1.0 AI assistant"
-git push
-```
-
-Team benefits:
-
-- Consistent AI assistance across developers
-- Shared context and standards
-- No individual setup required
-- Version controlled configuration
-
-## 📚 Additional Resources
-
-- **Complete Guide**: See EXAMPLES.md for usage patterns and command reference
-
-## 🎯 Philosophy
-
-SuperCopilot v1.0 follows the principle of **minimal context, maximum capability** with a hybrid approach:
-
-1. **Load only what's needed** - No universal commands or personas, just-in-time context loading
-2. **Hybrid AI + Scripting** - Intelligent workflows backed by comprehensive analysis scripts
-3. **Embed intelligence** - Mindsets integrated into workflow rules with executable validation
-4. **Clear mode boundaries** - Each mode has a specific purpose with optional scriptable enhancement
-5. **Evidence-based approach** - Quality standards built into every operation with measurable results
+1. **Structured Workflows** - Each chatmode provides a systematic approach to specific tasks
+2. **Speed Over Perfection** - Emphasis on rapid iteration and functional outcomes for prototype chat mode
+3. **User-Centered Design** - Focus on understanding user needs and business requirements for ux prd creation
+4. **Minimal Setup** - Streamlined installation and configuration process
+5. **Team Consistency** - Shared workflows and standards across development teams
 
 ---
 
-**SuperCopilot v1.0** - Intelligent development assistance through efficient context management
+**SuperCopilot** - Specialized chatmodes for streamlined GitHub Copilot development workflows
