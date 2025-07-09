@@ -21,6 +21,7 @@ FORCE_INSTALL=false
 UPDATE_MODE=false
 UNINSTALL_MODE=false
 DRY_RUN=false
+INSTALL_MCP=false
 
 # Function to show usage
 show_usage() {
@@ -36,6 +37,7 @@ show_usage() {
     echo "  --force                  Skip confirmation prompts (for automation)"
     echo "  --update                 Update existing installation (preserves customisations)"
     echo "  --uninstall              Remove SuperCopilot from specified directory"
+    echo "  --install-mcp            Install and configure MCP tools in VS Code"
     echo "  --dry-run                Show what would be done without making changes"
     echo "  -h, --help              Show this help message"
     echo ""
@@ -47,10 +49,9 @@ show_usage() {
     echo "  $0 ./test-project --dry-run               # Preview installation"
     echo ""
     echo "Features:"
-    echo "  • 5 Specialized Chat Modes for VS Code with GitHub Copilot"
+    echo "  • Specialized Chat Modes for VS Code with GitHub Copilot"
     echo "  • Structured workflows for rapid prototyping and PRD creation"
-    echo "  • 87% context reduction through just-in-time loading"
-    echo "  • Universal tools (--git-commit, --c7, --seq, --think, --ultrathink)"
+    echo "  • MCP tool integration for enhanced capabilities"
     echo "  • Prerequisites validation (Node.js, MCP servers)"
 }
 
@@ -67,6 +68,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --uninstall)
             UNINSTALL_MODE=true
+            shift
+            ;;
+        --install-mcp)
+            INSTALL_MCP=true
             shift
             ;;
         --dry-run)
@@ -103,6 +108,9 @@ if [[ -z "$INSTALL_DIR" ]]; then
     exit 1
 fi
 
+# Remove trailing slash if present
+INSTALL_DIR="${INSTALL_DIR%/}"
+
 # Convert to absolute path if relative
 if [[ ! "$INSTALL_DIR" = /* ]]; then
     INSTALL_DIR="$(cd "$(dirname "$INSTALL_DIR")" 2>/dev/null && pwd)/$(basename "$INSTALL_DIR")"
@@ -119,7 +127,7 @@ if [[ ! -d "$INSTALL_DIR" ]]; then
 fi
 
 # SuperCopilot target path
-SUPERCOPILOT_DIR="$INSTALL_DIR/github"
+SUPERCOPILOT_DIR="$INSTALL_DIR/.github"
 
 # Handle uninstall mode
 if [[ "$UNINSTALL_MODE" = true ]]; then
@@ -217,7 +225,7 @@ if [[ "$FORCE_INSTALL" != true ]] && [[ "$DRY_RUN" != true ]]; then
         echo -e "${YELLOW}This will update SuperCopilot Framework in $INSTALL_DIR${NC}"
     else
         echo -e "${YELLOW}This will install SuperCopilot Framework in $INSTALL_DIR${NC}"
-        echo "Features: 5 Chat Modes, Switch-based Specialization, Universal Tools, Minimal Context"
+        echo "Features: Specialized Chat Modes, Rapid Prototyping, PRD Creation, MCP Tool Integration"
     fi
     echo -n "Are you sure you want to continue? (y/n): "
     read -r confirm_install
@@ -328,18 +336,34 @@ check_prerequisites() {
         errors=$((errors + 1))
     fi
     
-    # Check Context7 MCP Server
-    if command -v npx >/dev/null 2>&1; then
-        echo -e "${GREEN}✓ Context7 MCP Server (install: npx @context7/mcp-server)${NC}"
+    # Check for MCP tools in VS Code settings
+    USER_ID=$(whoami)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        SETTINGS_PATH="/Users/$USER_ID/Library/Application Support/Code/User/settings.json"
     else
-        echo -e "${RED}✗ npx not found (required for MCP servers)${NC}"
-        echo "  Install Node.js: https://nodejs.org"
-        errors=$((errors + 1))
+        SETTINGS_PATH="/home/$USER_ID/.config/Code/User/settings.json"
     fi
     
-    # Check Sequential Thinking MCP Server
-    if command -v npx >/dev/null 2>&1; then
-        echo -e "${GREEN}✓ Sequential Thinking MCP Server (install: npx @anthropic-ai/mcp-server-sequential-thinking)${NC}"
+    if [ -f "$SETTINGS_PATH" ]; then
+        context7_configured=$(grep -q '"context7"' "$SETTINGS_PATH" && echo "true" || echo "false")
+        sequential_configured=$(grep -q '"sequential-thinking"' "$SETTINGS_PATH" && echo "true" || echo "false")
+        
+        if [[ "$context7_configured" == "true" ]]; then
+            echo -e "${GREEN}✓ Context7 MCP Server configured${NC}"
+        else
+            echo -e "${YELLOW}○ Context7 MCP Server not configured${NC}"
+            echo "  Configure with: ./install.sh <dir> --install-mcp"
+        fi
+        
+        if [[ "$sequential_configured" == "true" ]]; then
+            echo -e "${GREEN}✓ Sequential Thinking MCP Server configured${NC}"
+        else
+            echo -e "${YELLOW}○ Sequential Thinking MCP Server not configured${NC}"
+            echo "  Configure with: ./install.sh <dir> --install-mcp"
+        fi
+    else
+        echo -e "${YELLOW}○ VS Code settings not found - MCP tools not configured${NC}"
+        echo "  Configure with: ./install.sh <dir> --install-mcp (after VS Code setup)"
     fi
     
     # Block installation if prerequisites missing
@@ -354,6 +378,107 @@ check_prerequisites() {
     
     echo ""
     echo -e "${GREEN}✓ All prerequisites satisfied${NC}"
+}
+
+# Install MCP tools in VS Code settings
+install_mcp_tools() {
+    echo ""
+    echo "Installing MCP tools for VS Code..."
+    
+    # Get current user
+    USER_ID=$(whoami)
+    echo "👤 Detected user: $USER_ID"
+    
+    # Define VS Code settings path based on OS
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        SETTINGS_PATH="/Users/$USER_ID/Library/Application Support/Code/User/settings.json"
+    else
+        SETTINGS_PATH="/home/$USER_ID/.config/Code/User/settings.json"
+    fi
+    
+    echo "📁 VS Code settings path: $SETTINGS_PATH"
+    
+    # Check if settings.json exists
+    if [ ! -f "$SETTINGS_PATH" ]; then
+        echo -e "${RED}❌ Error: VS Code settings.json not found at $SETTINGS_PATH${NC}"
+        echo "   Please ensure VS Code is installed and has been run at least once."
+        return 1
+    fi
+    
+    # Backup existing settings
+    echo "💾 Creating backup of existing settings..."
+    cp "$SETTINGS_PATH" "$SETTINGS_PATH.backup.$(date +%Y%m%d_%H%M%S)"
+    
+    # Check if MCP tools are already configured
+    context7_configured=$(grep -q '"context7"' "$SETTINGS_PATH" && echo "true" || echo "false")
+    sequential_configured=$(grep -q '"sequential-thinking"' "$SETTINGS_PATH" && echo "true" || echo "false")
+    
+    if [[ "$context7_configured" == "true" ]] && [[ "$sequential_configured" == "true" ]]; then
+        echo -e "${YELLOW}⚠️  Both MCP tools are already configured in settings.json${NC}"
+        return 0
+    fi
+    
+    # Install missing MCP tools using Python
+    echo "⚙️  Adding MCP tool configurations..."
+    
+    python3 -c "
+import json
+import sys
+
+settings_path = '$SETTINGS_PATH'
+
+try:
+    with open(settings_path, 'r') as f:
+        settings = json.load(f)
+except json.JSONDecodeError:
+    print('Error: Invalid JSON in settings.json')
+    sys.exit(1)
+
+# Ensure mcp structure exists
+if 'mcp' not in settings:
+    settings['mcp'] = {}
+if 'servers' not in settings['mcp']:
+    settings['mcp']['servers'] = {}
+if 'inputs' not in settings['mcp']:
+    settings['mcp']['inputs'] = []
+
+# Add Context7 if not present
+if '$context7_configured' == 'false':
+    settings['mcp']['servers']['context7'] = {
+        'command': 'npx',
+        'args': ['-y', '@upstash/context7-mcp'],
+        'env': {}
+    }
+    print('✅ Added Context7 MCP server configuration')
+
+# Add Sequential Thinking if not present  
+if '$sequential_configured' == 'false':
+    settings['mcp']['servers']['sequential-thinking'] = {
+        'command': 'npx',
+        'args': ['-y', '@modelcontextprotocol/server-sequential-thinking'],
+        'env': {}
+    }
+    print('✅ Added Sequential Thinking MCP server configuration')
+
+# Write updated settings
+with open(settings_path, 'w') as f:
+    json.dump(settings, f, indent=4)
+
+print('✅ MCP tools configuration completed successfully')
+"
+    
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo -e "${GREEN}🎉 MCP tools installation completed successfully!${NC}"
+        echo ""
+        echo "📋 Next steps:"
+        echo "   1. Restart VS Code completely"
+        echo "   2. The MCP tools should now be available in your chat interface"
+        echo "   3. Test with documentation queries and complex problem analysis"
+    else
+        echo -e "${RED}❌ Error installing MCP tools${NC}"
+        return 1
+    fi
 }
 
 # Check prerequisites before proceeding
@@ -387,8 +512,8 @@ if [[ "$DRY_RUN" != true ]]; then
         echo "  1. Open your project in VS Code with GitHub Copilot"
         echo "  2. Select a chat mode from the dropdown"
         echo "  3. Use switches for specialization: --security, --feature"
-        echo "  4. Add universal tools as needed: --c7, --seq, --think, --ultrathink"
-        echo "  5. Enjoy 87% less context, 100% capability"
+        echo "  4. Use MCP tools for enhanced capabilities"
+        echo "  5. Leverage structured workflows for rapid development"
         echo ""
         echo -e "${YELLOW}📖 Available Chat Modes:${NC}"
         echo "  • prototype.chatmode.md - Rapid prototyping with 6-phase workflow"
@@ -415,6 +540,11 @@ if [[ "$DRY_RUN" != true ]]; then
         fi
         echo "Documentation: $SUPERCOPILOT_DIR/README.md"
         echo "Complete Guide: $SUPERCOPILOT_DIR/EXAMPLES.md"
+        
+        # Install MCP tools if requested
+        if [[ "$INSTALL_MCP" = true ]]; then
+            install_mcp_tools
+        fi
     else
         echo ""
         echo -e "${RED}✗ Installation may be incomplete${NC}"

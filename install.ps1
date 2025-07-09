@@ -8,6 +8,7 @@ param(
     [switch]$Force,
     [switch]$Update,
     [switch]$Uninstall,
+    [switch]$InstallMcp,
     [switch]$DryRun,
     [switch]$Help
 )
@@ -48,6 +49,7 @@ function Show-Usage {
     Write-Output "  -Force                   Skip confirmation prompts (for automation)"
     Write-Output "  -Update                  Update existing installation (preserves customisations)"
     Write-Output "  -Uninstall               Remove SuperCopilot from specified directory"
+    Write-Output "  -InstallMcp              Install and configure MCP tools in VS Code"
     Write-Output "  -DryRun                  Show what would be done without making changes"
     Write-Output "  -Help                    Show this help message"
     Write-Output ""
@@ -59,11 +61,10 @@ function Show-Usage {
     Write-Output "  .\install.ps1 .\test-project -DryRun                   # Preview installation"
     Write-Output ""
     Write-Output "Features:"
-    Write-Output "  • 5 Specialized Chat Modes for VS Code with GitHub Copilot"
-    Write-Output "  • Switch-based specialization (--security, --feature, --architecture, etc.)"
-    Write-Output "  • 87% context reduction through just-in-time loading"
-    Write-Output "  • Universal tools (--git-commit, --c7, --seq, --think, --ultrathink)"
-    Write-Output "  • Prerequisites validation (Python, Node.js, Lizard, MCP servers)"
+    Write-Output "  • Specialized Chat Modes for VS Code with GitHub Copilot"
+    Write-Output "  • Structured workflows for rapid prototyping and PRD creation"
+    Write-Output "  • MCP tool integration for enhanced capabilities"
+    Write-Output "  • Prerequisites validation (Node.js, MCP servers)"
 }
 
 function Test-SuperCopilotDirectory {
@@ -117,44 +118,42 @@ function Test-Prerequisites {
         $errors++
     }
     
-    # Check Context7 MCP Server
-    if (Get-Command npx -ErrorAction SilentlyContinue) {
+    # Check for MCP tools in VS Code settings
+    $settingsPath = "$env:APPDATA\Code\User\settings.json"
+    
+    if (Test-Path $settingsPath) {
         try {
-            & npx @context7/mcp-server --version *>$null
-            if ($LASTEXITCODE -eq 0) {
-                Write-ColorOutput "✓ Context7 MCP Server found" -Color $Colors.Green
+            $settingsContent = Get-Content -Path $settingsPath -Raw
+            $settings = $settingsContent | ConvertFrom-Json
+            
+            $context7Configured = $false
+            $sequentialConfigured = $false
+            
+            if ($settings.mcp -and $settings.mcp.servers) {
+                $context7Configured = $settings.mcp.servers.PSObject.Properties.Name -contains "context7"
+                $sequentialConfigured = $settings.mcp.servers.PSObject.Properties.Name -contains "sequential-thinking"
+            }
+            
+            if ($context7Configured) {
+                Write-ColorOutput "✓ Context7 MCP Server configured" -Color $Colors.Green
             } else {
-                Write-ColorOutput "✗ Context7 MCP Server not found" -Color $Colors.Red
-                Write-Output "  Install: npx @context7/mcp-server"
-                $errors++
+                Write-ColorOutput "○ Context7 MCP Server not configured" -Color $Colors.Yellow
+                Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp"
+            }
+            
+            if ($sequentialConfigured) {
+                Write-ColorOutput "✓ Sequential Thinking MCP Server configured" -Color $Colors.Green
+            } else {
+                Write-ColorOutput "○ Sequential Thinking MCP Server not configured" -Color $Colors.Yellow
+                Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp"
             }
         } catch {
-            Write-ColorOutput "✗ Context7 MCP Server not found" -Color $Colors.Red
-            Write-Output "  Install: npx @context7/mcp-server"
-            $errors++
+            Write-ColorOutput "○ VS Code settings found but could not parse - MCP tools not configured" -Color $Colors.Yellow
+            Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp"
         }
     } else {
-        Write-ColorOutput "✗ npx not found (required for MCP servers)" -Color $Colors.Red
-        Write-Output "  Install Node.js: https://nodejs.org"
-        $errors++
-    }
-    
-    # Check Sequential Thinking MCP Server
-    if (Get-Command npx -ErrorAction SilentlyContinue) {
-        try {
-            & npx @anthropic-ai/mcp-server-sequential-thinking --version *>$null
-            if ($LASTEXITCODE -eq 0) {
-                Write-ColorOutput "✓ Sequential Thinking MCP Server found" -Color $Colors.Green
-            } else {
-                Write-ColorOutput "✗ Sequential Thinking MCP Server not found" -Color $Colors.Red
-                Write-Output "  Install: npx @anthropic-ai/mcp-server-sequential-thinking"
-                $errors++
-            }
-        } catch {
-            Write-ColorOutput "✗ Sequential Thinking MCP Server not found" -Color $Colors.Red
-            Write-Output "  Install: npx @anthropic-ai/mcp-server-sequential-thinking"
-            $errors++
-        }
+        Write-ColorOutput "○ VS Code settings not found - MCP tools not configured" -Color $Colors.Yellow
+        Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp (after VS Code setup)"
     }
     
     # Block installation if prerequisites missing
@@ -171,11 +170,114 @@ function Test-Prerequisites {
     Write-ColorOutput "✓ All prerequisites satisfied" -Color $Colors.Green
 }
 
+function Install-McpTools {
+    Write-Output ""
+    Write-Output "Installing MCP tools for VS Code..."
+    
+    # Get current user
+    $userId = $env:USERNAME
+    Write-Output "👤 Detected user: $userId"
+    
+    # Define VS Code settings path for Windows
+    $settingsPath = "$env:APPDATA\Code\User\settings.json"
+    Write-Output "📁 VS Code settings path: $settingsPath"
+    
+    # Check if settings.json exists
+    if (-not (Test-Path $settingsPath)) {
+        Write-ColorOutput "❌ Error: VS Code settings.json not found at $settingsPath" -Color $Colors.Red
+        Write-Output "   Please ensure VS Code is installed and has been run at least once."
+        return $false
+    }
+    
+    # Backup existing settings
+    Write-Output "💾 Creating backup of existing settings..."
+    $backupPath = "$settingsPath.backup.$((Get-Date).ToString('yyyyMMdd_HHmmss'))"
+    Copy-Item -Path $settingsPath -Destination $backupPath
+    
+    try {
+        # Read and parse existing settings
+        $settingsContent = Get-Content -Path $settingsPath -Raw
+        $settings = $settingsContent | ConvertFrom-Json
+        
+        # Check if MCP tools are already configured
+        $context7Configured = $false
+        $sequentialConfigured = $false
+        
+        if ($settings.mcp -and $settings.mcp.servers) {
+            $context7Configured = $settings.mcp.servers.PSObject.Properties.Name -contains "context7"
+            $sequentialConfigured = $settings.mcp.servers.PSObject.Properties.Name -contains "sequential-thinking"
+        }
+        
+        if ($context7Configured -and $sequentialConfigured) {
+            Write-ColorOutput "⚠️  Both MCP tools are already configured in settings.json" -Color $Colors.Yellow
+            return $true
+        }
+        
+        # Ensure mcp structure exists
+        if (-not $settings.mcp) {
+            $settings | Add-Member -NotePropertyName "mcp" -NotePropertyValue ([PSCustomObject]@{})
+        }
+        if (-not $settings.mcp.servers) {
+            $settings.mcp | Add-Member -NotePropertyName "servers" -NotePropertyValue ([PSCustomObject]@{})
+        }
+        if (-not $settings.mcp.inputs) {
+            $settings.mcp | Add-Member -NotePropertyName "inputs" -NotePropertyValue @()
+        }
+        
+        # Add Context7 if not present
+        if (-not $context7Configured) {
+            $context7Config = [PSCustomObject]@{
+                command = "npx"
+                args = @("-y", "@upstash/context7-mcp")
+                env = [PSCustomObject]@{}
+            }
+            $settings.mcp.servers | Add-Member -NotePropertyName "context7" -NotePropertyValue $context7Config
+            Write-ColorOutput "✅ Added Context7 MCP server configuration" -Color $Colors.Green
+        }
+        
+        # Add Sequential Thinking if not present
+        if (-not $sequentialConfigured) {
+            $sequentialConfig = [PSCustomObject]@{
+                command = "npx"
+                args = @("-y", "@modelcontextprotocol/server-sequential-thinking")
+                env = [PSCustomObject]@{}
+            }
+            $settings.mcp.servers | Add-Member -NotePropertyName "sequential-thinking" -NotePropertyValue $sequentialConfig
+            Write-ColorOutput "✅ Added Sequential Thinking MCP server configuration" -Color $Colors.Green
+        }
+        
+        # Write updated settings back to file
+        $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath
+        
+        Write-Output ""
+        Write-ColorOutput "🎉 MCP tools installation completed successfully!" -Color $Colors.Green
+        Write-Output ""
+        Write-Output "📋 Next steps:"
+        Write-Output "   1. Restart VS Code completely"
+        Write-Output "   2. The MCP tools should now be available in your chat interface"
+        Write-Output "   3. Test with documentation queries and complex problem analysis"
+        
+        return $true
+        
+    } catch {
+        Write-ColorOutput "❌ Error installing MCP tools: $($_.Exception.Message)" -Color $Colors.Red
+        # Restore backup if something went wrong
+        if (Test-Path $backupPath) {
+            Copy-Item -Path $backupPath -Destination $settingsPath -Force
+            Write-Output "   Settings restored from backup"
+        }
+        return $false
+    }
+}
+
 # Show help if requested
 if ($Help) {
     Show-Usage
     exit 0
 }
+
+# Remove trailing slash if present
+$ProjectDirectory = $ProjectDirectory.TrimEnd('\', '/')
 
 # Convert to absolute path if relative
 if (-not [System.IO.Path]::IsPathRooted($ProjectDirectory)) {
@@ -288,7 +390,7 @@ if (-not $Force -and -not $DryRun) {
         Write-ColorOutput "This will update SuperCopilot Framework in $ProjectDirectory" -Color $Colors.Yellow
     } else {
         Write-ColorOutput "This will install SuperCopilot Framework in $ProjectDirectory" -Color $Colors.Yellow
-        Write-Output "Features: 5 Chat Modes, Switch-based Specialization, Universal Tools, Minimal Context"
+        Write-Output "Features: Specialized Chat Modes, Rapid Prototyping, PRD Creation, MCP Tool Integration"
     }
     $confirmInstall = Read-Host "Are you sure you want to continue? (y/n)"
     if ($confirmInstall -ne "y") {
@@ -328,7 +430,7 @@ Write-Output "Copying core configuration..."
 if ($DryRun) {
     Write-ColorOutput "[DRY RUN] Would copy: copilot-instructions.md" -Color $Colors.Blue
 } else {
-    $sourceFile = ".github\copilot-instructions.md"
+    $sourceFile = "github\copilot-instructions.md"
     $targetFile = Join-Path $SuperCopilotDir "copilot-instructions.md"
     
     if ($Update -and (Test-Path $targetFile)) {
@@ -346,9 +448,9 @@ if ($DryRun) {
 # Copy chat modes
 Write-Output "Copying chat modes..."
 if ($DryRun) {
-    Write-ColorOutput "[DRY RUN] Would copy: 5 chat mode files" -Color $Colors.Blue
+    Write-ColorOutput "[DRY RUN] Would copy: 2 chat mode files" -Color $Colors.Blue
 } else {
-    Copy-Item -Path ".github\chatmodes\*.md" -Destination (Join-Path $SuperCopilotDir "chatmodes") -Force
+    Copy-Item -Path "github\chatmodes\*.md" -Destination (Join-Path $SuperCopilotDir "chatmodes") -Force
 }
 
 # Copy workflows
@@ -412,11 +514,10 @@ if (-not $DryRun) {
     $workflowFiles = (Get-ChildItem (Join-Path $SuperCopilotDir "workflows") -Filter "*.md" -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count
 
     Write-ColorOutput "Main config: $mainConfig (expected: 1)" -Color $Colors.Green
-    Write-ColorOutput "Chat modes: $chatmodeFiles (expected: 5)" -Color $Colors.Green
-    Write-ColorOutput "Workflows: $workflowFiles (expected: 18)" -Color $Colors.Green
+    Write-ColorOutput "Chat modes: $chatmodeFiles (expected: 2)" -Color $Colors.Green
 
     # Calculate success criteria
-    $successCriteria = ($mainConfig -ge 1) -and ($chatmodeFiles -ge 5) -and ($workflowFiles -ge 18)
+    $successCriteria = ($mainConfig -ge 1) -and ($chatmodeFiles -ge 2)
 
     if ($successCriteria) {
         Write-Output ""
@@ -425,23 +526,17 @@ if (-not $DryRun) {
         Write-ColorOutput "🚀 Getting Started:" -Color $Colors.Yellow
         Write-Output "  1. Open your project in VS Code with GitHub Copilot"
         Write-Output "  2. Select a chat mode from the dropdown"
-        Write-Output "  3. Use switches for specialization: --security, --feature"
-        Write-Output "  4. Add universal tools as needed: --c7, --seq, --think, --ultrathink"
-        Write-Output "  5. Enjoy 87% less context, 100% capability"
+        Write-Output "  3. Use MCP tools for enhanced capabilities"
+        Write-Output "  4. Leverage structured workflows for rapid development"
+        Write-Output "  5. Create prototypes and PRDs efficiently"
         Write-Output ""
         Write-ColorOutput "📖 Available Chat Modes:" -Color $Colors.Yellow
-        Write-Output "  • Analyze Mode - Analysis with --security, --performance, --architecture, --code-quality"
-        Write-Output "  • Build Mode - Development with --feature, --prototype, --tdd, --plan"
-        Write-Output "  • Design Mode - Specifications with --ui, --architecture, --datamodel"
-        Write-Output "  • Plan Mode - Strategy with --refactor, --feature, --prd"
-        Write-Output "  • Fix Mode - Problem resolution with --bug, --performance, --test, --verbose"
+        Write-Output "  • prototype.chatmode.md - Rapid prototyping with 6-phase workflow"
+        Write-Output "  • ux-prd.chatmode.md - Product requirements documentation"
         Write-Output ""
-        Write-ColorOutput "🛠️ Universal Tools:" -Color $Colors.Yellow
-        Write-Output "  • --git-commit - Smart commit message generation"
-        Write-Output "  • --c7 - Context7 documentation lookup"
-        Write-Output "  • --seq - Sequential thinking for complex problems"
-        Write-Output "  • --think - Structured analysis with clarifying questions"
-        Write-Output "  • --ultrathink - Deep analysis with up to 3 clarifying questions"
+        Write-ColorOutput "🛠️ MCP Tools:" -Color $Colors.Yellow
+        Write-Output "  • Context7 - Documentation lookup (install: npx @upstash/context7-mcp)"
+        Write-Output "  • Sequential Thinking - Complex problem analysis (install: npx @modelcontextprotocol/server-sequential-thinking)"
         Write-Output ""
         if ($Update) {
             $newFiles = Get-ChildItem $SuperCopilotDir -Filter "*.new" -Recurse -ErrorAction SilentlyContinue
@@ -460,14 +555,18 @@ if (-not $DryRun) {
         }
         Write-Output "Documentation: $SuperCopilotDir\README.md"
         Write-Output "Complete Guide: $SuperCopilotDir\EXAMPLES.md"
+        
+        # Install MCP tools if requested
+        if ($InstallMcp) {
+            Install-McpTools
+        }
     } else {
         Write-Output ""
         Write-ColorOutput "✗ Installation may be incomplete" -Color $Colors.Red
         Write-Output ""
         Write-Output "Component status:"
         Write-Output "  Main config: $mainConfig/1$(if ($mainConfig -lt 1) { " ❌" } else { " ✓" })"
-        Write-Output "  Chat modes: $chatmodeFiles/5$(if ($chatmodeFiles -lt 5) { " ❌" } else { " ✓" })"
-        Write-Output "  Workflows: $workflowFiles/18$(if ($workflowFiles -lt 18) { " ❌" } else { " ✓" })"
+        Write-Output "  Chat modes: $chatmodeFiles/2$(if ($chatmodeFiles -lt 2) { " ❌" } else { " ✓" })"
         Write-Output ""
         Write-Output "Debugging installation:"
         Write-Output "1. Check write permissions to $ProjectDirectory"

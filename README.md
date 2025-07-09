@@ -8,12 +8,21 @@ SuperCopilot provides two specialized chatmodes that transform GitHub Copilot in
 
 ### Prerequisites
 
-**Required for VS Code with GitHub Copilot:**
+**Required Software:**
+
+| Component                          | Purpose                  | Installation                                       |
+| ---------------------------------- | ------------------------ | -------------------------------------------------- |
+| **VS Code**                        | IDE for development      | Download from [code.visualstudio.com](https://code.visualstudio.com/) |
+| **GitHub Copilot Extension**       | AI coding assistant      | Install from VS Code Extensions marketplace       |
+| **GitHub Copilot Chat Extension**  | Chat interface          | Install from VS Code Extensions marketplace       |
+| **Node.js 14+**                   | Runtime for MCP servers  | Download from [nodejs.org](https://nodejs.org/)  |
+
+**Optional MCP Tools (Enhanced Functionality):**
 
 | Component                   | Purpose                  | Installation                                       |
 | --------------------------- | ------------------------ | -------------------------------------------------- |
-| **Context7 MCP**            | Documentation lookup     | `npx @context7/mcp-server`                         |
-| **Sequential Thinking MCP** | Complex problem analysis | `npx @anthropic-ai/mcp-server-sequential-thinking` |
+| **Context7 MCP**            | Documentation lookup     | `npx @upstash/context7-mcp`                        |
+| **Sequential Thinking MCP** | Complex problem analysis | `npx @modelcontextprotocol/server-sequential-thinking` |
 
 _Installation scripts check for these prerequisites and guide setup if missing. You can find setup scripts for these in the local development setup repository_
 
