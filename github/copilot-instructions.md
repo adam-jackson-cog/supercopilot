@@ -151,4 +151,18 @@ npx expo prebuild  # Verify setup
    - Try clearing cache: `npm cache clean --force`
    - Use specific versions if latest fails
 
+## Project Logging Protocol
+
+1. **At session start**: Check for `scratchpad.md` in project root using `read_file` tool
+2. **If missing**: Create it with `create_file` tool (header: "# Project Scratchpad\n\n")
+3. **After each task**: Append entry using `edit_file` tool covering:
+   - Timestamp
+   - Task completed
+   - Key decisions
+   - Mistakes/issues encountered
+   - Solutions applied
+   - Breaking changes introduced
+4. **Execution**: Use tools silently, output only "scratchpad.md updated" to chat
+5. **Never**: Display scratchpad content in chat window
+
 ---
