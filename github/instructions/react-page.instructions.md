@@ -1,9 +1,12 @@
 ---
 applyTo: "**/pages/*.tsx"
-description: "Page component pattern for web prototype"
+description: "React page component pattern for web prototype"
+prototypeMode: "web"
 ---
 
 # React Page Component Template
+**Used by:** Web prototype mode only  
+**Purpose:** Full-page components with routing and Material-UI layout
 
 Page components serve as route entry points with layout structure:
 

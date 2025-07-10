@@ -1,9 +1,12 @@
 ---
 applyTo: "**/components/layout/*.tsx"
-description: "Layout components for web prototype"
+description: "Layout component pattern for web prototype"
+prototypeMode: "web"
 ---
 
 # Layout Component Template
+**Used by:** Web prototype mode only  
+**Purpose:** Material-UI based layout components for web structure
 
 Create consistent layout wrapper:
 

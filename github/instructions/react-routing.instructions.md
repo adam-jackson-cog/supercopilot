@@ -1,9 +1,12 @@
 ---
 applyTo: "**/App.tsx"
-description: "React Router configuration for web prototype"
+description: "React Router setup for web prototype"
+prototypeMode: "web"
 ---
 
 # React Router Setup
+**Used by:** Web prototype mode only  
+**Purpose:** React Router setup with Material-UI integration for web navigation
 
 Configure routing in App.tsx:
 

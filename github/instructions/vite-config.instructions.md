@@ -1,9 +1,12 @@
 ---
 applyTo: "vite.config.ts"
-description: "Vite configuration for React TypeScript projects"
+description: "Vite configuration for web prototype"
+prototypeMode: "web"
 ---
 
 # Vite Configuration Template
+**Used by:** Web prototype mode only  
+**Purpose:** Vite build configuration optimized for React + TypeScript + Material-UI
 
 Standard Vite config for React + TypeScript:
 

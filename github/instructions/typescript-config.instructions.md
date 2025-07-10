@@ -1,9 +1,12 @@
 ---
 applyTo: "tsconfig.json"
-description: "TypeScript configuration for Vite React projects"
+description: "TypeScript configuration for web and mobile prototypes"
+prototypeMode: "universal"
 ---
 
 # TypeScript Configuration Template
+**Used by:** Web prototype mode, Mobile prototype mode  
+**Purpose:** Universal TypeScript configuration for both platforms
 
 Optimized tsconfig for Vite + React:
 

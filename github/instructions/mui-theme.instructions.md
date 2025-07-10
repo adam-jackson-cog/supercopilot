@@ -1,9 +1,12 @@
 ---
 applyTo: "**/theme/*.ts"
 description: "Material-UI theme configuration for web prototype"
+prototypeMode: "web"
 ---
 
 # Material-UI Theme Configuration
+**Used by:** Web prototype mode only  
+**Purpose:** Material-UI theme customization for consistent web styling
 
 Create consistent theme configuration:
 

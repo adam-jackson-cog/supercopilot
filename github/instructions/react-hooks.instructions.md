@@ -1,9 +1,12 @@
 ---
 applyTo: "**/hooks/*.ts"
-description: "Custom React hooks for web prototype"
+description: "React hooks pattern for web and mobile prototypes"
+prototypeMode: "universal"
 ---
 
 # Custom Hook Template
+**Used by:** Web prototype mode, Mobile prototype mode  
+**Purpose:** Universal React hooks pattern for both platforms
 
 Create reusable custom hooks:
 

@@ -1,9 +1,12 @@
 ---
 applyTo: "**/services/*.ts"
-description: "Service layer with mock API pattern for web prototype"
+description: "API service pattern for web and mobile prototypes"
+prototypeMode: "universal"
 ---
 
 # Service Layer with Mock Data
+**Used by:** Web prototype mode, Mobile prototype mode  
+**Purpose:** Universal API service pattern for both platforms
 
 Create service modules that simulate API calls:
 

@@ -1,9 +1,12 @@
 ---
 applyTo: "**/*.tsx"
 description: "React component creation pattern for web prototype"
+prototypeMode: "web"
 ---
 
 # React Component Template
+**Used by:** Web prototype mode only  
+**Purpose:** Material-UI based components for web prototypes
 
 Create functional components using TypeScript with proper typing and Material-UI integration:
 
