@@ -170,6 +170,19 @@ Ensure these domains are whitelisted in corporate firewall:
 - `*.githubusercontent.com`
 - `api.github.com`
 - `copilot-proxy.githubusercontent.com`
+- `raw.githubusercontent.com` (for downloading fonts and tools)
+
+### No Administrator Rights Required
+The scripts work entirely without administrator privileges:
+- Install tools to `~/.local/bin` directory
+- Download fonts to `~/Library/Fonts`
+- Configure shell profiles in user home directory
+- Use direct downloads instead of system package managers
+
+### Installation Methods
+- **GitHub CLI**: Downloaded directly from GitHub releases
+- **Nerd Fonts**: Downloaded directly from PowerLevel10k media repository
+- **No Homebrew Required**: All installations use curl/wget downloads
 
 ### Proxy Configuration
 The scripts handle proxy configuration automatically by:

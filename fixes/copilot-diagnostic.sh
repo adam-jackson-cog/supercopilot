@@ -242,7 +242,7 @@ check_git_config() {
         fi
     else
         error "Git not found"
-        add_recommendation "Install Git: brew install git"
+        add_recommendation "Install Git via Xcode Command Line Tools: xcode-select --install"
     fi
 }
 
@@ -287,11 +287,11 @@ check_terminal_fonts() {
     
     # Check if Nerd Fonts are installed
     FONT_DIR="$HOME/Library/Fonts"
-    if ls "$FONT_DIR"/*Nerd* &> /dev/null; then
+    if ls "$FONT_DIR"/*Nerd* &> /dev/null 2>&1 || ls "$FONT_DIR"/MesloLGS* &> /dev/null 2>&1; then
         success "Nerd Fonts found in $FONT_DIR"
     else
         warning "Nerd Fonts not found"
-        add_recommendation "Install Nerd Fonts for better terminal display: brew install font-meslo-lg-nerd-font"
+        add_recommendation "Install Nerd Fonts for better terminal display (run ./copilot-fix.sh to install)"
     fi
 }
 
@@ -318,22 +318,29 @@ check_certificates() {
 check_github_auth() {
     header "GitHub Authentication"
     
-    # Check if GitHub CLI is available
+    # Check for GitHub CLI in standard locations
+    GH_CMD=""
     if command -v gh &> /dev/null; then
+        GH_CMD="gh"
+    elif [ -x "$HOME/.local/bin/gh" ]; then
+        GH_CMD="$HOME/.local/bin/gh"
+    fi
+    
+    if [ -n "$GH_CMD" ]; then
         success "GitHub CLI is installed"
         
         # Check authentication status
-        if gh auth status &> /dev/null; then
+        if $GH_CMD auth status &> /dev/null; then
             success "GitHub CLI is authenticated"
-            GH_USER=$(gh api user --jq '.login' 2>/dev/null || echo "Unable to fetch")
+            GH_USER=$($GH_CMD api user --jq '.login' 2>/dev/null || echo "Unable to fetch")
             info "Authenticated as: $GH_USER"
         else
             warning "GitHub CLI not authenticated"
-            add_recommendation "Authenticate with GitHub CLI: gh auth login"
+            add_recommendation "Authenticate with GitHub CLI: $GH_CMD auth login"
         fi
     else
         warning "GitHub CLI not installed"
-        add_recommendation "Install GitHub CLI: brew install gh"
+        add_recommendation "Install GitHub CLI by running ./copilot-fix.sh"
     fi
     
     # Check for GitHub tokens in environment
@@ -397,6 +404,9 @@ generate_report() {
 # Main execution
 main() {
     print_header
+    
+    # Add local bin to PATH for this session
+    export PATH="$HOME/.local/bin:$PATH"
     
     # Redirect output to log file
     exec > >(tee -a "copilot-diagnostic.log")

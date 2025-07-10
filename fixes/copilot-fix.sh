@@ -91,31 +91,111 @@ create_backup() {
 install_prerequisites() {
     header "Installing Prerequisites"
     
-    # Check if Homebrew is installed
-    if ! command -v brew &> /dev/null; then
-        warning "Homebrew not found. Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    else
-        success "Homebrew is installed"
+    # Check for curl or wget
+    if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
+        error "Neither curl nor wget is available. Cannot download required tools."
+        return 1
     fi
+    
+    # Create local bin directory
+    mkdir -p "$HOME/.local/bin"
+    export PATH="$HOME/.local/bin:$PATH"
     
     # Install GitHub CLI if not present
     if ! command -v gh &> /dev/null; then
         info "Installing GitHub CLI..."
-        brew install gh
-        success "GitHub CLI installed"
+        install_github_cli
     else
         success "GitHub CLI is already installed"
     fi
     
     # Install Nerd Fonts for better terminal display
-    if ! ls "$HOME/Library/Fonts"/*Nerd* &> /dev/null; then
+    if ! ls "$HOME/Library/Fonts"/*Nerd* &> /dev/null 2>&1; then
         info "Installing Nerd Fonts..."
-        brew install font-meslo-lg-nerd-font
-        success "Nerd Fonts installed"
+        install_nerd_fonts
     else
         success "Nerd Fonts already installed"
     fi
+}
+
+# Install GitHub CLI without Homebrew
+install_github_cli() {
+    info "Downloading GitHub CLI directly..."
+    
+    # Detect system architecture
+    ARCH=$(uname -m)
+    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+    
+    # Map architecture names
+    case "$ARCH" in
+        x86_64) ARCH="amd64" ;;
+        arm64) ARCH="arm64" ;;
+        aarch64) ARCH="arm64" ;;
+        *) error "Unsupported architecture: $ARCH"; return 1 ;;
+    esac
+    
+    # Get latest version
+    if command -v curl &> /dev/null; then
+        GH_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep '"tag_name"' | cut -d '"' -f 4 | sed 's/v//')
+    else
+        error "Cannot determine latest GitHub CLI version"
+        return 1
+    fi
+    
+    if [ -z "$GH_VERSION" ]; then
+        warning "Could not get latest version, using fallback version 2.40.0"
+        GH_VERSION="2.40.0"
+    fi
+    
+    # Download URL
+    GH_URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${OS}_${ARCH}.tar.gz"
+    
+    # Download and install
+    cd /tmp
+    if command -v curl &> /dev/null; then
+        curl -LsSf "$GH_URL" -o gh.tar.gz
+    else
+        wget -q "$GH_URL" -O gh.tar.gz
+    fi
+    
+    tar -xzf gh.tar.gz
+    mv gh_*/bin/gh "$HOME/.local/bin/"
+    chmod +x "$HOME/.local/bin/gh"
+    rm -rf gh.tar.gz gh_*
+    
+    success "GitHub CLI installed to ~/.local/bin/gh"
+}
+
+# Install Nerd Fonts without Homebrew
+install_nerd_fonts() {
+    info "Downloading Nerd Fonts directly..."
+    
+    # Create fonts directory if it doesn't exist
+    mkdir -p "$HOME/Library/Fonts"
+    
+    # Download MesloLGS NF fonts
+    FONT_BASE_URL="https://github.com/romkatv/powerlevel10k-media/raw/master"
+    
+    declare -a fonts=(
+        "MesloLGS%20NF%20Regular.ttf"
+        "MesloLGS%20NF%20Bold.ttf"
+        "MesloLGS%20NF%20Italic.ttf"
+        "MesloLGS%20NF%20Bold%20Italic.ttf"
+    )
+    
+    for font in "${fonts[@]}"; do
+        font_file=$(echo "$font" | sed 's/%20/ /g')
+        if [ ! -f "$HOME/Library/Fonts/$font_file" ]; then
+            info "Downloading $font_file..."
+            if command -v curl &> /dev/null; then
+                curl -fLo "$HOME/Library/Fonts/$font_file" "$FONT_BASE_URL/$font"
+            else
+                wget -q "$FONT_BASE_URL/$font" -O "$HOME/Library/Fonts/$font_file"
+            fi
+        fi
+    done
+    
+    success "Nerd Fonts installed to ~/Library/Fonts"
 }
 
 # Install VS Code CLI if not present
@@ -191,6 +271,13 @@ configure_bash_integration() {
     # Ensure .bashrc exists
     touch ~/.bashrc
     
+    # Add local bin to PATH if not present
+    if ! grep -q "HOME/.local/bin" ~/.bashrc; then
+        echo "" >> ~/.bashrc
+        echo "# User local bin directory" >> ~/.bashrc
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+    fi
+    
     # Add shell integration if not present
     if ! grep -q "vscode.*shell-integration" ~/.bashrc; then
         echo "" >> ~/.bashrc
@@ -200,6 +287,15 @@ configure_bash_integration() {
     else
         info "Bash shell integration already configured"
     fi
+    
+    # Also update .bash_profile to source .bashrc
+    if [ -f ~/.bash_profile ]; then
+        if ! grep -q "source.*bashrc" ~/.bash_profile; then
+            echo "" >> ~/.bash_profile
+            echo "# Source .bashrc" >> ~/.bash_profile
+            echo '[ -f ~/.bashrc ] && source ~/.bashrc' >> ~/.bash_profile
+        fi
+    fi
 }
 
 configure_zsh_integration() {
@@ -207,6 +303,13 @@ configure_zsh_integration() {
     
     # Ensure .zshrc exists
     touch ~/.zshrc
+    
+    # Add local bin to PATH if not present
+    if ! grep -q "HOME/.local/bin" ~/.zshrc; then
+        echo "" >> ~/.zshrc
+        echo "# User local bin directory" >> ~/.zshrc
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+    fi
     
     # Check for problematic configurations
     if grep -q "powerlevel10k" ~/.zshrc; then
@@ -217,6 +320,9 @@ configure_zsh_integration() {
             cat > ~/.zshrc.vscode << 'EOF'
 # Simplified Zsh configuration for VS Code compatibility
 # This profile ensures shell integration works properly
+
+# User local bin directory
+export PATH="$HOME/.local/bin:$PATH"
 
 # Basic options
 setopt AUTO_CD
@@ -271,6 +377,16 @@ EOF
             success "Zsh shell integration configured"
         else
             info "Zsh shell integration already configured"
+        fi
+    fi
+    
+    # Also update .zprofile for login shells
+    if [ -f ~/.zprofile ] || [ ! -f ~/.zshrc ]; then
+        touch ~/.zprofile
+        if ! grep -q "HOME/.local/bin" ~/.zprofile; then
+            echo "" >> ~/.zprofile
+            echo "# User local bin directory" >> ~/.zprofile
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zprofile
         fi
     fi
 }
@@ -427,7 +543,7 @@ test_fix() {
     info "Fix testing completed"
     info "Please test terminal integration in VS Code:"
     info "1. Open VS Code"
-    info "2. Open terminal (Ctrl+`)"
+    info "2. Open terminal (Ctrl+\`)"
     info "3. Try using GitHub Copilot Chat in terminal (Cmd+I)"
 }
 
