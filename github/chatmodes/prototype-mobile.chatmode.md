@@ -92,7 +92,31 @@ Please confirm to continue."
    npx expo install expo-font expo-splash-screen expo-status-bar
    ```
 
-2. **Verify Setup**:
+2. **Clean Default Demo Content**:
+
+   ```bash
+   # Remove default Expo demo content to prevent conflicts
+   echo 'import React from "react";
+   import { View, Text, StyleSheet } from "react-native";
+
+   export default function App() {
+     return (
+       <View style={styles.container}>
+         <Text>Ready for mobile prototype</Text>
+       </View>
+     );
+   }
+
+   const styles = StyleSheet.create({
+     container: {
+       flex: 1,
+       justifyContent: "center",
+       alignItems: "center",
+     },
+   });' > App.tsx
+   ```
+
+3. **Verify Setup**:
 
    ```bash
    # For Expo projects, prebuild to verify

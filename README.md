@@ -10,18 +10,18 @@ SuperCopilot provides two specialized chatmodes that transform GitHub Copilot in
 
 **Required Software:**
 
-| Component                          | Purpose                  | Installation                                       |
-| ---------------------------------- | ------------------------ | -------------------------------------------------- |
-| **VS Code**                        | IDE for development      | Download from [code.visualstudio.com](https://code.visualstudio.com/) |
-| **GitHub Copilot Extension**       | AI coding assistant      | Install from VS Code Extensions marketplace       |
-| **GitHub Copilot Chat Extension**  | Chat interface          | Install from VS Code Extensions marketplace       |
-| **Node.js 14+**                   | Runtime for MCP servers  | Download from [nodejs.org](https://nodejs.org/)  |
+| Component                         | Purpose                 | Installation                                                          |
+| --------------------------------- | ----------------------- | --------------------------------------------------------------------- |
+| **VS Code**                       | IDE for development     | Download from [code.visualstudio.com](https://code.visualstudio.com/) |
+| **GitHub Copilot Extension**      | AI coding assistant     | Install from VS Code Extensions marketplace                           |
+| **GitHub Copilot Chat Extension** | Chat interface          | Install from VS Code Extensions marketplace                           |
+| **Node.js 14+**                   | Runtime for MCP servers | Download from [nodejs.org](https://nodejs.org/)                       |
 
 **Optional MCP Tools (Enhanced Functionality):**
 
-| Component                   | Purpose                  | Installation                                       |
-| --------------------------- | ------------------------ | -------------------------------------------------- |
-| **Context7 MCP**            | Documentation lookup     | `npx @upstash/context7-mcp`                        |
+| Component                   | Purpose                  | Installation                                           |
+| --------------------------- | ------------------------ | ------------------------------------------------------ |
+| **Context7 MCP**            | Documentation lookup     | `npx @upstash/context7-mcp`                            |
 | **Sequential Thinking MCP** | Complex problem analysis | `npx @modelcontextprotocol/server-sequential-thinking` |
 
 _Installation scripts check for these prerequisites and guide setup if missing. You can find setup scripts for these in the local development setup repository_
@@ -38,6 +38,33 @@ _Installation scripts check for these prerequisites and guide setup if missing. 
 .\install.ps1 C:\path\to\project
 ```
 
+**Available Command Switches:**
+
+| Switch | Purpose | Example |
+|--------|---------|---------|
+| `--force` | Skip confirmation prompts (automation) | `./install.sh ~/project --force` |
+| `--update` | Update existing installation (preserves customizations) | `./install.sh ~/project --update` |
+| `--uninstall` | Remove SuperCopilot from project | `./install.sh ~/project --uninstall` |
+| `--install-mcp` | Install and configure MCP tools in VS Code | `./install.sh ~/project --install-mcp` |
+| `--dry-run` | Preview installation without making changes | `./install.sh ~/project --dry-run` |
+| `-h, --help` | Show help message with all options | `./install.sh --help` |
+
+**Common Installation Scenarios:**
+
+```bash
+# Fresh installation with MCP tools
+./install.sh ~/my-project --install-mcp
+
+# Update existing installation
+./install.sh ~/my-project --update
+
+# Preview what will be installed
+./install.sh ~/my-project --dry-run
+
+# Automated installation (CI/CD)
+./install.sh ~/my-project --force --install-mcp
+```
+
 **Manual**:
 
 ```bash
@@ -47,21 +74,32 @@ cp -r /path/to/SuperCopilot/github ./
 ### Using Chatmodes
 
 1. **Open GitHub Copilot Chat** in VS Code (⌃⌘I)
-2. **Select a chatmode** from the dropdown or attach via "Attach Context" → "Prompt..."
+2. **Select a chatmode** from the dropdown
 3. **Enter your specific request** following the structured approach
 
 ## 📋 Available Chatmodes
 
-### prototype.chatmode.md
+### prototype-web.chatmode.md
 
-A 6-phase workflow for rapid prototype development focused on "speed over perfection" principles.
+A 5-phase workflow for rapid web prototype development focused on "speed over perfection" principles using Vite + React + TypeScript + Material-UI.
 
 **Best for:**
 
-- Creating functional demos and proof-of-concepts
-- Building MVP features quickly
+- Creating functional web demos and proof-of-concepts
+- Building MVP web features quickly
 - Validating ideas with minimal setup time
 - Demonstrating core functionality to stakeholders
+
+### prototype-mobile.chatmode.md
+
+A 5-phase workflow for rapid mobile prototype development focused on "speed over perfection" principles using Expo + React Native + TypeScript.
+
+**Best for:**
+
+- Creating functional mobile demos and proof-of-concepts
+- Building MVP mobile features quickly
+- Validating mobile app ideas with minimal setup time
+- Demonstrating core mobile functionality to stakeholders
 
 ### ux-prd.chatmode.md
 
@@ -78,39 +116,50 @@ A structured approach for creating comprehensive Product Requirements Documents 
 
 ### Prototype Chatmode Examples
 
-#### Task Management App
+#### Web Prototype Examples
+
+##### Task Management App
 
 ```
-Using the prototype chatmode:
-"Create a prototype for a task management app with drag-and-drop functionality, user authentication, and real-time updates. Target users are small teams who need to collaborate on project tasks."
+Using the prototype-web chatmode:
+"Create a web prototype for a task management app with drag-and-drop functionality, user authentication, and real-time updates. Target users are small teams who need to collaborate on project tasks."
 ```
 
-#### E-commerce Product Listing
+##### E-commerce Product Listing
 
 ```
-Using the prototype chatmode:
-"Build a quick demo of an e-commerce product listing with filters, search functionality, and shopping cart. Focus on mobile-first design with category filtering and price sorting."
+Using the prototype-web chatmode:
+"Build a quick demo of an e-commerce product listing with filters, search functionality, and shopping cart. Focus on responsive design with category filtering and price sorting."
 ```
 
-#### Analytics Dashboard
+##### Analytics Dashboard
 
 ```
-Using the prototype chatmode:
+Using the prototype-web chatmode:
 "Prototype a dashboard showing real-time metrics for a SaaS application. Include user analytics, performance metrics, and revenue tracking with interactive charts."
 ```
 
-#### Mobile Expense Tracker
+#### Mobile Prototype Examples
+
+##### Mobile Expense Tracker
 
 ```
-Using the prototype chatmode:
+Using the prototype-mobile chatmode:
 "Create a mobile app prototype for expense tracking with camera receipt capture, category management, and monthly reporting. Target users are individuals managing personal finances."
 ```
 
-#### Social Media Feed
+##### Social Media Feed
 
 ```
-Using the prototype chatmode:
-"Build a social media feed prototype with infinite scroll, like/comment functionality, and user profiles. Focus on responsive design and smooth interactions."
+Using the prototype-mobile chatmode:
+"Build a social media feed prototype with infinite scroll, like/comment functionality, and user profiles. Focus on native mobile interactions and gestures."
+```
+
+##### Fitness Tracking App
+
+```
+Using the prototype-mobile chatmode:
+"Create a mobile fitness app prototype with workout logging, progress tracking, and GPS route recording. Target users are casual fitness enthusiasts who want simple tracking."
 ```
 
 ### UX-PRD Chatmode Examples
@@ -119,7 +168,7 @@ Using the prototype chatmode:
 
 ```
 Using the ux-prd chatmode:
-"Create a comprehensive PRD for a video calling feature in a team collaboration app. Include screen flows, technical requirements, and accessibility considerations."
+"Create a comprehensive PRD for neuro diverse career guidance web app. Include screen flows, technical requirements, and accessibility considerations."
 ```
 
 #### Mobile App Planning
@@ -190,10 +239,13 @@ The framework includes a global `copilot-instructions.md` file that addresses co
 
 ```
 github/
-├── copilot-instructions.md     # Global configuration and common issues
-├── chatmodes/                  # Specialized chatmode definitions
-│   ├── prototype.chatmode.md   # Rapid prototyping workflow
-│   └── ux-prd.chatmode.md      # Product requirements documentation
+├── copilot-instructions.md        # Global configuration and common issues
+├── chatmodes/                     # Specialized chatmode definitions
+│   ├── prototype-web.chatmode.md  # Web rapid prototyping workflow
+│   ├── prototype-mobile.chatmode.md # Mobile rapid prototyping workflow
+│   └── ux-prd.chatmode.md         # Product requirements documentation
+├── instructions/                  # VS Code file-specific instructions
+│   └── *.instructions.md          # Pattern-based file creation guidance
 └── [additional configuration files]
 ```
 
@@ -202,10 +254,11 @@ github/
 SuperCopilot follows the principle of **focused specialization** through:
 
 1. **Structured Workflows** - Each chatmode provides a systematic approach to specific tasks
-2. **Speed Over Perfection** - Emphasis on rapid iteration and functional outcomes for prototype chat mode
-3. **User-Centered Design** - Focus on understanding user needs and business requirements for ux prd creation
-4. **Minimal Setup** - Streamlined installation and configuration process
-5. **Team Consistency** - Shared workflows and standards across development teams
+2. **Speed Over Perfection** - Emphasis on rapid iteration and functional outcomes for prototype chat modes
+3. **Platform-Specific Optimization** - Separate workflows for web and mobile development with appropriate tooling
+4. **User-Centered Design** - Focus on understanding user needs and business requirements for ux prd creation
+5. **Minimal Setup** - Streamlined installation and configuration process
+6. **Team Consistency** - Shared workflows and standards across development teams
 
 ---
 

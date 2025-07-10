@@ -464,9 +464,9 @@ if ($DryRun) {
 # Copy documentation files
 Write-Output "Copying documentation..."
 if ($DryRun) {
-    Write-ColorOutput "[DRY RUN] Would copy: README.md, EXAMPLES.md" -Color $Colors.Blue
+    Write-ColorOutput "[DRY RUN] Would copy: README.md" -Color $Colors.Blue
 } else {
-    $docFiles = @("README.md", "EXAMPLES.md", "CHAT-MODES-MIGRATION-PLAN.md")
+    $docFiles = @("README.md")
     foreach ($file in $docFiles) {
         if (Test-Path $file) {
             Copy-Item -Path $file -Destination $SuperCopilotDir -Force -ErrorAction SilentlyContinue
@@ -554,7 +554,6 @@ if (-not $DryRun) {
             Write-Output ""
         }
         Write-Output "Documentation: $SuperCopilotDir\README.md"
-        Write-Output "Complete Guide: $SuperCopilotDir\EXAMPLES.md"
         
         # Install MCP tools if requested
         if ($InstallMcp) {

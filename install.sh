@@ -280,11 +280,9 @@ fi
 # Copy documentation files
 echo "Copying documentation..."
 if [[ "$DRY_RUN" = true ]]; then
-    echo -e "${BLUE}[DRY RUN] Would copy: README.md, EXAMPLES.md${NC}"
+    echo -e "${BLUE}[DRY RUN] Would copy: README.md${NC}"
 else
     cp README.md "$SUPERCOPILOT_DIR/" 2>/dev/null || true
-    cp EXAMPLES.md "$SUPERCOPILOT_DIR/" 2>/dev/null || true
-    cp CHAT-MODES-MIGRATION-PLAN.md "$SUPERCOPILOT_DIR/" 2>/dev/null || true
 fi
 
 
@@ -522,7 +520,6 @@ if [[ "$DRY_RUN" != true ]]; then
             echo ""
         fi
         echo "Documentation: $SUPERCOPILOT_DIR/README.md"
-        echo "Complete Guide: $SUPERCOPILOT_DIR/EXAMPLES.md"
         
         # Install MCP tools if requested
         if [[ "$INSTALL_MCP" = true ]]; then

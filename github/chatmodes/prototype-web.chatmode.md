@@ -89,7 +89,24 @@ Please confirm to continue."
    npm install react-router-dom
    ```
 
-2. **Verify Setup**:
+2. **Clean Default Demo Content**:
+
+   ```bash
+   # Remove default Vite/React demo content to prevent conflicts
+   echo 'import React from "react"
+
+   function App() {
+     return <div>Ready for prototype</div>
+   }
+
+   export default App' > src/App.tsx
+
+   # Clear default styles
+   echo '/* Custom app styles */' > src/App.css
+   echo '/* Global styles */' > src/index.css
+   ```
+
+3. **Verify Setup**:
 
    ```bash
    npm run build
