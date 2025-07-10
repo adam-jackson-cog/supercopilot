@@ -101,19 +101,19 @@ function Test-Prerequisites {
             $nodeVersion = (& node --version).TrimStart('v')
             $nodeMajor = [int]($nodeVersion.Split('.')[0])
             if ($nodeMajor -ge 14) {
-                Write-ColorOutput "✓ Node.js $nodeVersion found" -Color $Colors.Green
+                Write-ColorOutput "[OK] Node.js $nodeVersion found" -Color $Colors.Green
             } else {
-                Write-ColorOutput "✗ Node.js $nodeVersion found, but 14+ required" -Color $Colors.Red
+                Write-ColorOutput "[ERROR] Node.js $nodeVersion found, but 14+ required" -Color $Colors.Red
                 Write-Output "  Install: https://nodejs.org"
                 $errors++
             }
         } catch {
-            Write-ColorOutput "✗ Node.js version check failed" -Color $Colors.Red
+            Write-ColorOutput "[ERROR] Node.js version check failed" -Color $Colors.Red
             Write-Output "  Install: https://nodejs.org"
             $errors++
         }
     } else {
-        Write-ColorOutput "✗ Node.js not found" -Color $Colors.Red
+        Write-ColorOutput "[ERROR] Node.js not found" -Color $Colors.Red
         Write-Output "  Install: https://nodejs.org"
         $errors++
     }
@@ -135,31 +135,31 @@ function Test-Prerequisites {
             }
             
             if ($context7Configured) {
-                Write-ColorOutput "✓ Context7 MCP Server configured" -Color $Colors.Green
+                Write-ColorOutput "[OK] Context7 MCP Server configured" -Color $Colors.Green
             } else {
-                Write-ColorOutput "○ Context7 MCP Server not configured" -Color $Colors.Yellow
+                Write-ColorOutput "[INFO] Context7 MCP Server not configured" -Color $Colors.Yellow
                 Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp"
             }
             
             if ($sequentialConfigured) {
-                Write-ColorOutput "✓ Sequential Thinking MCP Server configured" -Color $Colors.Green
+                Write-ColorOutput "[OK] Sequential Thinking MCP Server configured" -Color $Colors.Green
             } else {
-                Write-ColorOutput "○ Sequential Thinking MCP Server not configured" -Color $Colors.Yellow
+                Write-ColorOutput "[INFO] Sequential Thinking MCP Server not configured" -Color $Colors.Yellow
                 Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp"
             }
         } catch {
-            Write-ColorOutput "○ VS Code settings found but could not parse - MCP tools not configured" -Color $Colors.Yellow
+            Write-ColorOutput "[INFO] VS Code settings found but could not parse - MCP tools not configured" -Color $Colors.Yellow
             Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp"
         }
     } else {
-        Write-ColorOutput "○ VS Code settings not found - MCP tools not configured" -Color $Colors.Yellow
+        Write-ColorOutput "[INFO] VS Code settings not found - MCP tools not configured" -Color $Colors.Yellow
         Write-Output "  Configure with: .\install.ps1 <dir> -InstallMcp (after VS Code setup)"
     }
     
     # Block installation if prerequisites missing
     if ($errors -gt 0) {
         Write-Output ""
-        Write-ColorOutput "✗ Installation blocked: $errors prerequisite(s) missing" -Color $Colors.Red
+        Write-ColorOutput "[ERROR] Installation blocked: $errors prerequisite(s) missing" -Color $Colors.Red
         Write-Output ""
         Write-Output "Please install missing prerequisites and run again."
         Write-Output "See README.md Prerequisites section for details."
@@ -167,7 +167,7 @@ function Test-Prerequisites {
     }
     
     Write-Output ""
-    Write-ColorOutput "✓ All prerequisites satisfied" -Color $Colors.Green
+    Write-ColorOutput "[OK] All prerequisites satisfied" -Color $Colors.Green
 }
 
 function Install-McpTools {
@@ -176,21 +176,21 @@ function Install-McpTools {
     
     # Get current user
     $userId = $env:USERNAME
-    Write-Output "👤 Detected user: $userId"
+    Write-Output "[INFO] Detected user: $userId"
     
     # Define VS Code settings path for Windows
     $settingsPath = "$env:APPDATA\Code\User\settings.json"
-    Write-Output "📁 VS Code settings path: $settingsPath"
+    Write-Output "[INFO] VS Code settings path: $settingsPath"
     
     # Check if settings.json exists
     if (-not (Test-Path $settingsPath)) {
-        Write-ColorOutput "❌ Error: VS Code settings.json not found at $settingsPath" -Color $Colors.Red
+        Write-ColorOutput "[ERROR] VS Code settings.json not found at $settingsPath" -Color $Colors.Red
         Write-Output "   Please ensure VS Code is installed and has been run at least once."
         return $false
     }
     
     # Backup existing settings
-    Write-Output "💾 Creating backup of existing settings..."
+    Write-Output "[INFO] Creating backup of existing settings..."
     $backupPath = "$settingsPath.backup.$((Get-Date).ToString('yyyyMMdd_HHmmss'))"
     Copy-Item -Path $settingsPath -Destination $backupPath
     
@@ -209,7 +209,7 @@ function Install-McpTools {
         }
         
         if ($context7Configured -and $sequentialConfigured) {
-            Write-ColorOutput "⚠️  Both MCP tools are already configured in settings.json" -Color $Colors.Yellow
+            Write-ColorOutput "[WARNING] Both MCP tools are already configured in settings.json" -Color $Colors.Yellow
             return $true
         }
         
@@ -224,7 +224,7 @@ function Install-McpTools {
             $settings.mcp | Add-Member -NotePropertyName "inputs" -NotePropertyValue @()
         }
         
-        # Add Context7 if not present
+            # Add Context7 if not present
         if (-not $context7Configured) {
             $context7Config = [PSCustomObject]@{
                 command = "npx"
@@ -235,7 +235,7 @@ function Install-McpTools {
             Write-ColorOutput "✅ Added Context7 MCP server configuration" -Color $Colors.Green
         }
         
-        # Add Sequential Thinking if not present
+            # Add Sequential Thinking if not present
         if (-not $sequentialConfigured) {
             $sequentialConfig = [PSCustomObject]@{
                 command = "npx"
@@ -250,9 +250,9 @@ function Install-McpTools {
         $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath
         
         Write-Output ""
-        Write-ColorOutput "🎉 MCP tools installation completed successfully!" -Color $Colors.Green
+        Write-ColorOutput "[SUCCESS] MCP tools installation completed successfully!" -Color $Colors.Green
         Write-Output ""
-        Write-Output "📋 Next steps:"
+        Write-Output "[INFO] Next steps:"
         Write-Output "   1. Restart VS Code completely"
         Write-Output "   2. The MCP tools should now be available in your chat interface"
         Write-Output "   3. Test with documentation queries and complex problem analysis"
@@ -260,7 +260,7 @@ function Install-McpTools {
         return $true
         
     } catch {
-        Write-ColorOutput "❌ Error installing MCP tools: $($_.Exception.Message)" -Color $Colors.Red
+        Write-ColorOutput "[ERROR] Error installing MCP tools: $($_.Exception.Message)" -Color $Colors.Red
         # Restore backup if something went wrong
         if (Test-Path $backupPath) {
             Copy-Item -Path $backupPath -Destination $settingsPath -Force
@@ -330,7 +330,7 @@ if ($Uninstall) {
     } else {
         Write-Output "Removing SuperCopilot..."
         Remove-Item -Path $SuperCopilotDir -Recurse -Force
-        Write-ColorOutput "✓ SuperCopilot uninstalled successfully!" -Color $Colors.Green
+        Write-ColorOutput "[SUCCESS] SuperCopilot uninstalled successfully!" -Color $Colors.Green
     }
     exit 0
 }
@@ -516,7 +516,7 @@ if (-not $DryRun) {
 
     if ($successCriteria) {
         Write-Output ""
-        Write-ColorOutput "✓ SuperCopilot Framework installed successfully!" -Color $Colors.Green
+        Write-ColorOutput "[SUCCESS] SuperCopilot Framework installed successfully!" -Color $Colors.Green
         Write-Output ""
         Write-ColorOutput "🚀 Getting Started:" -Color $Colors.Yellow
         Write-Output "  1. Open your project in VS Code with GitHub Copilot"
@@ -561,12 +561,12 @@ if (-not $DryRun) {
         }
     } else {
         Write-Output ""
-        Write-ColorOutput "✗ Installation may be incomplete" -Color $Colors.Red
+        Write-ColorOutput "[ERROR] Installation may be incomplete" -Color $Colors.Red
         Write-Output ""
         Write-Output "Component status:"
-        Write-Output "  Main config: $mainConfig/1$(if ($mainConfig -lt 1) { " ❌" } else { " ✓" })"
-        Write-Output "  Chat modes: $chatmodeFiles/3$(if ($chatmodeFiles -lt 3) { " ❌" } else { " ✓" })"
-        Write-Output "  Instructions: $instructionsFiles/10$(if ($instructionsFiles -lt 10) { " ❌" } else { " ✓" })"
+        Write-Output "  Main config: $mainConfig/1$(if ($mainConfig -lt 1) { ' [FAIL]' } else { ' [OK]' })"
+        Write-Output "  Chat modes: $chatmodeFiles/3$(if ($chatmodeFiles -lt 3) { ' [FAIL]' } else { ' [OK]' })"
+        Write-Output "  Instructions: $instructionsFiles/10$(if ($instructionsFiles -lt 10) { ' [FAIL]' } else { ' [OK]' })"
         Write-Output ""
         Write-Output "Debugging installation:"
         Write-Output "1. Check write permissions to $ProjectDirectory"
@@ -577,6 +577,6 @@ if (-not $DryRun) {
     }
 } else {
     Write-Output ""
-    Write-ColorOutput "✓ DRY RUN COMPLETE" -Color $Colors.Blue
+    Write-ColorOutput "[SUCCESS] DRY RUN COMPLETE" -Color $Colors.Blue
     Write-Output "All operations would succeed. Run without -DryRun to perform actual installation."
 }
