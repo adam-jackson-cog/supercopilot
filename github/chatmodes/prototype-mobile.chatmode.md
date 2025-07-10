@@ -28,6 +28,14 @@ The `--continue` switch allows resuming work from an existing tasks.md file:
 - **VERIFY** each file is created before proceeding
 - **USE** absolute paths for all operations
 
+### Critical Terminal Verification Rules
+
+- **MANDATORY**: All build/compilation commands must have verified terminal output
+- **NEVER** proceed if terminal output verification fails or is incomplete
+- **NEVER** fake, simulate, or echo mock success responses
+- **ALWAYS** request user confirmation when terminal verification fails
+- **STOP IMMEDIATELY** if unable to confirm actual build success
+
 ## 5-Phase Workflow Process
 
 ### --continue Switch Detection
@@ -127,8 +135,12 @@ Please confirm to continue."
 **CHECKPOINT: Build Verification Required**
 
 - Run: `npx expo prebuild --clean`
-- Fix any errors before proceeding
-- State: "Mobile project setup successful. Ready for Phase 3: Task Planning?"
+- **CRITICAL**: If terminal output verification fails or is incomplete:
+  - STOP IMMEDIATELY - DO NOT continue to next phase
+  - State: "Build verification failed - unable to confirm terminal output"
+  - Request user confirmation: "Please confirm prebuild completed successfully before proceeding"
+  - NEVER fake or simulate build success with echo statements
+- Only on confirmed successful prebuild: State "Mobile project setup successful. Ready for Phase 3: Task Planning?"
 - Wait for user confirmation
 
 ### Phase 3: Task Planning & Breakdown
@@ -198,6 +210,17 @@ Please confirm to continue."
    - Execute all task requirements in order
    - Ensure all acceptance criteria are met
 
+   **CHECKPOINT: Build Verification Required**
+
+   - Run: `npx expo prebuild --clean`
+   - **CRITICAL**: If terminal output verification fails or is incomplete:
+     - STOP IMMEDIATELY - DO NOT continue to next phase
+     - State: "Build verification failed - unable to confirm terminal output"
+     - Request user confirmation: "Please confirm prebuild completed successfully before proceeding"
+     - NEVER fake or simulate build success with echo statements
+   - Only on confirmed successful prebuild: State "Mobile project setup successful. Ready for Phase 3: Task Planning?"
+   - Wait for user confirmation
+
 3. **CRITICAL - Update Task Status**:
 
    - Update `tasks.md` marking current task as complete (check all boxes)
@@ -212,21 +235,7 @@ Please confirm to continue."
    - Load next incomplete task from `tasks.md`
    - Repeat process until all tasks complete
 
-**Mobile Prototype Shortcuts to Apply**:
-
-- Use StyleSheet.create for performance
-- Hardcode data in /src/data/mockData.ts
-- Mock API calls with setTimeout
-- Use React Native Elements for consistent UI
-
-**CRITICAL STOP POINT**: Cannot proceed to next task until:
-
-- All current task requirements completed
-- Type checking passes with no errors
-- Build compilation succeeds
-- All acceptance criteria validated
-
-### Phase 5: Validation & Polish
+### Phase 5: Final Validation
 
 **Tools**: `terminal`, `edit_file`
 
@@ -239,6 +248,12 @@ Please confirm to continue."
    # Start development server
    npm start
    ```
+
+   **CRITICAL**: Final validation requires confirmed terminal output verification:
+
+   - If expo doctor or npm start commands fail to provide clear terminal feedback
+   - STOP and request user verification of final setup success
+   - NEVER simulate or fake successful completion
 
 ## Common Mobile Patterns & Shortcuts
 
