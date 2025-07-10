@@ -245,49 +245,35 @@ else
 fi
 
 # Create SuperCopilot directory structure
-echo "Creating SuperCopilot directory structure..."
+echo "Creating SuperCopilot base directory..."
 if [[ "$DRY_RUN" = true ]]; then
-    echo -e "${BLUE}[DRY RUN] Would create:${NC}"
-    echo "  $SUPERCOPILOT_DIR/"
-    echo "  $SUPERCOPILOT_DIR/chatmodes/"
+    echo -e "${BLUE}[DRY RUN] Would create: $SUPERCOPILOT_DIR/${NC}"
 else
-    mkdir -p "$SUPERCOPILOT_DIR/chatmodes"
+    mkdir -p "$SUPERCOPILOT_DIR"
 fi
 
-# Copy main configuration file
-echo "Copying core configuration..."
+# Copy entire github directory structure to .github
+echo "Copying SuperCopilot framework files..."
 if [[ "$DRY_RUN" = true ]]; then
-    echo -e "${BLUE}[DRY RUN] Would copy: copilot-instructions.md${NC}"
+    echo -e "${BLUE}[DRY RUN] Would copy: entire github/ directory to .github/ preserving structure${NC}"
 else
     if [[ "$UPDATE_MODE" = true ]] && [[ -f "$SUPERCOPILOT_DIR/copilot-instructions.md" ]]; then
+        # In update mode, check if copilot-instructions.md was customized
         if ! cmp -s "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md"; then
             echo "  Preserving customised copilot-instructions.md (new version: copilot-instructions.md.new)"
-            cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md.new"
+            # Copy everything except copilot-instructions.md
+            rsync -av --exclude='copilot-instructions.md' github/ "$SUPERCOPILOT_DIR/" 2>/dev/null || {
+                # Fallback if rsync not available
+                cp -r github/* "$SUPERCOPILOT_DIR/" 2>/dev/null || true
+                cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/copilot-instructions.md.new"
+            }
         else
-            cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/"
+            # No customization, copy everything
+            cp -r github/* "$SUPERCOPILOT_DIR/" 2>/dev/null || true
         fi
     else
-        cp "github/copilot-instructions.md" "$SUPERCOPILOT_DIR/"
-    fi
-fi
-
-# Copy chat modes
-echo "Copying chat modes..."
-if [[ "$DRY_RUN" = true ]]; then
-    echo -e "${BLUE}[DRY RUN] Would copy: 2 chat mode files${NC}"
-else
-    cp github/chatmodes/*.md "$SUPERCOPILOT_DIR/chatmodes/"
-fi
-
-# Note: Personas embedded in workflow rules
-
-# Copy additional configuration files (if any)
-if [ -d "github/additional" ]; then
-    echo "Copying additional configuration files..."
-    if [[ "$DRY_RUN" = true ]]; then
-        echo -e "${BLUE}[DRY RUN] Would copy: additional configuration files${NC}"
-    else
-        cp -r github/additional/* "$SUPERCOPILOT_DIR/" 2>/dev/null || true
+        # Fresh install, copy everything
+        cp -r github/* "$SUPERCOPILOT_DIR/" 2>/dev/null || true
     fi
 fi
 
@@ -301,16 +287,6 @@ else
     cp CHAT-MODES-MIGRATION-PLAN.md "$SUPERCOPILOT_DIR/" 2>/dev/null || true
 fi
 
-# Copy additional files from github directory if they exist
-if [ -d "github" ]; then
-    echo "Copying additional framework files..."
-    if [[ "$DRY_RUN" = true ]]; then
-        echo -e "${BLUE}[DRY RUN] Would copy: any additional files from github directory${NC}"
-    else
-        # Copy any additional files that aren't chatmodes or copilot-instructions.md
-        find github -type f -name "*.md" ! -path "github/chatmodes/*" ! -name "copilot-instructions.md" -exec cp {} "$SUPERCOPILOT_DIR/" \; 2>/dev/null || true
-    fi
-fi
 
 # Check prerequisites for SuperCopilot framework
 check_prerequisites() {
@@ -497,12 +473,14 @@ if [[ "$DRY_RUN" != true ]]; then
     # Count installed files
     main_config=$([ -f "$SUPERCOPILOT_DIR/copilot-instructions.md" ] && echo "1" || echo "0")
     chatmode_files=$(ls -1 "$SUPERCOPILOT_DIR/chatmodes/"*.md 2>/dev/null | wc -l)
+    instructions_files=$(ls -1 "$SUPERCOPILOT_DIR/instructions/"*.md 2>/dev/null | wc -l)
 
     echo -e "Main config: ${GREEN}$main_config${NC} (expected: 1)"
-    echo -e "Chat modes: ${GREEN}$chatmode_files${NC} (expected: 2)"
+    echo -e "Chat modes: ${GREEN}$chatmode_files${NC} (expected: 3)"
+    echo -e "Instructions: ${GREEN}$instructions_files${NC} (expected: 10)"
 
     # Calculate success criteria
-    success_criteria=$((main_config >= 1 && chatmode_files >= 2))
+    success_criteria=$((main_config >= 1 && chatmode_files >= 3 && instructions_files >= 10))
 
     if [ "$success_criteria" -eq 1 ]; then
         echo ""
@@ -516,8 +494,13 @@ if [[ "$DRY_RUN" != true ]]; then
         echo "  5. Leverage structured workflows for rapid development"
         echo ""
         echo -e "${YELLOW}📖 Available Chat Modes:${NC}"
-        echo "  • prototype.chatmode.md - Rapid prototyping with 6-phase workflow"
+        echo "  • prototype-web.chatmode.md - Web app rapid prototyping with 5-phase workflow"
+        echo "  • prototype-mobile.chatmode.md - Mobile app rapid prototyping with 6-phase workflow"
         echo "  • ux-prd.chatmode.md - Product requirements documentation"
+        echo ""
+        echo -e "${YELLOW}📝 File Creation Instructions:${NC}"
+        echo "  • 10 VS Code .instructions.md files for consistent web prototype patterns"
+        echo "  • Covers React components, pages, services, styling, and configuration"
         echo ""
         echo -e "${YELLOW}🛠️ MCP Tools:${NC}"
         echo "  • Context7 - Documentation lookup (install: npx @context7/mcp-server)"
@@ -551,7 +534,8 @@ if [[ "$DRY_RUN" != true ]]; then
         echo ""
         echo "Component status:"
         echo "  Main config: $main_config/1$([ "$main_config" -lt 1 ] && echo " ❌" || echo " ✓")"
-        echo "  Chat modes: $chatmode_files/2$([ "$chatmode_files" -lt 2 ] && echo " ❌" || echo " ✓")"
+        echo "  Chat modes: $chatmode_files/3$([ "$chatmode_files" -lt 3 ] && echo " ❌" || echo " ✓")"
+        echo "  Instructions: $instructions_files/10$([ "$instructions_files" -lt 10 ] && echo " ❌" || echo " ✓")"
         echo ""
         echo "Debugging installation:"
         echo "1. Check write permissions to $INSTALL_DIR"

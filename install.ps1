@@ -409,64 +409,57 @@ if ($Update) {
 }
 
 # Create SuperCopilot directory structure
-Write-Output "Creating SuperCopilot directory structure..."
+Write-Output "Creating SuperCopilot base directory..."
 if ($DryRun) {
-    Write-ColorOutput "[DRY RUN] Would create:" -Color $Colors.Blue
-    Write-Output "  $SuperCopilotDir\"
-    Write-Output "  $SuperCopilotDir\chatmodes\"
-    Write-Output "  $SuperCopilotDir\workflows\"
-    Write-Output "  $SuperCopilotDir\workflows\{analyze,build,design,plan,fix}\"
+    Write-ColorOutput "[DRY RUN] Would create: $SuperCopilotDir\" -Color $Colors.Blue
 } else {
-    New-Item -ItemType Directory -Path (Join-Path $SuperCopilotDir "chatmodes") -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $SuperCopilotDir "workflows\analyze") -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $SuperCopilotDir "workflows\build") -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $SuperCopilotDir "workflows\design") -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $SuperCopilotDir "workflows\plan") -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $SuperCopilotDir "workflows\fix") -Force | Out-Null
+    New-Item -ItemType Directory -Path $SuperCopilotDir -Force | Out-Null
 }
 
-# Copy main configuration file
-Write-Output "Copying core configuration..."
+# Copy entire github directory structure to .github
+Write-Output "Copying SuperCopilot framework files..."
 if ($DryRun) {
-    Write-ColorOutput "[DRY RUN] Would copy: copilot-instructions.md" -Color $Colors.Blue
+    Write-ColorOutput "[DRY RUN] Would copy: entire github\ directory to .github\ preserving structure" -Color $Colors.Blue
 } else {
-    $sourceFile = "github\copilot-instructions.md"
-    $targetFile = Join-Path $SuperCopilotDir "copilot-instructions.md"
-    
-    if ($Update -and (Test-Path $targetFile)) {
+    if ($Update -and (Test-Path (Join-Path $SuperCopilotDir "copilot-instructions.md"))) {
+        # In update mode, check if copilot-instructions.md was customized
+        $sourceFile = "github\copilot-instructions.md"
+        $targetFile = Join-Path $SuperCopilotDir "copilot-instructions.md"
+        
         if ((Get-FileHash $sourceFile).Hash -ne (Get-FileHash $targetFile).Hash) {
             Write-Output "  Preserving customised copilot-instructions.md (new version: copilot-instructions.md.new)"
+            # Copy everything except copilot-instructions.md
+            $githubItems = Get-ChildItem "github" -Recurse
+            foreach ($item in $githubItems) {
+                if ($item.Name -ne "copilot-instructions.md" -or $item.Directory.Name -ne "github") {
+                    $relativePath = $item.FullName.Substring((Resolve-Path "github").Path.Length + 1)
+                    $targetPath = Join-Path $SuperCopilotDir $relativePath
+                    $targetDir = Split-Path $targetPath -Parent
+                    
+                    if (-not (Test-Path $targetDir)) {
+                        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+                    }
+                    
+                    if ($item.PSIsContainer) {
+                        if (-not (Test-Path $targetPath)) {
+                            New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
+                        }
+                    } else {
+                        Copy-Item -Path $item.FullName -Destination $targetPath -Force
+                    }
+                }
+            }
             Copy-Item -Path $sourceFile -Destination "$targetFile.new" -Force
         } else {
-            Copy-Item -Path $sourceFile -Destination $targetFile -Force
+            # No customization, copy everything
+            Copy-Item -Path "github\*" -Destination $SuperCopilotDir -Recurse -Force
         }
     } else {
-        Copy-Item -Path $sourceFile -Destination $targetFile -Force
+        # Fresh install, copy everything
+        Copy-Item -Path "github\*" -Destination $SuperCopilotDir -Recurse -Force
     }
 }
 
-# Copy chat modes
-Write-Output "Copying chat modes..."
-if ($DryRun) {
-    Write-ColorOutput "[DRY RUN] Would copy: 2 chat mode files" -Color $Colors.Blue
-} else {
-    Copy-Item -Path "github\chatmodes\*.md" -Destination (Join-Path $SuperCopilotDir "chatmodes") -Force
-}
-
-# Copy workflows
-Write-Output "Copying workflows..."
-if ($DryRun) {
-    Write-ColorOutput "[DRY RUN] Would copy: workflow files to respective directories" -Color $Colors.Blue
-} else {
-    $workflowDirs = @("analyze", "build", "design", "plan", "fix")
-    foreach ($dir in $workflowDirs) {
-        $sourcePath = ".github\workflows\$dir\*.md"
-        $targetPath = Join-Path $SuperCopilotDir "workflows\$dir"
-        if (Test-Path ".github\workflows\$dir") {
-            Copy-Item -Path $sourcePath -Destination $targetPath -Force -ErrorAction SilentlyContinue
-        }
-    }
-}
 
 # Copy documentation files
 Write-Output "Copying documentation..."
@@ -495,6 +488,7 @@ if (Test-Path ".github\scripts") {
     }
 }
 
+
 # Check prerequisites before proceeding
 if (-not $DryRun) {
     Test-Prerequisites
@@ -511,13 +505,14 @@ if (-not $DryRun) {
     # Count installed files
     $mainConfig = if (Test-Path (Join-Path $SuperCopilotDir "copilot-instructions.md")) { 1 } else { 0 }
     $chatmodeFiles = (Get-ChildItem (Join-Path $SuperCopilotDir "chatmodes") -Filter "*.md" -ErrorAction SilentlyContinue | Measure-Object).Count
-    $workflowFiles = (Get-ChildItem (Join-Path $SuperCopilotDir "workflows") -Filter "*.md" -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count
+    $instructionsFiles = (Get-ChildItem (Join-Path $SuperCopilotDir "instructions") -Filter "*.md" -ErrorAction SilentlyContinue | Measure-Object).Count
 
     Write-ColorOutput "Main config: $mainConfig (expected: 1)" -Color $Colors.Green
-    Write-ColorOutput "Chat modes: $chatmodeFiles (expected: 2)" -Color $Colors.Green
+    Write-ColorOutput "Chat modes: $chatmodeFiles (expected: 3)" -Color $Colors.Green
+    Write-ColorOutput "Instructions: $instructionsFiles (expected: 10)" -Color $Colors.Green
 
     # Calculate success criteria
-    $successCriteria = ($mainConfig -ge 1) -and ($chatmodeFiles -ge 2)
+    $successCriteria = ($mainConfig -ge 1) -and ($chatmodeFiles -ge 3) -and ($instructionsFiles -ge 10)
 
     if ($successCriteria) {
         Write-Output ""
@@ -531,8 +526,13 @@ if (-not $DryRun) {
         Write-Output "  5. Create prototypes and PRDs efficiently"
         Write-Output ""
         Write-ColorOutput "📖 Available Chat Modes:" -Color $Colors.Yellow
-        Write-Output "  • prototype.chatmode.md - Rapid prototyping with 6-phase workflow"
+        Write-Output "  • prototype-web.chatmode.md - Web app rapid prototyping with 5-phase workflow"
+        Write-Output "  • prototype-mobile.chatmode.md - Mobile app rapid prototyping with 6-phase workflow"
         Write-Output "  • ux-prd.chatmode.md - Product requirements documentation"
+        Write-Output ""
+        Write-ColorOutput "📝 File Creation Instructions:" -Color $Colors.Yellow
+        Write-Output "  • 10 VS Code .instructions.md files for consistent web prototype patterns"
+        Write-Output "  • Covers React components, pages, services, styling, and configuration"
         Write-Output ""
         Write-ColorOutput "🛠️ MCP Tools:" -Color $Colors.Yellow
         Write-Output "  • Context7 - Documentation lookup (install: npx @upstash/context7-mcp)"
@@ -566,7 +566,8 @@ if (-not $DryRun) {
         Write-Output ""
         Write-Output "Component status:"
         Write-Output "  Main config: $mainConfig/1$(if ($mainConfig -lt 1) { " ❌" } else { " ✓" })"
-        Write-Output "  Chat modes: $chatmodeFiles/2$(if ($chatmodeFiles -lt 2) { " ❌" } else { " ✓" })"
+        Write-Output "  Chat modes: $chatmodeFiles/3$(if ($chatmodeFiles -lt 3) { " ❌" } else { " ✓" })"
+        Write-Output "  Instructions: $instructionsFiles/10$(if ($instructionsFiles -lt 10) { " ❌" } else { " ✓" })"
         Write-Output ""
         Write-Output "Debugging installation:"
         Write-Output "1. Check write permissions to $ProjectDirectory"

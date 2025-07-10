@@ -17,8 +17,7 @@ Review what the user has already shared and identify which key areas need clarif
 - **Product Concept:** What is the core product idea and its primary purpose?
 - **Target Users:** Who are the intended users and what are their key characteristics?
 - **Problem Statement:** What specific problem does this product solve?
-- **Technical Context:** What technology stack, platforms, or constraints exist?
-- **Business Context:** What are the business goals, timeline, and scope?
+- **Platform choice:** Which platform(s)?
 - **UX/UI Requirements:** What are the key user experience and interface needs, what design principles, what visual design system?
 - **Screen Architecture:** What screens/views have been identified and how do users flow between them?
 
@@ -40,10 +39,6 @@ Based on your analysis, ask specific questions to fill information gaps. Structu
 - How do users currently solve this problem today?
 - What are the key user goals and motivations?
 
-**Technical Questions:**
-
-- Are there any specific technology requirements or constraints?
-
 **UX/UI Specific Questions:**
 
 - What are the core user journeys?
@@ -56,7 +51,7 @@ Based on your analysis, ask specific questions to fill information gaps. Structu
 
 **Screen Architecture & User Flow Questions:**
 
-*If screens haven't been identified or only partially defined:*
+_If screens haven't been identified or only partially defined:_
 
 - What do you envision as the main screens or views users will interact with?
 - What should users see first when they open/access the product?
@@ -67,7 +62,7 @@ Based on your analysis, ask specific questions to fill information gaps. Structu
 - Are there administrative, settings, or configuration screens needed?
 - How should the product handle different user states (new user, returning user, different permission levels)?
 
-*If screens have been partially defined:*
+_If screens have been partially defined:_
 
 - I see you've mentioned [specific screens]. Can you clarify how users navigate from [Screen A] to [Screen B]?
 - For the [specific screen] you described, what are the key actions users can take there?
@@ -75,7 +70,7 @@ Based on your analysis, ask specific questions to fill information gaps. Structu
 - How does the user flow handle edge cases like [relevant scenario based on their context]?
 - What happens when users need to [specific action] - which screens are involved in that process?
 
-*For user flow clarification:*
+_For user flow clarification:_
 
 - What triggers the primary user journey - how do users typically start their main task?
 - What is the ideal "happy path" flow for your primary persona from start to completion?
@@ -134,44 +129,15 @@ Use this exact template structure for all generated PRDs:
 Provide a comprehensive overview that includes:
 
 - **Product concept and core purpose**
-- **Target platforms and technical approach**
+- **Target platforms**
 - **Primary problem being solved**
 - **Solution approach and key differentiators**
 
-_Write 2-3 paragraphs that clearly establish what this product is, who it's for, and why it matters._
+_Write 1-2 paragraphs that clearly establish what this product is, who it's for, and why it matters._
 
 ---
 
-## 2. Customer Problem We Are Solving
-
-### Working Backwards: Press Release
-
-> **FOR IMMEDIATE RELEASE**
->
-> **[Product Name] Launches [Key Innovation] That [Primary Benefit for Users]**
->
-> _[Secondary benefit or key metric claim]_
->
-> [LOCATION] - [Product Name] today announced the launch of [brief product description]. [Key value proposition statement].
->
-> "[Quote about the problem being solved]" said [Role].
->
-> **Key Customer Problems Solved:**
->
-> - **[Problem 1]:** "[User quote about this problem]" - [User type]
-> - **[Problem 2]:** "[User quote about this problem]" - [User type]
-> - **[Problem 3]:** "[User quote about this problem]" - [User type]
->
-> [Product Name]'s approach has demonstrated results in [testing context]:
->
-> - [Key metric 1]
-> - [Key metric 2]
-> - [Key metric 3]
-> - [Key metric 4]
-
----
-
-## 3. MoSCoW Prioritised Features
+## 2. MoSCoW Prioritised Features
 
 ### Must Have
 
@@ -203,7 +169,7 @@ _List 3-5 features explicitly excluded from this version/scope_
 
 ---
 
-## 4. Design Principles & Guidelines
+## 3. Design Principles & Guidelines
 
 ### Core Design Principles
 
@@ -269,32 +235,36 @@ _List 3-5 features explicitly excluded from this version/scope_
 
 ---
 
-## 5. Screen Inventory & Information Architecture
+## 4. Screen Inventory & Information Architecture
 
 ### Screen Overview
 
 **Primary Screens:**
+
 - **[Screen Name]:** [Brief description of screen purpose and primary user actions]
 - **[Screen Name]:** [Brief description of screen purpose and primary user actions]
 - **[Screen Name]:** [Brief description of screen purpose and primary user actions]
 
 **Secondary/Supporting Screens:**
+
 - **[Screen Name]:** [Brief description of screen purpose and when users access it]
 - **[Screen Name]:** [Brief description of screen purpose and when users access it]
 
 **Administrative/Configuration Screens:**
+
 - **[Screen Name]:** [Brief description of screen purpose and user access level required]
 
 ### Feature-to-Screen Mapping
 
-| Feature | Primary Screen(s) | Supporting Screen(s) | Notes |
-|---------|------------------|---------------------|-------|
-| [Feature Name] | [Screen Name] | [Screen Name] | [Any special considerations] |
-| [Feature Name] | [Screen Name] | [Screen Name] | [Any special considerations] |
+| Feature        | Primary Screen(s) | Supporting Screen(s) | Notes                        |
+| -------------- | ----------------- | -------------------- | ---------------------------- |
+| [Feature Name] | [Screen Name]     | [Screen Name]        | [Any special considerations] |
+| [Feature Name] | [Screen Name]     | [Screen Name]        | [Any special considerations] |
 
 ### User Flow Architecture
 
 **Primary User Journey:**
+
 ```
 [Entry Point] → [Screen 1] → [Screen 2] → [Screen 3] → [Completion]
                ↓ (optional)    ↓ (alternative)
@@ -302,10 +272,12 @@ _List 3-5 features explicitly excluded from this version/scope_
 ```
 
 **Alternative User Flows:**
+
 - **[Scenario/Persona]:** [Different path through screens for specific use case]
 - **[Edge Case]:** [How user flow handles exceptional circumstances]
 
 **Navigation Patterns:**
+
 - **Primary Navigation:** [How users move between main sections]
 - **Secondary Navigation:** [How users access supporting features]
 - **Return/Exit Points:** [How users return to previous screens or exit workflows]
@@ -313,17 +285,19 @@ _List 3-5 features explicitly excluded from this version/scope_
 ### Screen Hierarchy & Relationships
 
 **Information Architecture:**
+
 - **Level 1 (Primary):** [Main entry points and core functionality screens]
 - **Level 2 (Secondary):** [Feature-specific and detailed interaction screens]
 - **Level 3 (Supporting):** [Settings, help, administrative functions]
 
 **Cross-Screen Dependencies:**
+
 - **[Screen A] → [Screen B]:** [What information/state carries between screens]
 - **[Screen C] ← [Screen D]:** [Bi-directional relationships and shared data]
 
 ---
 
-## 6. Detailed Feature Specifications
+## 5. Detailed Feature Specifications
 
 ### Must Have Features
 
@@ -375,7 +349,7 @@ _[Repeat this complete specification format for each Should Have feature]_
 
 ---
 
-## 7. Target Users and Their Motivations
+## 6. Target Users and Their Motivations
 
 ### Primary Persona: [Name] - [Role/Title]
 
@@ -401,33 +375,12 @@ _[Repeat this complete specification format for each Should Have feature]_
 - **[Pain Point Category]:** "[Direct quote about this problem]"
 
 **Screen Usage Patterns:**
+
 - **Most Frequently Used Screens:** [Which screens this persona visits most often]
 - **Entry Point Preferences:** [How this persona typically starts their journey]
 - **Task Completion Patterns:** [How this persona moves through workflows]
 
-### Secondary Persona: [Name] - [Role/Title]
-
-_[Follow same structure for secondary persona]_
-
-**Motivations for Both Personas:**
-
-- **[Motivation Category]:** [Description of what drives these users]
-- **[Motivation Category]:** [Description of what drives these users]
-
-**Cross-Persona Screen Considerations:**
-- **Shared Screens:** [Which screens both personas use and how usage differs]
-- **Persona-Specific Needs:** [How screen design accommodates different persona requirements]
-
----
-
-## 8. Technical Constraints
-
-- **[Constraint category]** requiring [specific limitation or requirement]
-- **[Constraint category]** requiring [specific limitation or requirement]
-
----
-
-## 9. Onboarding Experience Design
+## 7. Onboarding Experience Design
 
 ### Core Onboarding Principles
 
@@ -511,4 +464,4 @@ _[Follow same structure for secondary persona]_
 - **Include complete specifications:** Don't summarise or abbreviate critical details
 - **Screen-feature integration:** Ensure clear relationships between features and screen architecture
 
-Remember: The goal is to create a PRD document in the current project folder that serves as a definitive guide for product development, with particular emphasis on user experience design, interface specifications, and clear screen architecture that supports optimal user flows.
+Remember: The goal is to create a PRD document in the current project folder that serves as a definitive guide for product feature development, with particular emphasis on user experience design, interface specifications, and clear screen architecture that supports optimal user flows.
