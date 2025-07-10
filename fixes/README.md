@@ -1,6 +1,6 @@
-# GitHub Copilot Corporate Fixes
+# GitHub Copilot Terminal Output Detection Fix
 
-This directory contains tools and scripts to diagnose and fix GitHub Copilot terminal integration issues in corporate macOS environments.
+This directory contains tools and scripts to diagnose and fix VS Code shell integration issues that prevent GitHub Copilot from detecting terminal command output and completion status.
 
 ## Quick Start
 
@@ -32,43 +32,29 @@ This directory contains tools and scripts to diagnose and fix GitHub Copilot ter
 
 - **`README.md`** - Overview and usage instructions (this file)
 
-## Common Issues Addressed
+## Core Issue Addressed
 
-### 1. Terminal Integration Problems
-- Commands not completing properly
-- Missing or incomplete output
-- Shell integration not working
+**Problem**: GitHub Copilot can run terminal commands but cannot detect when they complete or capture their output.
 
-### 2. Network Connectivity Issues
-- Corporate firewall blocking GitHub
-- Proxy configuration problems
-- SSL certificate issues
+**Root Cause**: VS Code shell integration is not properly configured, preventing Copilot from receiving terminal feedback.
 
-### 3. Authentication Problems
-- Multiple account conflicts
-- Expired tokens
-- Corporate SSO requirements
+### Specific Issues Fixed
 
-### 4. Corporate Environment Challenges
-- PowerLevel10k incompatibility
-- Oh My Zsh interference
-- Managed device restrictions
+1. **Shell Integration Missing**: VS Code shell integration not configured in bash/zsh
+2. **PowerLevel10k Conflicts**: Custom prompts break shell integration protocol
+3. **Oh My Zsh Interference**: Complex zsh configurations prevent proper integration
+4. **VS Code Settings**: Terminal integration disabled or misconfigured
 
 ## Diagnostic Script Features
 
 The diagnostic script (`copilot-diagnostic.sh`) checks:
 
-- ✅ System information and corporate management detection
-- ✅ VS Code installation and CLI availability
-- ✅ GitHub Copilot extension status
-- ✅ Shell integration configuration
-- ✅ Network connectivity to GitHub services
-- ✅ Git configuration and credentials
-- ✅ VS Code settings and terminal configuration
-- ✅ Font installation for proper display
-- ✅ SSL certificate issues
-- ✅ GitHub authentication status
-- ✅ Running processes and potential conflicts
+- ✅ System information and shell type
+- ✅ VS Code installation 
+- ✅ Shell integration configuration in bash/zsh profiles
+- ✅ VS Code terminal integration settings
+- ✅ PowerLevel10k/Oh My Zsh conflicts
+- ✅ Running VS Code processes
 
 ### Usage
 
@@ -87,16 +73,13 @@ cat copilot-diagnostic.log
 
 The fix script (`copilot-fix.sh`) automatically:
 
-- 🔧 Creates backup of current configuration
-- 🔧 Installs required prerequisites (Homebrew, GitHub CLI, Nerd Fonts)
-- 🔧 Configures VS Code CLI if missing
-- 🔧 Installs/updates GitHub Copilot extensions
+- 🔧 Creates backup of current shell configuration
+- 🔧 Checks VS Code installation prerequisites
 - 🔧 Configures shell integration for bash/zsh
-- 🔧 Handles PowerLevel10k compatibility issues
-- 🔧 Applies corporate-optimized VS Code settings
-- 🔧 Configures proxy and certificate settings
-- 🔧 Authenticates with GitHub
-- 🔧 Tests the fix and provides verification
+- 🔧 Handles PowerLevel10k compatibility issues with simplified profile
+- 🔧 Applies VS Code terminal integration settings
+- 🔧 Tests shell integration configuration
+- 🔧 Provides step-by-step verification instructions
 
 ### Usage
 
@@ -114,16 +97,14 @@ cat copilot-fix.log
 
 ## VS Code Settings Template
 
-The `vscode-settings-corporate.json` file contains optimized settings for corporate environments:
+The `vscode-settings-corporate.json` file contains optimized settings for terminal integration:
 
 ### Key Settings Include:
 
-- **Terminal Integration**: Properly configured shell integration
-- **Proxy Support**: HTTP/HTTPS proxy configuration
-- **Certificate Handling**: Corporate certificate support
-- **Font Configuration**: Nerd Font setup for proper display
-- **Security Settings**: Appropriate telemetry and security settings
-- **Copilot Configuration**: Optimized Copilot settings
+- **Terminal Integration**: Enables `terminal.integrated.shellIntegration.enabled`
+- **Shell Integration**: Configures decorations and history tracking
+- **Font Configuration**: Terminal font settings for proper display
+- **Copilot Configuration**: Basic Copilot settings for terminal chat
 
 ### Usage
 

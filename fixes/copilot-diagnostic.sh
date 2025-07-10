@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# GitHub Copilot Corporate Terminal Integration Diagnostic Script
-# For macOS corporate environments with VS Code
+# GitHub Copilot Terminal Output Detection Diagnostic Script
+# For macOS environments with VS Code shell integration issues
 # Version: 1.0.0
 
 set -e
@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Script info
-SCRIPT_NAME="GitHub Copilot Corporate Diagnostic"
+SCRIPT_NAME="GitHub Copilot Terminal Output Diagnostic"
 SCRIPT_VERSION="1.0.0"
 
 # Output functions
@@ -49,11 +49,11 @@ add_recommendation() {
 
 print_header() {
     echo -e "${BLUE}╔══════════════════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║                    $SCRIPT_NAME                     ║${NC}"
+    echo -e "${BLUE}║                  $SCRIPT_NAME                   ║${NC}"
     echo -e "${BLUE}║                              Version $SCRIPT_VERSION                              ║${NC}"
     echo -e "${BLUE}║                                                                              ║${NC}"
-    echo -e "${BLUE}║  Diagnoses GitHub Copilot terminal integration issues in corporate macOS    ║${NC}"
-    echo -e "${BLUE}║  environments with VS Code                                                  ║${NC}"
+    echo -e "${BLUE}║    Diagnoses VS Code shell integration issues preventing Copilot from      ║${NC}"
+    echo -e "${BLUE}║    detecting terminal command output and completion status                  ║${NC}"
     echo -e "${BLUE}╚══════════════════════════════════════════════════════════════════════════════╝${NC}"
     echo
 }
@@ -417,14 +417,8 @@ main() {
     
     check_system_info
     check_vscode
-    check_copilot_extension
     check_shell_integration
-    check_network
-    check_git_config
     check_vscode_settings
-    check_terminal_fonts
-    check_certificates
-    check_github_auth
     check_running_processes
     
     generate_report

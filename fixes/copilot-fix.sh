@@ -87,165 +87,32 @@ create_backup() {
     success "Backup completed"
 }
 
-# Install prerequisites
-install_prerequisites() {
-    header "Installing Prerequisites"
+# Check prerequisites for shell configuration
+check_prerequisites() {
+    header "Checking Prerequisites"
     
-    # Check for curl or wget
-    if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
-        error "Neither curl nor wget is available. Cannot download required tools."
-        return 1
-    fi
-    
-    # Create local bin directory
-    mkdir -p "$HOME/.local/bin"
-    export PATH="$HOME/.local/bin:$PATH"
-    
-    # Install GitHub CLI if not present
-    if ! command -v gh &> /dev/null; then
-        info "Installing GitHub CLI..."
-        install_github_cli
-    else
-        success "GitHub CLI is already installed"
-    fi
-    
-    # Install Nerd Fonts for better terminal display
-    if ! ls "$HOME/Library/Fonts"/*Nerd* &> /dev/null 2>&1; then
-        info "Installing Nerd Fonts..."
-        install_nerd_fonts
-    else
-        success "Nerd Fonts already installed"
-    fi
-}
-
-# Install GitHub CLI without Homebrew
-install_github_cli() {
-    info "Downloading GitHub CLI directly..."
-    
-    # Detect system architecture
-    ARCH=$(uname -m)
-    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-    
-    # Map architecture names
-    case "$ARCH" in
-        x86_64) ARCH="amd64" ;;
-        arm64) ARCH="arm64" ;;
-        aarch64) ARCH="arm64" ;;
-        *) error "Unsupported architecture: $ARCH"; return 1 ;;
+    # Check if we're in a supported shell
+    case "$SHELL" in
+        */bash|*/zsh)
+            success "Supported shell detected: $SHELL"
+            ;;
+        *)
+            warning "Unsupported shell: $SHELL"
+            info "This script supports bash and zsh only"
+            return 1
+            ;;
     esac
     
-    # Get latest version
-    if command -v curl &> /dev/null; then
-        GH_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep '"tag_name"' | cut -d '"' -f 4 | sed 's/v//')
+    # Check if VS Code is installed
+    if [ -d "/Applications/Visual Studio Code.app" ]; then
+        success "VS Code installation found"
     else
-        error "Cannot determine latest GitHub CLI version"
-        return 1
-    fi
-    
-    if [ -z "$GH_VERSION" ]; then
-        warning "Could not get latest version, using fallback version 2.40.0"
-        GH_VERSION="2.40.0"
-    fi
-    
-    # Download URL
-    GH_URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${OS}_${ARCH}.tar.gz"
-    
-    # Download and install
-    cd /tmp
-    if command -v curl &> /dev/null; then
-        curl -LsSf "$GH_URL" -o gh.tar.gz
-    else
-        wget -q "$GH_URL" -O gh.tar.gz
-    fi
-    
-    tar -xzf gh.tar.gz
-    mv gh_*/bin/gh "$HOME/.local/bin/"
-    chmod +x "$HOME/.local/bin/gh"
-    rm -rf gh.tar.gz gh_*
-    
-    success "GitHub CLI installed to ~/.local/bin/gh"
-}
-
-# Install Nerd Fonts without Homebrew
-install_nerd_fonts() {
-    info "Downloading Nerd Fonts directly..."
-    
-    # Create fonts directory if it doesn't exist
-    mkdir -p "$HOME/Library/Fonts"
-    
-    # Download MesloLGS NF fonts
-    FONT_BASE_URL="https://github.com/romkatv/powerlevel10k-media/raw/master"
-    
-    declare -a fonts=(
-        "MesloLGS%20NF%20Regular.ttf"
-        "MesloLGS%20NF%20Bold.ttf"
-        "MesloLGS%20NF%20Italic.ttf"
-        "MesloLGS%20NF%20Bold%20Italic.ttf"
-    )
-    
-    for font in "${fonts[@]}"; do
-        font_file=$(echo "$font" | sed 's/%20/ /g')
-        if [ ! -f "$HOME/Library/Fonts/$font_file" ]; then
-            info "Downloading $font_file..."
-            if command -v curl &> /dev/null; then
-                curl -fLo "$HOME/Library/Fonts/$font_file" "$FONT_BASE_URL/$font"
-            else
-                wget -q "$FONT_BASE_URL/$font" -O "$HOME/Library/Fonts/$font_file"
-            fi
-        fi
-    done
-    
-    success "Nerd Fonts installed to ~/Library/Fonts"
-}
-
-# Install VS Code CLI if not present
-install_vscode_cli() {
-    header "VS Code CLI Setup"
-    
-    if ! command -v code &> /dev/null; then
-        info "Installing VS Code CLI..."
-        # This requires VS Code to be installed first
-        if [ -d "/Applications/Visual Studio Code.app" ]; then
-            # Add to PATH temporarily
-            export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"
-            
-            # Add to shell profile
-            case "$SHELL" in
-                */bash)
-                    echo 'export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"' >> ~/.bash_profile
-                    ;;
-                */zsh)
-                    echo 'export PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:$PATH"' >> ~/.zprofile
-                    ;;
-            esac
-            
-            success "VS Code CLI configured"
-        else
-            error "VS Code not found. Please install VS Code first."
-            return 1
-        fi
-    else
-        success "VS Code CLI is available"
-    fi
-}
-
-# Install GitHub Copilot extensions
-install_copilot_extensions() {
-    header "Installing Copilot Extensions"
-    
-    if command -v code &> /dev/null; then
-        info "Installing GitHub Copilot extension..."
-        code --install-extension github.copilot
-        
-        info "Installing GitHub Copilot Chat extension..."
-        code --install-extension github.copilot-chat
-        
-        success "Copilot extensions installed"
-    else
-        error "VS Code CLI not available"
+        error "VS Code not found at /Applications/Visual Studio Code.app"
+        info "Please install VS Code before running this script"
         return 1
     fi
 }
+
 
 # Configure shell integration
 configure_shell_integration() {
@@ -270,13 +137,6 @@ configure_bash_integration() {
     
     # Ensure .bashrc exists
     touch ~/.bashrc
-    
-    # Add local bin to PATH if not present
-    if ! grep -q "HOME/.local/bin" ~/.bashrc; then
-        echo "" >> ~/.bashrc
-        echo "# User local bin directory" >> ~/.bashrc
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-    fi
     
     # Add shell integration if not present
     if ! grep -q "vscode.*shell-integration" ~/.bashrc; then
@@ -304,13 +164,6 @@ configure_zsh_integration() {
     # Ensure .zshrc exists
     touch ~/.zshrc
     
-    # Add local bin to PATH if not present
-    if ! grep -q "HOME/.local/bin" ~/.zshrc; then
-        echo "" >> ~/.zshrc
-        echo "# User local bin directory" >> ~/.zshrc
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-    fi
-    
     # Check for problematic configurations
     if grep -q "powerlevel10k" ~/.zshrc; then
         warning "PowerLevel10k detected - this may interfere with shell integration"
@@ -320,9 +173,6 @@ configure_zsh_integration() {
             cat > ~/.zshrc.vscode << 'EOF'
 # Simplified Zsh configuration for VS Code compatibility
 # This profile ensures shell integration works properly
-
-# User local bin directory
-export PATH="$HOME/.local/bin:$PATH"
 
 # Basic options
 setopt AUTO_CD
@@ -379,16 +229,6 @@ EOF
             info "Zsh shell integration already configured"
         fi
     fi
-    
-    # Also update .zprofile for login shells
-    if [ -f ~/.zprofile ] || [ ! -f ~/.zshrc ]; then
-        touch ~/.zprofile
-        if ! grep -q "HOME/.local/bin" ~/.zprofile; then
-            echo "" >> ~/.zprofile
-            echo "# User local bin directory" >> ~/.zprofile
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zprofile
-        fi
-    fi
 }
 
 # Configure VS Code settings
@@ -439,63 +279,6 @@ with open('$SETTINGS_FILE', 'w') as f:
     fi
 }
 
-# Configure network settings
-configure_network_settings() {
-    header "Configuring Network Settings"
-    
-    # Check for corporate proxy
-    if [ -n "$http_proxy" ] || [ -n "$https_proxy" ]; then
-        info "Proxy environment variables detected"
-        
-        # Configure Git to use proxy
-        if [ -n "$https_proxy" ]; then
-            git config --global http.proxy "$https_proxy"
-            git config --global https.proxy "$https_proxy"
-            success "Git proxy configured"
-        fi
-        
-        # Configure npm to use proxy (for Node.js extensions)
-        if command -v npm &> /dev/null; then
-            if [ -n "$http_proxy" ]; then
-                npm config set proxy "$http_proxy"
-            fi
-            if [ -n "$https_proxy" ]; then
-                npm config set https-proxy "$https_proxy"
-            fi
-            success "npm proxy configured"
-        fi
-    fi
-    
-    # Handle corporate certificates
-    if confirm "Are you behind a corporate firewall with custom certificates?"; then
-        warning "Corporate certificates detected"
-        
-        if confirm "Disable Node.js certificate verification? (SECURITY RISK but may be required)"; then
-            echo "export NODE_TLS_REJECT_UNAUTHORIZED=0" >> ~/.bash_profile
-            echo "export NODE_TLS_REJECT_UNAUTHORIZED=0" >> ~/.zprofile
-            warning "Node.js certificate verification disabled"
-            warning "This is a security risk - only use in trusted corporate environments"
-        fi
-    fi
-}
-
-# Authenticate with GitHub
-authenticate_github() {
-    header "GitHub Authentication"
-    
-    if command -v gh &> /dev/null; then
-        if ! gh auth status &> /dev/null; then
-            info "Authenticating with GitHub..."
-            gh auth login
-            success "GitHub authentication completed"
-        else
-            success "Already authenticated with GitHub"
-        fi
-    else
-        error "GitHub CLI not available"
-        return 1
-    fi
-}
 
 # Restart VS Code processes
 restart_vscode() {
@@ -519,53 +302,55 @@ restart_vscode() {
 
 # Test the fix
 test_fix() {
-    header "Testing Fix"
+    header "Testing Shell Integration"
     
-    info "Testing GitHub Copilot functionality..."
+    info "Testing shell integration setup..."
     
-    # Check if extensions are loaded
-    if command -v code &> /dev/null; then
-        EXTENSIONS=$(code --list-extensions)
-        if echo "$EXTENSIONS" | grep -q "github.copilot"; then
-            success "GitHub Copilot extension is active"
-        else
-            error "GitHub Copilot extension not found"
-        fi
-    fi
+    # Test shell integration markers
+    case "$SHELL" in
+        */bash)
+            if grep -q "vscode.*shell-integration" ~/.bashrc; then
+                success "Bash shell integration configured"
+            else
+                warning "Bash shell integration not found in ~/.bashrc"
+            fi
+            ;;
+        */zsh)
+            if grep -q "vscode.*shell-integration" ~/.zshrc; then
+                success "Zsh shell integration configured"
+            else
+                warning "Zsh shell integration not found in ~/.zshrc"
+            fi
+            ;;
+    esac
     
-    # Test network connectivity
-    if curl -s --connect-timeout 5 https://api.github.com > /dev/null; then
-        success "GitHub API is accessible"
-    else
-        error "Cannot connect to GitHub API"
-    fi
-    
-    info "Fix testing completed"
+    info "Shell integration testing completed"
     info "Please test terminal integration in VS Code:"
-    info "1. Open VS Code"
+    info "1. Close and restart VS Code"
     info "2. Open terminal (Ctrl+\`)"
     info "3. Try using GitHub Copilot Chat in terminal (Cmd+I)"
+    info "4. Run a command and verify Copilot can see the output"
 }
 
 # Generate summary report
 generate_report() {
     header "Fix Summary"
     
-    echo -e "\n${GREEN}✅ Fix script completed successfully!${NC}"
+    echo -e "\n${GREEN}✅ Shell integration fix completed!${NC}"
     echo -e "\n${BLUE}Changes made:${NC}"
     echo -e "${BLUE}  - Created backup in: $BACKUP_DIR${NC}"
-    echo -e "${BLUE}  - Installed prerequisites${NC}"
-    echo -e "${BLUE}  - Configured shell integration${NC}"
-    echo -e "${BLUE}  - Applied VS Code settings${NC}"
-    echo -e "${BLUE}  - Configured network settings${NC}"
-    echo -e "${BLUE}  - Authenticated with GitHub${NC}"
+    echo -e "${BLUE}  - Configured shell integration for terminal output detection${NC}"
+    echo -e "${BLUE}  - Applied VS Code terminal settings${NC}"
+    echo -e "${BLUE}  - Handled PowerLevel10k compatibility if detected${NC}"
     
     echo -e "\n${YELLOW}Next steps:${NC}"
-    echo -e "${YELLOW}  1. Restart VS Code if not already done${NC}"
-    echo -e "${YELLOW}  2. Test GitHub Copilot in terminal (Cmd+I)${NC}"
-    echo -e "${YELLOW}  3. If issues persist, check COPILOT-TROUBLESHOOTING.md${NC}"
-    echo -e "${YELLOW}  4. To restore original settings: cp $BACKUP_DIR/* ~/${NC}"
+    echo -e "${YELLOW}  1. Restart VS Code completely${NC}"
+    echo -e "${YELLOW}  2. Open terminal in VS Code (Ctrl+\`)${NC}"
+    echo -e "${YELLOW}  3. Test GitHub Copilot Chat in terminal (Cmd+I)${NC}"
+    echo -e "${YELLOW}  4. Run a command and verify Copilot can see the output${NC}"
+    echo -e "${YELLOW}  5. If issues persist, check COPILOT-TROUBLESHOOTING.md${NC}"
     
+    echo -e "\n${BLUE}To restore original settings: cp $BACKUP_DIR/* ~/${NC}"
     echo -e "\n${BLUE}📄 Log file saved to: copilot-fix.log${NC}"
 }
 
@@ -593,13 +378,9 @@ main() {
     fi
     
     create_backup
-    install_prerequisites
-    install_vscode_cli
-    install_copilot_extensions
+    check_prerequisites
     configure_shell_integration
     configure_vscode_settings
-    configure_network_settings
-    authenticate_github
     restart_vscode
     test_fix
     
