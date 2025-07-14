@@ -4,10 +4,6 @@ description: "TypeScript configuration for web and mobile prototypes"
 prototypeMode: "universal"
 ---
 
-# TypeScript Configuration Template
-**Used by:** Web prototype mode, Mobile prototype mode  
-**Purpose:** Universal TypeScript configuration for both platforms
-
 Optimized tsconfig for Vite + React:
 
 ```json
@@ -19,7 +15,7 @@ Optimized tsconfig for Vite + React:
     "module": "ESNext",
     "skipLibCheck": true,
     "types": ["vite/client"],
-    
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -27,13 +23,13 @@ Optimized tsconfig for Vite + React:
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    
+
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
@@ -49,11 +45,3 @@ Optimized tsconfig for Vite + React:
   "references": [{ "path": "./tsconfig.node.json" }]
 }
 ```
-
-## TypeScript Settings
-
-1. **Bundler Mode**: Optimized for Vite's esbuild
-2. **Strict Mode**: All strict checks enabled
-3. **Path Mapping**: Matches Vite aliases
-4. **React JSX**: New transform (no React import needed)
-5. **Isolated Modules**: Required for Vite

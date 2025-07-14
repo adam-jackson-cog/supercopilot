@@ -5,20 +5,18 @@ prototypeMode: "mobile"
 ---
 
 # React Native Screen Component Template
-**Used by:** Mobile prototype mode only  
-**Purpose:** React Native screen components with View, Text, StyleSheet, and TypeScript
 
 Create functional screen components using TypeScript with proper React Native patterns:
 
 ```tsx
-import React, { FC } from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { FC } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ScreenNameProps {
   // Define prop types
-  title: string
-  onAction?: () => void
+  title: string;
+  onAction?: () => void;
 }
 
 export const ScreenName: FC<ScreenNameProps> = ({ title, onAction }) => {
@@ -31,13 +29,13 @@ export const ScreenName: FC<ScreenNameProps> = ({ title, onAction }) => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
@@ -48,11 +46,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
-})
+});
 ```
 
 ## Key Patterns
@@ -67,30 +65,33 @@ const styles = StyleSheet.create({
 ## Common Imports
 
 ```tsx
-import React, { FC, useState, useEffect } from 'react'
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView 
-} from 'react-native'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import React, { FC, useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 ```
 
 ## Navigation Props Pattern
 
 ```tsx
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
-  Home: undefined
-  Profile: { userId: string }
-}
+  Home: undefined;
+  Profile: { userId: string };
+};
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>
+type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 export const HomeScreen: FC<Props> = ({ navigation, route }) => {
   // Screen implementation
-}
+};
 ```

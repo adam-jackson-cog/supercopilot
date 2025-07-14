@@ -5,25 +5,23 @@ prototypeMode: "web"
 ---
 
 # Material-UI Theme Configuration
-**Used by:** Web prototype mode only  
-**Purpose:** Material-UI theme customization for consistent web styling
 
 Create consistent theme configuration:
 
 ```typescript
-import { createTheme } from '@mui/material/styles'
+import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: {
-      main: '#1976d2',
+      main: "#1976d2",
     },
     secondary: {
-      main: '#dc004e',
+      main: "#dc004e",
     },
     background: {
-      default: '#f5f5f5',
+      default: "#f5f5f5",
     },
   },
   typography: {
@@ -41,7 +39,7 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
+          textTransform: "none",
         },
       },
     },
@@ -51,7 +49,7 @@ export const theme = createTheme({
       },
     },
   },
-})
+});
 ```
 
 ## Theme Guidelines

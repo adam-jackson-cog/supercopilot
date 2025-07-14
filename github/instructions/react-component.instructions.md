@@ -5,19 +5,17 @@ prototypeMode: "web"
 ---
 
 # React Component Template
-**Used by:** Web prototype mode only  
-**Purpose:** Material-UI based components for web prototypes
 
 Create functional components using TypeScript with proper typing and Material-UI integration:
 
 ```tsx
-import { FC } from 'react'
-import { Box, Typography } from '@mui/material'
+import { FC } from "react";
+import { Box, Typography } from "@mui/material";
 
 interface ComponentNameProps {
   // Define prop types
-  title: string
-  onAction?: () => void
+  title: string;
+  onAction?: () => void;
 }
 
 export const ComponentName: FC<ComponentNameProps> = ({ title, onAction }) => {
@@ -25,8 +23,8 @@ export const ComponentName: FC<ComponentNameProps> = ({ title, onAction }) => {
     <Box sx={{ p: 2 }}>
       <Typography variant="h6">{title}</Typography>
     </Box>
-  )
-}
+  );
+};
 ```
 
 ## Key Patterns

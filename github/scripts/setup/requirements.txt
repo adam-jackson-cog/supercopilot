@@ -20,6 +20,7 @@ py-spy>=0.3.0; platform_system != "Windows"  # Python profiler (Unix only)
 flake8>=4.0.0                  # Style guide enforcement
 pylint>=2.12.0                 # Code analysis
 radon>=5.1.0                   # Complexity metrics
+lizard>=1.17.0                 # Advanced complexity analysis
 vulture>=2.3                   # Dead code finder
 mccabe>=0.6.0                  # Complexity checker
 

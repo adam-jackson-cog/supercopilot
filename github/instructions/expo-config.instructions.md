@@ -5,8 +5,6 @@ prototypeMode: "mobile"
 ---
 
 # Expo App Configuration Template
-**Used by:** Mobile prototype mode only  
-**Purpose:** app.json configuration optimized for React Native mobile prototypes
 
 Configure Expo projects with essential settings for rapid prototyping:
 
@@ -26,9 +24,7 @@ Configure Expo projects with essential settings for rapid prototyping:
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.prototype.mobile"
@@ -135,7 +131,7 @@ Configure Expo projects with essential settings for rapid prototyping:
 {
   "expo": {
     "name": "Mobile Prototype",
-    "slug": "mobile-prototype", 
+    "slug": "mobile-prototype",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -146,9 +142,7 @@ Configure Expo projects with essential settings for rapid prototyping:
       "resizeMode": "contain",
       "backgroundColor": "#6200EE"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.prototype.mobile",
@@ -208,6 +202,7 @@ Configure Expo projects with essential settings for rapid prototyping:
 ## Platform-Specific Configurations
 
 ### iOS Configuration
+
 ```json
 {
   "expo": {
@@ -228,6 +223,7 @@ Configure Expo projects with essential settings for rapid prototyping:
 ```
 
 ### Android Configuration
+
 ```json
 {
   "expo": {
@@ -265,9 +261,7 @@ Configure Expo projects with essential settings for rapid prototyping:
 ```json
 {
   "expo": {
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
       [
         "expo-asset",
@@ -278,7 +272,10 @@ Configure Expo projects with essential settings for rapid prototyping:
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/Inter-Regular.ttf", "./assets/fonts/Inter-Bold.ttf"]
+          "fonts": [
+            "./assets/fonts/Inter-Regular.ttf",
+            "./assets/fonts/Inter-Bold.ttf"
+          ]
         }
       ]
     ]
@@ -324,20 +321,24 @@ Configure Expo projects with essential settings for rapid prototyping:
 ## Common Plugin Configurations
 
 ### Navigation
+
 - `expo-router`: File-based routing
 - `expo-screen-orientation`: Control screen orientation
 
 ### Development
+
 - `expo-dev-client`: Enhanced development experience
 - `expo-build-properties`: Build configuration
 
 ### Hardware Access
+
 - `expo-camera`: Camera and microphone access
 - `expo-location`: GPS and location services
 - `expo-sensors`: Device motion and sensors
 - `expo-local-authentication`: Biometric authentication
 
 ### Storage & Data
+
 - `expo-secure-store`: Secure storage
 - `expo-sqlite`: Local database
 - `expo-document-picker`: File system access

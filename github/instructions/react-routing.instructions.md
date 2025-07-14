@@ -5,24 +5,22 @@ prototypeMode: "web"
 ---
 
 # React Router Setup
-**Used by:** Web prototype mode only  
-**Purpose:** React Router setup with Material-UI integration for web navigation
 
 Configure routing in App.tsx:
 
 ```tsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { ThemeProvider, CssBaseline } from '@mui/material'
-import { theme } from './theme'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { theme } from "./theme";
 
 // Pages
-import HomePage from './pages/HomePage'
-import DashboardPage from './pages/DashboardPage'
-import ProfilePage from './pages/ProfilePage'
-import NotFoundPage from './pages/NotFoundPage'
+import HomePage from "./pages/HomePage";
+import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 // Layout
-import { MainLayout } from './components/layout/MainLayout'
+import { MainLayout } from "./components/layout/MainLayout";
 
 function App() {
   return (
@@ -40,10 +38,10 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;
 ```
 
 ## Routing Patterns

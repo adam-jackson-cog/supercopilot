@@ -5,72 +5,71 @@ prototypeMode: "universal"
 ---
 
 # Custom Hook Template
-**Used by:** Web prototype mode, Mobile prototype mode  
-**Purpose:** Universal React hooks pattern for both platforms
 
 Create reusable custom hooks:
 
 ```typescript
-import { useState, useEffect, useCallback } from 'react'
-import { ApiResponse } from '@/services/types'
+import { useState, useEffect, useCallback } from "react";
+import { ApiResponse } from "@/services/types";
 
 // Example: Data fetching hook
 export function useApi<T>(
   fetchFn: () => Promise<ApiResponse<T>>,
   deps: any[] = []
 ) {
-  const [data, setData] = useState<T | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refetch = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    
+    setLoading(true);
+    setError(null);
+
     try {
-      const response = await fetchFn()
-      
-      if (response.status === 'error') {
-        setError(response.message || 'An error occurred')
+      const response = await fetchFn();
+
+      if (response.status === "error") {
+        setError(response.message || "An error occurred");
       } else {
-        setData(response.data)
+        setData(response.data);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, deps)
+  }, deps);
 
   useEffect(() => {
-    refetch()
-  }, [refetch])
+    refetch();
+  }, [refetch]);
 
-  return { data, loading, error, refetch }
+  return { data, loading, error, refetch };
 }
 
 // Example: Local storage hook
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
-      const item = window.localStorage.getItem(key)
-      return item ? JSON.parse(item) : initialValue
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      return initialValue
+      return initialValue;
     }
-  })
+  });
 
   const setValue = (value: T | ((val: T) => T)) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value
-      setStoredValue(valueToStore)
-      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
-      console.error(`Error saving to localStorage:`, error)
+      console.error(`Error saving to localStorage:`, error);
     }
-  }
+  };
 
-  return [storedValue, setValue] as const
+  return [storedValue, setValue] as const;
 }
 ```
 

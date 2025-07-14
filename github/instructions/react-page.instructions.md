@@ -5,21 +5,19 @@ prototypeMode: "web"
 ---
 
 # React Page Component Template
-**Used by:** Web prototype mode only  
-**Purpose:** Full-page components with routing and Material-UI layout
 
 Page components serve as route entry points with layout structure:
 
 ```tsx
-import { FC, useState } from 'react'
-import { Container, Box, Typography, Button, Stack } from '@mui/material'
+import { FC, useState } from "react";
+import { Container, Box, Typography, Button, Stack } from "@mui/material";
 
 interface PageNameProps {
   // Route params if needed
 }
 
 const PageName: FC<PageNameProps> = () => {
-  const [state, setState] = useState<string>('')
+  const [state, setState] = useState<string>("");
 
   return (
     <Container maxWidth="lg">
@@ -27,16 +25,14 @@ const PageName: FC<PageNameProps> = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Page Title
         </Typography>
-        
-        <Stack spacing={3}>
-          {/* Page content */}
-        </Stack>
+
+        <Stack spacing={3}>{/* Page content */}</Stack>
       </Box>
     </Container>
-  )
-}
+  );
+};
 
-export default PageName
+export default PageName;
 ```
 
 ## Page Patterns

@@ -5,26 +5,24 @@ prototypeMode: "mobile"
 ---
 
 # React Native Navigation Template
-**Used by:** Mobile prototype mode only  
-**Purpose:** React Navigation v6 setup with TypeScript for mobile prototypes
 
 Create navigation structure using React Navigation with proper TypeScript patterns:
 
 ## Stack Navigator Setup
 
 ```tsx
-import React from 'react'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { HomeScreen } from '../screens/HomeScreen'
-import { DetailsScreen } from '../screens/DetailsScreen'
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { HomeScreen } from "../screens/HomeScreen";
+import { DetailsScreen } from "../screens/DetailsScreen";
 
 export type RootStackParamList = {
-  Home: undefined
-  Details: { itemId: string }
-  Profile: { userId: string }
-}
+  Home: undefined;
+  Details: { itemId: string };
+  Profile: { userId: string };
+};
 
-const Stack = createNativeStackNavigator<RootStackParamList>()
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   return (
@@ -32,97 +30,97 @@ export const RootNavigator = () => {
       initialRouteName="Home"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#6200EE',
+          backgroundColor: "#6200EE",
         },
-        headerTintColor: '#fff',
+        headerTintColor: "#fff",
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: "bold",
         },
       }}
     >
-      <Stack.Screen 
-        name="Home" 
+      <Stack.Screen
+        name="Home"
         component={HomeScreen}
-        options={{ title: 'Home' }}
+        options={{ title: "Home" }}
       />
-      <Stack.Screen 
-        name="Details" 
+      <Stack.Screen
+        name="Details"
         component={DetailsScreen}
-        options={{ title: 'Details' }}
+        options={{ title: "Details" }}
       />
-      <Stack.Screen 
-        name="Profile" 
+      <Stack.Screen
+        name="Profile"
         component={ProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: "Profile" }}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 ```
 
 ## Tab Navigator Setup
 
 ```tsx
-import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Ionicons } from '@expo/vector-icons'
-import { HomeScreen } from '../screens/HomeScreen'
-import { SettingsScreen } from '../screens/SettingsScreen'
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { HomeScreen } from "../screens/HomeScreen";
+import { SettingsScreen } from "../screens/SettingsScreen";
 
 export type TabParamList = {
-  HomeTab: undefined
-  SettingsTab: undefined
-}
+  HomeTab: undefined;
+  SettingsTab: undefined;
+};
 
-const Tab = createBottomTabNavigator<TabParamList>()
+const Tab = createBottomTabNavigator<TabParamList>();
 
 export const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: keyof typeof Ionicons.glyphMap
+          let iconName: keyof typeof Ionicons.glyphMap;
 
-          if (route.name === 'HomeTab') {
-            iconName = focused ? 'home' : 'home-outline'
-          } else if (route.name === 'SettingsTab') {
-            iconName = focused ? 'settings' : 'settings-outline'
+          if (route.name === "HomeTab") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "SettingsTab") {
+            iconName = focused ? "settings" : "settings-outline";
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#6200EE',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: "#6200EE",
+        tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen 
-        name="HomeTab" 
+      <Tab.Screen
+        name="HomeTab"
         component={HomeScreen}
-        options={{ title: 'Home' }}
+        options={{ title: "Home" }}
       />
-      <Tab.Screen 
-        name="SettingsTab" 
+      <Tab.Screen
+        name="SettingsTab"
         component={SettingsScreen}
-        options={{ title: 'Settings' }}
+        options={{ title: "Settings" }}
       />
     </Tab.Navigator>
-  )
-}
+  );
+};
 ```
 
 ## App Container Setup
 
 ```tsx
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import { RootNavigator } from './navigation/RootNavigator'
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { RootNavigator } from "./navigation/RootNavigator";
 
 export default function App() {
   return (
     <NavigationContainer>
       <RootNavigator />
     </NavigationContainer>
-  )
+  );
 }
 ```
 
@@ -164,22 +162,22 @@ export const DetailsScreen: FC<Props> = ({ navigation, route }) => {
 
 ```tsx
 // Navigate with parameters
-navigation.navigate('Details', { itemId: '42' })
+navigation.navigate("Details", { itemId: "42" });
 
 // Navigate without parameters
-navigation.navigate('Home')
+navigation.navigate("Home");
 
 // Go back
-navigation.goBack()
+navigation.goBack();
 
 // Replace current screen
-navigation.replace('Login')
+navigation.replace("Login");
 
 // Reset navigation stack
 navigation.reset({
   index: 0,
-  routes: [{ name: 'Home' }],
-})
+  routes: [{ name: "Home" }],
+});
 ```
 
 ## Nested Navigation Pattern
@@ -189,14 +187,14 @@ navigation.reset({
 export const AppNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="Main" 
+      <Stack.Screen
+        name="Main"
         component={TabNavigator}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Details" component={DetailsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
-  )
-}
+  );
+};
 ```

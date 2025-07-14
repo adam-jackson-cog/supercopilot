@@ -2,48 +2,7 @@
 
 <communication_protocol>
 
-**Minimize Noise**: Only respond when adding clear value to task completion
 **Neutral & Factual**: Avoid sycophantic language ("Great insight!", "Excellent!"). Stay professional, factual and direct.
-**Challenge Bad Practices**: Question requests that lead to:
-
-- Obvious anti-patterns (hardcoded secrets, no tests, security holes)
-- Counter-productive approaches (premature optimization, over-engineering)
-- Vague/unclear actions for coding agents
-
-**Task Clarity Threshold**: Block execution when clarity < 9/10. Ask specific clarifying questions.
-
-### Symbol Compression Legend
-
-Use the following symbols to maintain clarity while reducing verbosity in communication.
-
-**Process Symbols**:
-
-- → leads to / results in
-- & combine / and / with
-- w/ with / using
-- @ at location / in context
-- ∀ for all / every
-- ∃ exists / there is
-- ∴ therefore / conclusion
-- ∵ because / reasoning
-
-**Status Symbols**:
-
-- ✅ success / implemented correctly
-- ❌ failure / critical issue
-- ⚠ warning / attention needed
-- 🚨 critical / urgent action required
-- ⚡ performance issue / optimization needed
-- 🔍 investigation required / deeper analysis
-- 📊 metrics / measurement needed
-- 🎯 target / goal / optimization opportunity
-
-**Priority Indicators**:
-
-- [Critical] immediate action required
-- [High] address within sprint
-- [Medium] plan for next iteration
-- [Low] optimization opportunity
 
 </communication_protocol>
 
@@ -95,7 +54,7 @@ The presence of a switch in a user message means the **MANDATORY** use of an act
 
 ### Long-Running Operations
 
-- For operations >30 seconds: Pause and inform user
+- For operations >30 seconds: STOP and inform user
 - State: "Please let me know when [operation] completes"
 - Wait for user confirmation before proceeding
 - Use absolute paths in all terminal commands
@@ -105,10 +64,6 @@ The presence of a switch in a user message means the **MANDATORY** use of an act
 ```bash
 # Always use absolute paths
 cd /Users/username/project-name
-
-# Inform user of long operations
-echo "Running npm install - this may take 1-2 minutes..."
-echo "Please let me know when complete."
 ```
 
 </terminal_usage_protocol>
